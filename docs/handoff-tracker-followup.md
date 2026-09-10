@@ -149,14 +149,29 @@ correctly untouched.
 | Outcome | Rows | Detail |
 |---|---|---|
 | Skipped, `Ignore` | 1 | Mark Bunting — G deliberately left at 8/29 |
-| **Never forwarded** | **7** | Zing Beam LLC, Christopher Terry, Daniel Spencer, J LaMacchia, Jeffrey Naegle, Jerome M Limage, narinder Singh |
+| **Never forwarded** | **6** | Zing Beam LLC, Christopher Terry, Daniel Spencer, J LaMacchia, Jeffrey Naegle, narinder Singh |
+| Reclassified to `Ignore` | 1 | Jerome M Limage — see below |
 | Setter call on the board | 2 | Michael j Wilson, Eric Rubinstein |
 
-**The headline finding is the seven.** Only three threads in Helen's entire mailbox have
-ever involved Yobani, and two of them were already marked In Progress. So seven Tier 1
+**The headline finding is the six.** Only three threads in Helen's entire mailbox have
+ever involved Yobani, and two of them were already marked In Progress. So six Tier 1
 buyer leads sat for **12 days** with no handoff at all — they were logged, and then nothing
 happened. That is a process problem the tracker was not surfacing, and it is now the
 digest's loudest section.
+
+**One of the original seven was misclassified, and it is worth knowing why.** Sheila caught
+that Jerome M Limage was not a buyer at all: he wanted seller financing on *"an investment
+property that I tend to hold."* Deal-newsletter replies come back fluent in seller
+financing, down payments and terms, and that vocabulary reads as a buyer signal when it is
+not — the question is whether the money is for the business in the email or for an asset
+the sender already owns. His `Recommended Action` is now `Ignore`, and the test is written
+into the digest task's classification rules. His column G was left at 9/10 rather than
+reverted: a check genuinely did run that day, and `Ignore` rows are skipped on the column D
+test before H is ever consulted, so the value has no behavioural effect.
+
+The Slack digest had already gone out naming seven, so it was corrected in-thread with a
+broadcast rather than left to mislead — forwarding a non-buyer would have wasted the
+setter's time.
 
 The two that moved:
 

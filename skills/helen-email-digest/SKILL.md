@@ -154,11 +154,40 @@ Every Tier 1 lead gets a Recommended Action, written to tracker column D. There 
 values: **"Send to Yobani"** (the default — a real buyer worth the setter's time) and
 **"Ignore"**.
 
-Two things earn "Ignore":
+Three things earn "Ignore":
 
 1. **The lead has already disqualified themselves** — declined outright, an obvious
    tyre-kicker, or someone who says they cannot afford it.
 2. **The lead has already booked a call, verified in Close CRM** — see below.
+3. **The lead does not want to buy a business** — they are asking about something else
+   entirely, even when the words look like a buyer's. See the next section.
+
+#### What they want financed is not always a business
+
+The deal newsletters go out with headlines like *"$280K/yr biz → 50% seller financed"*, and
+replies come back talking fluently about seller financing, down payments and terms. That
+vocabulary is not a buyer signal on its own. **Ask what asset the money is for.**
+
+Real case from 2026-08-29: Jerome M Limage replied *"I'd like knowing more of the seller
+financing with 50% and would want an opted financing on an investment property that I tend
+to hold."* Read quickly that is a Ready Now buyer discussing financing terms. Read properly,
+he wants financing on **his own investment property, which he intends to keep** — he is not
+buying a business and there is nothing for the setter to do. → **Ignore**.
+
+Contrast the same thread on the same day, which *is* a real buyer: J LaMacchia wrote *"I
+would counter offer, to get the conversation going, with a 50% down payment ($1,250,000) and
+2 years funding the balance."* He is making an offer on the featured business. → **Send to
+Yobani**.
+
+The test that separates them: **is the sender buying the thing in the email, or asking about
+an asset of their own?** Financing questions about a property they already hold, a refinance,
+or their existing portfolio are not buyer leads no matter how much deal language they use.
+
+The related judgement call, recorded because it recurs and has no clean answer: *"I'm
+interested to talk to you, we own a few businesses in the Albany NY area"* (narinder Singh,
+same day). An explicit ask to talk, so Ready Now is defensible — but someone who already owns
+businesses may be an operator or a future seller rather than a buyer. Classify on the ask,
+flag it in the digest, and let a human decide rather than dropping it.
 
 #### Price Wall: asking the price vs. not having the money
 
