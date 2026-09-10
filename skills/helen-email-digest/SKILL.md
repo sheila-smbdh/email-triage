@@ -375,6 +375,12 @@ data row is **row 27** (26 rows, all dated 8/29/2026). Columns A–K:
 Column **L — "Suggested Helen Email Draft"** was added 2026-09-10 and is empty for every
 row before then. That is expected; do not backfill it.
 
+**The sheet now runs to column Q.** M–Q (`Suggested Yobani Response`, `Setter Call Date`,
+`Setter Progress`, `Closer Call Date`, `Closer Progress`) belong to the `tracker-followup`
+task, which fills them in on later passes. This task writes A–L only and leaves M–Q empty
+on the rows it appends. Do not widen this task's writes into them, and do not "fix" them
+when they are blank on a new row — they are meant to be.
+
 **`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9`. Buy Box,
 Ready Now and Price Wall all map to **Yobani**; the other rows (Sellside → Bill, Investor
 and Operators → Kyle, Pitches and Engaged Reader → Helen) are now unused by this routine

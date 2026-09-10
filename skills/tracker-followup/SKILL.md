@@ -1,0 +1,467 @@
+---
+name: tracker-followup
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Yobani's booking progress in Close, and draft Yobani's reply for leads he now owns
+---
+
+You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
+
+This is the second half of the daily routine. The `helen-email-digest` task looks
+*forward* — it finds new buyer leads in Helen's inbox and logs them. This task looks
+*backward* — it walks leads already in the tracker and asks, for each one that has come
+due, whether it actually moved.
+
+It runs **unattended in the cloud**. There is no human at a keyboard when it fires. Every
+step completes through connectors or fails loudly to Slack.
+
+**It is read-only on email and on Close CRM.** It never replies, forwards, labels,
+archives or deletes an email, and never writes to Close. Its only writes are to the
+tracker and to Slack. Drafts are written for a human to paste — nothing is sent.
+
+---
+
+## The shape of the thing
+
+Each tracked lead moves along one path:
+
+```
+Tier 1, owner Helen  ──Helen forwards to Yobani──▶  In Progress, owner Yobani  ──setter call on the board──▶  resolved
+        │                                                    │
+        └── not forwarded → nag Helen in Slack               └── no setter call → draft Yobani's reply
+```
+
+This task's whole job is to work out where each due lead sits on that path, record it, and
+produce the one artefact that unblocks the next step.
+
+---
+
+## STEP 0 — Access preflight
+
+Identical to `helen-email-digest`. All email and tracker access goes through the
+**Composio connector**; the first-party Gmail connector authenticates as
+`sheila@smbdealhunter.xyz` only and cannot reach Helen's mailbox.
+
+| Purpose | Composio toolkit | Account id | Mailbox |
+|---|---|---|---|
+| Read Helen's mail | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
+| Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
+
+**Account selection is required on every Gmail call** — two mailboxes are connected and
+the default is a flippable setting. Pin `gmail_kath-tiou` explicitly every time.
+
+Close CRM is read through the **first-party Close connector** (`mcp__Close__*`),
+read-only.
+
+If either Composio toolkit is not ACTIVE, do not run a partial pass. Post to Slack
+`C0BTCGZSF9R` and stop:
+
+> ⚠️ The tracker follow-up pass couldn't run — the Composio `<toolkit>` connection is not
+> active (status: `<status>`). Sheila needs to reconnect it at
+> https://dashboard.composio.dev, then this task can run again.
+
+Report the status you actually observed. **Never assert a cause you have not verified** —
+an earlier version of the digest task hardcoded a wrong diagnosis and sent the team
+looking in the wrong place for eight days.
+
+If the **Close** connector is missing, that is not a reason to abort — but it is a reason
+not to draft. Every Yobani check fails to confirm, and an unconfirmed check is **not**
+evidence that no call was booked. Write no drafts for those rows, note in column O that
+the check could not run, and say so in Slack. Treating a Close outage as "no call booked"
+would send "let's grab 15 minutes" to leads who have already had their call.
+
+---
+
+## STEP 1 — Read the tracker and find the due rows
+
+Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit
+Spreadsheet ID: `1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ`
+
+Read `Tracker!A1:Q<n>` with **`valueRenderOption: "FORMULA"`**. This matters: column J
+holds `=HYPERLINK(...)` and the formatted read gives you only the visible subject text,
+throwing away the thread ID you need in Step 3.
+
+Columns A–Q:
+
+`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Suggested Yobani Response | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
+
+Row 1 is the header; data starts at row 2.
+
+**M–Q track the two stages of a lead's journey.** N/O are the **setter** stage — the short
+intro call that gets a lead onto the board, which is Yobani's job. P/Q are the **closer**
+stage — the longer discovery/closing call that follows. Read the pair separately: a lead
+can have a completed setter call and a failed closer call, and conflating them loses the
+only fact worth acting on.
+
+**Dates come back as Google serial numbers** under a FORMULA or UNFORMATTED read. Serial
+`46275` = 2026-09-10. Convert with `date = 1899-12-30 + serial days`. Compute today's
+serial the same way and compare numerically — do not string-compare formatted dates.
+
+**A row is due when `H <= today`.** H is the formula `=G+5`, so read G and add 5 rather
+than trusting a cached H.
+
+### Scope filter — apply in this order
+
+1. **`Recommended Action` (D) is `Ignore` → out of scope.** Skip the row entirely: no
+   checks, no draft, and **do not touch column G**. These leads were deliberately parked
+   (they disqualified themselves, or their call was already verified in Close). They will
+   read as perpetually due and that is fine — they are skipped every run at no cost.
+2. **`Tier` (B) is `1` → run STEP 2** (the forward check).
+3. **`Tier` (B) is `In Progress` → run STEP 3** (the Yobani check).
+4. Any other tier value is historical. Leave it alone.
+
+---
+
+## STEP 2 — Tier 1: did Helen actually forward it?
+
+For every due Tier 1 row, the question is whether Yobani has been looped in yet.
+
+### Get the thread ID out of column J
+
+Column J is `=HYPERLINK("<url>","<subject>")`. Pull the URL and take the thread ID from
+its fragment. **Three URL formats exist in the sheet** and the first is a trap:
+
+| Format | Example fragment | Thread ID |
+|---|---|---|
+| Legacy, URL-encoded decimal | `#inbox/%23thread-f%3A1874806018152371407` | **decimal — convert to hex**: `1a04a623eebc94cf` |
+| Delegation-token URL, hex | `/d/<token>/#inbox/1a04e6390ccde4d0` | `1a04e6390ccde4d0` as-is |
+| Current `authuser=` form, hex | `?authuser=helen@...#all/1a08bf287ff6e1ef` | `1a08bf287ff6e1ef` as-is |
+
+The Gmail API takes the **hex** thread ID. A `%23thread-f%3A` fragment is
+`#thread-f:<decimal>` percent-encoded; `format(int(decimal), 'x')` gives the API ID. Pass a
+raw decimal and the fetch 404s.
+
+The delegation-token URLs no longer open in a browser — that delegation lapsed — but the
+thread ID inside them is still valid. Extract it and ignore the dead prefix.
+
+### Find Yobani's involvement in ONE query
+
+Do **not** fetch each thread and scan its participants — that is one call per row for a
+question a single search answers. Yobani is `yobani@smbdealhunter.xyz`. Run one
+`GMAIL_FETCH_EMAILS` on `gmail_kath-tiou`:
+
+```
+query: {to:yobani@smbdealhunter.xyz cc:yobani@smbdealhunter.xyz bcc:yobani@smbdealhunter.xyz from:yobani@smbdealhunter.xyz} after:<YYYY/MM/DD>
+max_results: 100
+verbose: false
+```
+
+Braces are Gmail's OR syntax. Set `after:` a day before the oldest due row's Date so the
+window covers every lead in play, and page through `nextPageToken` until it is absent or
+empty-string.
+
+That returns every message in Helen's mailbox that involves Yobani, each with its
+`threadId`, `subject` and `preview.body`.
+
+### Match a due row to that set
+
+A row counts as forwarded if **either** holds:
+
+- **Same thread** — the row's thread ID appears in the result set. A forward often stays
+  in the original thread, so this is the common case.
+- **Separate thread** — a result's subject is `Fwd: <the row's subject>` (compare with
+  `Re:`/`Fwd:` prefixes stripped), or its `preview.body` contains the lead's email
+  address. Gmail sometimes threads a forward separately, and matching only on thread ID
+  would miss it.
+
+Match on thread ID and subject/address. **Never conclude "forwarded" from the sender's
+display name alone** — several leads in this sheet share first names.
+
+### Then
+
+**Forwarded** → Helen did her part. Write, in this run:
+
+- **B** → `In Progress` (literal text)
+- **E** → `Yes`
+- **G** → today
+
+Then **immediately run STEP 3 for this row in the same pass.** Column F is the formula
+`=if(E="No","Helen",xlookup(C,...))`, so setting E to `Yes` flips the owner to Yobani the
+moment it lands. The row is a Yobani row now and gets the Yobani check now — it does not
+wait a week for the next cycle.
+
+**Not forwarded** → nothing has happened. Write:
+
+- **G** → today (the check ran, so the clock resets)
+- B, E, M, N, O → unchanged
+
+and flag it to Helen in Slack (STEP 5). This is the output that matters: a Tier 1 lead
+still owned by Helen days after it arrived is a lead going cold because the handoff never
+happened.
+
+---
+
+## STEP 3 — Yobani rows: has the call been set up?
+
+For every row now at `In Progress` / owner Yobani, ask Close whether a call exists.
+
+### You need the lead's email address, and the tracker does not have it
+
+Column I holds a display name (`Michael`, `narinder Singh`, sometimes a bare address).
+Close must be matched **by email address, never by display name** — see the trap below. Get
+the address from Gmail: the thread's sender, or the `From:` line quoted inside Helen's
+forward (`preview.body` of the Step 2 results carries it, e.g.
+`From: Michael Wilson <michaeljwilson11@gmail.com>`).
+
+If you cannot resolve an address, do not guess. Treat it as "no call booked", say so in
+column O, and flag it in Slack.
+
+> **The name-matching trap.** `christopher green <cjgreen7904@yahoo.com>` is the Close lead
+> **"CJ Green"**, while a name search for "christopher green" also returns *"Chris Green"*
+> and *"Chris Greene"* — different people. A name match produces a confidently wrong
+> answer. The email search returns exactly one.
+
+### Query Close
+
+1. `mcp__Close__lead_search` with `full_text: "<the lead's email address>"`.
+2. `mcp__Close__activity_search` with `lead_ids: ["<lead_id>"]` and
+   `activity_types: ["activity.meeting", "activity.call"]`. Batch the lead IDs into one
+   call rather than one call per lead.
+3. Read each result's `title`, `starts_at` / `activity_at`, and `note`.
+
+### Sort each meeting into setter or closer
+
+Close returns every meeting on the lead. Split them by **duration first, event name
+second** — the two stages are different calls:
+
+| | Setter call → N/O | Closer call → P/Q |
+|---|---|---|
+| Duration | ~900s (15 min) | ~2700s (45 min) |
+| Event name | `SMB Deal Hunter Intro with <name>`, `Intro Call With SMB Deal Hunter Pro` | `Discovery Call with SMB Deal Hunter Pro - S2C` |
+
+**A setter call counts even if someone other than Yobani booked it.** The question is
+whether this lead got onto the board, not who gets credit. Real case: Eric Rubinstein's
+intro call was held by **David Martin**, and it still resolves the row. The meeting title
+names the host (`Eric Rubinstein and David Martin`), so record who it was with.
+
+**A cancelled call is not a held call.** Close prefixes the title `Canceled:`. Never read
+one as progress.
+
+### Then
+
+| What Close shows | N/O (setter) | P/Q (closer) | M (draft) |
+|---|---|---|---|
+| A setter call, upcoming or already held | its date + who with, event name, any lead note | closer call if one exists | **empty — resolved** |
+| A setter call held **and** a cancelled closer call | the setter call | the cancelled call's date + that it was cancelled and by whom | **empty — resolved.** Surface in Slack |
+| No setter call, or the only one was cancelled | empty, or `No call booked` | — | **write the draft** (STEP 4) |
+| No Close record for the address | `No Close record for <address>` | — | **write the draft** |
+| Close lookup failed | that the check could not run | — | empty — say so in Slack |
+
+Always write **G → today** for a row you checked.
+
+**A setter call on the board resolves the row.** Once a lead has had their intro call,
+Yobani's job is done and there is nothing for him to draft. Do **not** write a "let's grab
+15 minutes" reply to someone who has already had a call — it would reach a real customer
+and read as nobody paying attention. That holds even when the *closer* call then fell
+through: a cancelled discovery call needs re-booking by whoever owns that stage, which is
+not a setter intro. Record it in P/Q, mention it in Slack, and write no draft.
+
+---
+
+## STEP 4 — Draft Yobani's reply
+
+Only for a Yobani-owned row with **no call booked**.
+
+The draft is **a reply on the existing thread, keeping Helen on it** so the handoff stays
+tracked. Not a fresh email. The lead has been talking to Helen, so the reply picks up from
+her rather than introducing a stranger.
+
+### The three templates
+
+One per category, reproduced verbatim. Use the template for the row's category (column C).
+
+**Buy Box**
+
+```
+Hi [First Name],
+
+Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
+
+Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+```
+
+**Ready Now**
+
+```
+Hi [First Name],
+
+Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. Grab 15 minutes here: [Calendly Link].
+
+I want to get sharper on where things stand and figure out the fastest next step.
+```
+
+**Price Wall**
+
+```
+Hi [First Name],
+
+Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do.
+
+Can I give you a call at [time slot]? If that time doesn't work, book a time with me here [Calendly link].
+```
+
+### Filling them in
+
+**`[time slot]` and `[Calendly Link]` stay as literal bracketed placeholders.** Yobani
+fills them in himself. Do **not** substitute a real time or a real link:
+
+- Sheila's Calendly token is role `user` and cannot read Yobani's event types or
+  availability (`event_types-list_event_types` returns Permission Denied for another
+  user), so any time you propose would be invented. A proposed slot he is not free for is
+  worse than a blank he fills in five seconds.
+- His scheduling page is `https://calendly.com/yobani-smbdealhunter` (from the Calendly
+  API's `scheduling_url` on his org membership) if this is ever revisited — but leave the
+  placeholder unless Sheila says otherwise.
+
+Say in the Slack thread that both brackets need filling before sending, so nobody pastes a
+draft with `[time slot]` still in it.
+
+**First name.** The name the sender signs off with in the email body, else the first word
+of their Gmail display name. If there is **no display name** — a bare address like
+`ms.raquele@gmail.com` — open with `Hi there,` and drop the name. Getting a name wrong in
+the first three words is worse than not using one.
+
+**Pronouns.** The templates address the lead as "you" for this reason. Never infer a
+lead's gender from their name; where a third-person reference is unavoidable, use
+they/them unless the sender's own signature makes it explicit.
+
+**`[buy box criteria]`** (Buy Box) — the concrete thing they asked for, in their own words,
+phrased to follow "interested in": `hotels in California`, `deals in Central FL`,
+`absentee businesses`. If the ask is too vague to name in a few words, write
+`what we've got` rather than inflating it into a specific.
+
+**`[their own words]`** (Ready Now) — a short quote or close paraphrase of their stated
+readiness, from column K or the email: `buying a business`, `the Bethlehem PA deal`,
+`the 50% seller financing terms`. Never invent a deal, a location or a number they did not
+mention.
+
+**Never invent commercial terms.** No draft here quotes a price, a fee, a range, a
+guarantee or a timeline. Note that unlike Helen's Price Wall draft, **Yobani's Price Wall
+template deliberately does not answer the pricing question** — it moves to a call. Do not
+import the 1% line from the digest task's templates into it. If a lead asked a direct
+pricing question, the call is where it gets answered.
+
+**Nothing else goes in.** A finished draft is the template plus the substitutions above.
+If it says something the template does not, take that back out.
+
+---
+
+## STEP 5 — Post the follow-up digest to Slack
+
+Post to channel `C0BTCGZSF9R` (#helen-email-digest) as its **own message**, separate from
+the morning lead digest — the two answer different questions and merging them buries both.
+
+Use the channel's established format: a bold header, emoji section headers, and
+`_Category_ — Sender: "<link|subject>" — detail` bullets.
+
+Sections, each skipped entirely when empty:
+
+- **Header** — `**Tracker Follow-up — <Month D, YYYY>**` and the count of due rows checked.
+- **🔴 Needs Helen** — Tier 1 rows never forwarded. Say how many days each has been
+  waiting; that number is the point. Mention Helen as `<@U04ATRJKXPD>` once, in this
+  section.
+- **🟡 Needs a decision** — rows Step 3 could not resolve: an address that would not
+  resolve to a Close lead, a failed Close lookup.
+- **🟢 Moving** — rows with a setter call on the board. One line each: who with, and when.
+  Where the closer call was cancelled, say so on the same line — it is the one actionable
+  fact on an otherwise resolved row.
+- **✍️ Drafts** — *not in the message body.* See below.
+
+Write the message in standard markdown (`**bold**`, `_italic_`, `[text](url)`); the Slack
+tool converts it to Slack mrkdwn on send. **Do not add a "Sent using Claude" footer** —
+the platform appends one automatically, and including your own produces it twice.
+
+If no row was due at all, post nothing. A daily "nothing to do" message in a channel that
+also carries the lead digest is noise. Say it in the run report instead.
+
+### Drafts go in a threaded reply
+
+Capture the parent message's `ts` and post the drafts as **one threaded reply** with
+`thread_ts`. Full drafts inline would bury the flags the message exists to deliver.
+
+Format — one block per draft, each in a code block so it copies cleanly:
+
+> ✍️ *Suggested replies for Yobani* — reply on the existing thread and keep Helen on it.
+> **Fill in `[time slot]` and `[Calendly Link]` before sending.**
+>
+> *Ready Now — Jerome M Limage*
+> ```
+> Hi Jerome,
+> …
+> ```
+
+If no row produced a draft, **post no thread reply at all** — not an empty one.
+
+Do not use `@channel` or `@here`.
+
+---
+
+## STEP 6 — Write the tracker back
+
+All writes go to the rows you already identified. Never append a row: this task updates
+existing leads, it never creates them.
+
+**Columns F and H are formula-driven. Never write a literal to either.**
+
+- **F (Owner)** `=if(E<n>="No","Helen",xlookup(C<n>,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
+- **H (Next Check-in Date)** `=G<n>+5`
+
+They already hold these formulas on every existing row. Setting E and G is what moves them
+— F recomputes the owner and H recomputes the due date on its own. Writing either by hand
+converts a live formula to a dead literal and the row stops tracking.
+
+`Responsibility!A2:B9` holds the category → owner lookup. Its unused rows (Sellside → Bill,
+Investor and Operators → Kyle, Pitches and Engaged Reader → Helen) **must stay** — the
+`xlookup` range is absolute and trimming it breaks column F on every row.
+
+### What to write per row
+
+| Column | Value |
+|---|---|
+| **B** Tier | `In Progress` — only on a row whose forward you just confirmed |
+| **E** Action Taken? | `Yes` — same rows only. Match the existing casing exactly |
+| **G** Last Check-in Date | today, on **every** row you checked (including not-forwarded rows) |
+| **M** Suggested Yobani Response | the STEP 4 draft, plain text with real line breaks — not a formula, not quote-wrapped. Empty when no draft |
+| **N** Setter Call Date | the intro call's date. Empty when there is none |
+| **O** Setter Progress | short factual context: who with, event name, any note the lead left |
+| **P** Closer Call Date | the discovery/closing call's date. Empty when there is none |
+| **Q** Closer Progress | short factual context, including a cancellation and who it was with |
+
+Do not touch A, C, D, I, J, K or L. Do not touch a row whose D is `Ignore`.
+
+### How to write
+
+Use `GOOGLESHEETS_VALUES_UPDATE` with `value_input_option: "USER_ENTERED"` so dates coerce
+to real dates. Because the due rows are usually contiguous but the columns are not, write
+in per-column blocks — `Tracker!B<a>:B<b>`, `Tracker!E<a>:E<b>`, `Tracker!G<a>:G<b>`,
+`Tracker!M<a>:Q<b>` — which keeps F and H untouched by construction. For scattered rows use
+`GOOGLESHEETS_UPDATE_VALUES_BATCH` (note: it takes `valueInputOption` in camelCase, unlike
+the singular tool's `value_input_option`) and check every entry in `data.responses[*]`.
+
+Google Sheets rate-limits at 60 writes/minute. Batch; do not write cell by cell.
+
+### Verify, and report honestly
+
+Re-read `Tracker!A1:Q<n>` with `valueRenderOption: "FORMULA"` and confirm:
+
+- every G you wrote is today's serial, and H is still the formula `=G<n>+5`
+- every F is still the `if(...xlookup(...))` formula, and none of them spilled `#N/A`
+- B and E changed on exactly the rows you meant, and nowhere else
+- M/N/O landed on the right rows
+- no row was added or removed
+
+If verification fails, **say so explicitly in Slack**. Never post a success digest for a
+pass that only partly completed.
+
+---
+
+## Scope limits
+
+Read email, read Close, write the tracker, post to Slack. Nothing else. Specifically: do
+**not** reply to, forward, label, archive or delete any email — including the forward to
+Yobani that Step 2 is checking for. If Helen has not forwarded a lead, this task says so;
+it does not do it for her. Do not create, update or delete anything in Close.
+
+## Failure reporting
+
+If any step fails, post what actually happened to `C0BTCGZSF9R` — the failing step, the
+tool that errored, and the error text. Never assert a cause you have not verified, and
+never report a partial pass as a success.

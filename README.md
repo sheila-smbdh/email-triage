@@ -4,10 +4,14 @@ Daily triage of Helen Guo's inbox for SMB Deal Hunter: pull new mail, pick out b
 leads, post one digest to Slack `#helen-email-digest`, and log one row per lead to the
 Google Sheets tracker.
 
+Two tasks make up the routine. The digest looks **forward** at new mail; the follow-up pass
+looks **backward** at leads already logged.
+
 | | |
 |---|---|
 | **Task definition** | [`skills/helen-email-digest/SKILL.md`](skills/helen-email-digest/SKILL.md) — the single source of truth. The cloud Routine reads this file at run time. |
-| **Handoff / context** | [`docs/handoff-helen-email-digest.md`](docs/handoff-helen-email-digest.md) — why it is built this way, what broke before, what is still open. |
+| **Follow-up task** | [`skills/tracker-followup/SKILL.md`](skills/tracker-followup/SKILL.md) — walks due tracker rows: chases Helen's un-forwarded handoffs, checks Yobani's booking progress in Close, drafts his reply. Built and verified 2026-09-10; **not yet wired into the Routine**. |
+| **Handoff / context** | [`docs/handoff-helen-email-digest.md`](docs/handoff-helen-email-digest.md) and [`docs/handoff-tracker-followup.md`](docs/handoff-tracker-followup.md) — why it is built this way, what broke before, what is still open. |
 | **Schedule** | Daily 08:03 America/New_York (cron `3 12 * * *` UTC — see the DST note in the handoff). |
 | **Status** | ✅ Live — enabled and verified end-to-end on 2026-09-10 (8 leads, digest posted, tracker rows 28–35 written). |
 | **Scope** | Buy Box, Ready Now, Price Wall, and handovers of those three. Everything else is dropped. |
