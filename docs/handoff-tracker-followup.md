@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
+| **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10. Both specs are on `main` and the Routine reads them from there. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
 | **Last updated** | 2026-09-10 |
@@ -222,7 +222,7 @@ removed, row 10 untouched.
 
 | # | Item | Owner |
 |---|---|---|
-| **1** | ⚠️ **The Routine reads from an unmerged branch.** `trig_012Ap72Z58NHa2m8ahWYUQmt` is pinned to `claude/sleepy-hamilton-bch8b6`, because `main` holds an **older** `helen-email-digest/SKILL.md` (no hydration rule) and no `tracker-followup/SKILL.md` at all. A fallback-on-absence would not have caught the stale digest spec — the file exists on `main`, it is just wrong. **Merge that branch, then change the Routine's "Which ref to read" section to `main`.** Until then the branch must not be deleted, and anyone editing a spec on `main` will be silently ignored. | Sheila / Zain |
+| 1 | **Specs are on `main` and the Routine reads them from there.** PR #3 merged 2026-09-10; the Routine's ref-pinning section was removed the same day, so editing a spec on `main` is now all that is needed to change behaviour. The branch `claude/sleepy-hamilton-bch8b6` is no longer load-bearing and is safe to delete. | Closed 2026-09-10 |
 | 2 | **Both tasks now run in one Routine**, digest first, then follow-up, daily 08:03 ET. They are independent: if one spec cannot be read, the other still runs. Renamed to *"Helen email digest + tracker follow-up (daily 08:03 ET)"*. Connectors (GitHub, Composio, Slack, Close) unchanged. | Done 2026-09-10 |
 | 3 | **Drafting path untested on live data** (see §6). Accepted — it will exercise on the first run where a forwarded lead has no setter call. | Accepted |
 | 4 | **Flagged leads go quiet for 5 days.** Setting G = today on a *not-forwarded* row pushes H forward, so Helen is nagged once every 5 days rather than daily. Reviewed and accepted as-is on 2026-09-10. | Accepted |
