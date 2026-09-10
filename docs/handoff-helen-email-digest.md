@@ -184,18 +184,35 @@ parameter is not available for this organization"* — and creating without it s
 `mcp_connections: []`. This is an org-level restriction on the API, not a missing
 connection: Composio and Slack are both connected and working in interactive sessions.
 
-**To go live**, attach the connectors from the claude.ai Routines UI:
+It was also created with **no repository attached** (`sources: []`). Routines clone their
+selected repositories at the start of each run, so without one there is nothing to read
+`SKILL.md` from. Both gaps are fixed in the same edit form.
 
-1. Open the Routine **"Helen email digest (daily 08:03 ET)"**.
-2. Attach **Composio** and **Slack**.
-3. Enable the Routine.
+**To go live** — at [claude.ai/code/routines](https://claude.ai/code/routines):
 
-Do not enable it before step 2 — a run without connectors produces nothing and reports
-nothing. If the UI does not offer connector attachment either, the fallback is to recreate
-the Routine from the Routines UI directly, pasting the same prompt (it is stored on the
-Routine and in this repo's history).
+1. Click the Routine **"Helen email digest (daily 08:03 ET)"**, then the **pencil icon**
+   to open **Edit routine**.
+2. Under **Repositories**, add **`sheila-smbdh/email-triage`**.
+3. Under **Connectors** at the bottom of the form, make sure **Composio** and **Slack**
+   are included. (The web form includes all connected connectors by default; this Routine
+   has none because it was created through the API. Remove any the routine doesn't need —
+   Claude can call every tool from an included connector, writes included, without asking
+   during a run.)
+4. Save, then use the toggle in the **Repeats** section to resume the schedule.
+5. Click **Run now** on the detail page to test immediately rather than waiting for 08:03.
 
-Verify after enabling by triggering one manual run rather than waiting for 08:03.
+Do not enable it before steps 2–3 — a run without them produces nothing and reports
+nothing.
+
+⚠️ **A green status in the run list does not mean the task succeeded.** It means the
+session started and exited without an infrastructure error. Blocked network requests,
+missing connector tools and task-level failures all surface only in the transcript. Open
+the run and read it, and check that the Slack digest and the tracker rows actually appeared.
+
+Note that routines clone each repository **from its default branch**. Until PR #1 is
+merged, `SKILL.md` is not on `main` — the Routine prompt handles this by trying `main`
+first and falling back to the feature branch, and reports which ref it used. Once the PR
+is merged, that fallback can be dropped from the prompt.
 
 ### Everything else
 
