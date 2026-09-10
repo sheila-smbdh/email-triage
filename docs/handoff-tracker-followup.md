@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Built and run once end-to-end on 2026-09-10. Not yet wired into the cloud Routine. |
+| **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
 | **Last updated** | 2026-09-10 |
@@ -222,14 +222,15 @@ removed, row 10 untouched.
 
 | # | Item | Owner |
 |---|---|---|
-| 1 | **Not wired into the Routine.** The cloud Routine (`trig_012Ap72Z58NHa2m8ahWYUQmt`) still runs only `helen-email-digest`. This task needs adding to that prompt, or its own Routine, before it runs unattended. | Sheila / Zain |
-| 2 | **The 7 cold leads go quiet for 5 days.** Setting G = today on a *not-forwarded* row pushes H to 9/15, so Helen is nagged once every 5 days rather than daily. This is what was asked for, but for leads already 12 days cold, daily may be wanted. Changing it means not bumping G when nothing happened — at the cost of the row re-firing every run. | Sheila |
-| 3 | **Drafting path untested on live data** (see §6). | Next run with an unbooked forwarded lead |
-| 3a | **Re-review of the deleted 8/29 rows: explicitly declined.** Two of the ten surviving rows were misclassified from truncated snippets, so the ~16 rows deleted on 9/10 could hold the opposite error — a real buyer dropped as Tier 3. Sheila's call on 2026-09-10 was that recovering them from version history is not worth it. Recorded so it is not mistaken for an oversight. The hydration rule prevents the same error going forward. | Closed |
-| 4 | **`H = G+5` is 5 days, not a week.** Sheila's phrasing was "so the next check-in date becomes next week"; the formula is +5 calendar days. From a Monday check-in this lands on a Saturday. Change to `=G+7` if a true week is wanted. | Sheila |
-| 5 | **Loop-in detection is email-only.** If Helen hands a lead to Yobani in Slack, in Close, or verbally, this task will report it as never forwarded. | Accepted |
-| 6 | **Yobani's mailbox is not connected.** If he replies to a lead without Helen on the thread, that reply is invisible here and the row could be drafted for again. Keeping Helen on the thread (§5) is the mitigation. | Accepted |
-| 7 | **`SKILL.md` is now on `main`.** The digest handoff's open item — the Routine's `main`-then-feature-branch fallback — can be dropped. | Zain |
+| **1** | ⚠️ **The Routine reads from an unmerged branch.** `trig_012Ap72Z58NHa2m8ahWYUQmt` is pinned to `claude/sleepy-hamilton-bch8b6`, because `main` holds an **older** `helen-email-digest/SKILL.md` (no hydration rule) and no `tracker-followup/SKILL.md` at all. A fallback-on-absence would not have caught the stale digest spec — the file exists on `main`, it is just wrong. **Merge that branch, then change the Routine's "Which ref to read" section to `main`.** Until then the branch must not be deleted, and anyone editing a spec on `main` will be silently ignored. | Sheila / Zain |
+| 2 | **Both tasks now run in one Routine**, digest first, then follow-up, daily 08:03 ET. They are independent: if one spec cannot be read, the other still runs. Renamed to *"Helen email digest + tracker follow-up (daily 08:03 ET)"*. Connectors (GitHub, Composio, Slack, Close) unchanged. | Done 2026-09-10 |
+| 3 | **Drafting path untested on live data** (see §6). Accepted — it will exercise on the first run where a forwarded lead has no setter call. | Accepted |
+| 4 | **Flagged leads go quiet for 5 days.** Setting G = today on a *not-forwarded* row pushes H forward, so Helen is nagged once every 5 days rather than daily. Reviewed and accepted as-is on 2026-09-10. | Accepted |
+| 5 | **`H = G+5` is 5 days, not a week.** Sheila's phrasing was "so the next check-in date becomes next week"; the formula is +5 calendar days, so from a Monday check-in it lands on a Saturday. Reviewed and accepted as-is on 2026-09-10. | Accepted |
+| 6 | **Re-review of the deleted 8/29 rows: explicitly declined.** Two of the ten surviving rows were misclassified from truncated snippets, so the ~16 rows deleted on 9/10 could hold the opposite error — a real buyer dropped as Tier 3. Sheila's call on 2026-09-10 was that recovering them from version history is not worth it. Recorded so it is not mistaken for an oversight. The hydration rule prevents the same error going forward. | Closed |
+| 7 | **Loop-in detection is email-only.** If Helen hands a lead to Yobani in Slack, in Close, or verbally, this task will report it as never forwarded. | Accepted |
+| 8 | **Yobani's mailbox is not connected.** If he replies to a lead without Helen on the thread, that reply is invisible here and the row could be drafted for again. Keeping Helen on the thread (§5) is the mitigation. | Accepted |
+| 9 | **DST rollover on 2026-11-01.** Cron `3 12 * * *` is UTC and does not observe daylight saving, so this fires at 07:03 ET after that date until the cron is changed to `3 13 * * *`. Inherited from the digest Routine; now affects both tasks. | Sheila |
 
 ---
 
