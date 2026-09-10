@@ -171,6 +171,34 @@ This is the single known scheduled-drift issue.
 
 ## 8. Open items
 
+### ⛔ Blocker — the Routine has no connectors attached
+
+The Routine exists (`trig_012Ap72Z58NHa2m8ahWYUQmt`, cron `3 12 * * *`) but is **created
+disabled**, because the sessions it fires would launch with **no connector tools at all** —
+no Composio, no Slack. It would wake up, be unable to read mail, and be unable to post a
+failure notice saying so. Given this task's history of failing quietly for 8 days, it was
+disabled rather than left to fire into a void.
+
+Cause: `create_trigger` rejected the `connectors` parameter outright — *"the connectors
+parameter is not available for this organization"* — and creating without it stores
+`mcp_connections: []`. This is an org-level restriction on the API, not a missing
+connection: Composio and Slack are both connected and working in interactive sessions.
+
+**To go live**, attach the connectors from the claude.ai Routines UI:
+
+1. Open the Routine **"Helen email digest (daily 08:03 ET)"**.
+2. Attach **Composio** and **Slack**.
+3. Enable the Routine.
+
+Do not enable it before step 2 — a run without connectors produces nothing and reports
+nothing. If the UI does not offer connector attachment either, the fallback is to recreate
+the Routine from the Routines UI directly, pasting the same prompt (it is stored on the
+Routine and in this repo's history).
+
+Verify after enabling by triggering one manual run rather than waiting for 08:03.
+
+### Everything else
+
 | # | Item | Owner |
 |---|---|---|
 | 1 | **First-run link check.** New rows link as `https://mail.google.com/mail/u/?authuser=helen@smbdealhunter.xyz#all/<threadId>`. The 8/29 rows use a delegation-token URL that is probably dead now. The first run reports whether the new format resolved — if it didn't, fall back to `/mail/u/0/#inbox/<threadId>` and update the task file. | First run |

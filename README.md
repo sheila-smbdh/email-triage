@@ -9,6 +9,7 @@ Google Sheets tracker.
 | **Task definition** | [`skills/helen-email-digest/SKILL.md`](skills/helen-email-digest/SKILL.md) — the single source of truth. The cloud Routine reads this file at run time. |
 | **Handoff / context** | [`docs/handoff-helen-email-digest.md`](docs/handoff-helen-email-digest.md) — why it is built this way, what broke before, what is still open. |
 | **Schedule** | Daily 08:03 America/New_York (cron `3 12 * * *` UTC — see the DST note in the handoff). |
+| **Status** | ⛔ Routine created but **disabled** — connectors must be attached from the claude.ai Routines UI first. See the blocker in the handoff. |
 | **Scope** | Buy Box, Ready Now, Price Wall, and handovers of those three. Everything else is dropped. |
 
 Email access runs through the **Composio** connector (account `gmail_kath-tiou` =
