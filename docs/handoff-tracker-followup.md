@@ -149,29 +149,55 @@ correctly untouched.
 | Outcome | Rows | Detail |
 |---|---|---|
 | Skipped, `Ignore` | 1 | Mark Bunting — G deliberately left at 8/29 |
-| **Never forwarded** | **6** | Zing Beam LLC, Christopher Terry, Daniel Spencer, J LaMacchia, Jeffrey Naegle, narinder Singh |
-| Reclassified to `Ignore` | 1 | Jerome M Limage — see below |
+| **Never forwarded** | **5** | Zing Beam LLC, Christopher Terry, Daniel Spencer, Jeffrey Naegle, narinder Singh |
+| Reclassified to `Ignore` | 2 | Jerome M Limage, J LaMacchia — see below |
 | Setter call on the board | 2 | Michael j Wilson, Eric Rubinstein |
 
-**The headline finding is the six.** Only three threads in Helen's entire mailbox have
-ever involved Yobani, and two of them were already marked In Progress. So six Tier 1
+**The headline finding is the five.** Only three threads in Helen's entire mailbox have
+ever involved Yobani, and two of them were already marked In Progress. So five Tier 1
 buyer leads sat for **12 days** with no handoff at all — they were logged, and then nothing
 happened. That is a process problem the tracker was not surfacing, and it is now the
 digest's loudest section.
 
-**One of the original seven was misclassified, and it is worth knowing why.** Sheila caught
-that Jerome M Limage was not a buyer at all: he wanted seller financing on *"an investment
-property that I tend to hold."* Deal-newsletter replies come back fluent in seller
-financing, down payments and terms, and that vocabulary reads as a buyer signal when it is
-not — the question is whether the money is for the business in the email or for an asset
-the sender already owns. His `Recommended Action` is now `Ignore`, and the test is written
-into the digest task's classification rules. His column G was left at 9/10 rather than
-reverted: a check genuinely did run that day, and `Ignore` rows are skipped on the column D
-test before H is ever consulted, so the value has no behavioural effect.
+### Two of the original seven were not buyers at all
 
-The Slack digest had already gone out naming seven, so it was corrected in-thread with a
-broadcast rather than left to mislead — forwarding a non-buyer would have wasted the
-setter's time.
+Sheila caught both, and the reason they were missed is worth more than the corrections.
+
+- **Jerome M Limage** wanted seller financing on *"an investment property that I tend to
+  hold"* — his own real estate, which he intends to keep.
+- **J LaMacchia** appeared to make a live offer (*"50% down payment ($1,250,000)…"*) but his
+  email ends *"…and I will remove from the market"* — he is reasoning from the **seller's**
+  side about how offers should be handled, and never asks to speak to anyone.
+
+Both replied to the same newsletter on the same day, and both were logged Tier 1 "Send to
+Yobani" by the digest task. **Deal vocabulary is not buyer intent.** Replies to a
+*"50% seller financed"* headline come back fluent in down payments, contingencies and terms
+from readers who are commenting on the deal, discussing their own assets, or thinking from
+the seller's side.
+
+**The mechanical cause is worth fixing, not just the classification.** `verbose: false`
+truncates `preview.body` at roughly 200 characters. J LaMacchia's snippet ended at *"Any
+serious offer should be vi…"* — every word that revealed his position was past the cut, so
+the snippet said the opposite of the email. The digest task now **requires hydrating any
+reply containing deal terms** (dollar figures, down payments, financing structures,
+contingencies, deadlines) before classifying it. Snippets remain fine for the short plain
+asks that make up most real buyer mail; they are not safe for anyone doing arithmetic.
+
+For contrast, the five genuine buyers all stated the ask in one line with no deal analysis:
+*"I'm looking for local business in 94538 area code, ready to invest"*, *"Do you have a
+company like this in Colorado"*, *"Helen I want to buy a business show me."* On this
+newsletter, length and financial sophistication correlate **negatively** with buyer intent —
+the real buyers ask for deals, the commentators explain deals.
+
+After the second correction the **full text of every remaining un-forwarded lead was read**
+rather than trusted from a snippet; all five are complete, unambiguous asks. Both reclassified
+rows keep `Last Check-in Date` = 9/10 rather than reverting to 8/29: a check genuinely ran
+that day, and `Ignore` rows are skipped on the column D test before H is consulted, so the
+value has no behavioural effect.
+
+The Slack digest had already gone out naming seven, so it was corrected twice in-thread with
+a broadcast rather than left to mislead — forwarding non-buyers would have wasted the
+setter's time and taught Yobani to distrust the digest.
 
 The two that moved:
 
@@ -199,6 +225,7 @@ removed, row 10 untouched.
 | 1 | **Not wired into the Routine.** The cloud Routine (`trig_012Ap72Z58NHa2m8ahWYUQmt`) still runs only `helen-email-digest`. This task needs adding to that prompt, or its own Routine, before it runs unattended. | Sheila / Zain |
 | 2 | **The 7 cold leads go quiet for 5 days.** Setting G = today on a *not-forwarded* row pushes H to 9/15, so Helen is nagged once every 5 days rather than daily. This is what was asked for, but for leads already 12 days cold, daily may be wanted. Changing it means not bumping G when nothing happened — at the cost of the row re-firing every run. | Sheila |
 | 3 | **Drafting path untested on live data** (see §6). | Next run with an unbooked forwarded lead |
+| 3a | **The 8/29 batch was never re-reviewed against the hydration rule.** Two of its ten rows were misclassified from truncated snippets. The rows that survived were checked, but the ~16 rows deleted from the sheet on 9/10 were not, and any of them could have been the opposite error — a real buyer dropped. Worth one pass over the deleted set if it can be recovered from version history. | Sheila |
 | 4 | **`H = G+5` is 5 days, not a week.** Sheila's phrasing was "so the next check-in date becomes next week"; the formula is +5 calendar days. From a Monday check-in this lands on a Saturday. Change to `=G+7` if a true week is wanted. | Sheila |
 | 5 | **Loop-in detection is email-only.** If Helen hands a lead to Yobani in Slack, in Close, or verbally, this task will report it as never forwarded. | Accepted |
 | 6 | **Yobani's mailbox is not connected.** If he replies to a lead without Helen on the thread, that reply is invisible here and the row could be drafted for again. Keeping Helen on the thread (§5) is the mitigation. | Accepted |

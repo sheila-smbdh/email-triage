@@ -76,6 +76,13 @@ snippet is genuinely ambiguous, hydrate that one message with
 `GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID` (`format: "metadata"`, or `"full"` if you need the
 body). Do not hydrate the whole batch — it is slow and mostly wasted.
 
+**One case always earns hydration: a reply containing deal terms** — dollar figures, down
+payments, financing structures, contingencies, deposits, deadlines. `preview.body` is cut at
+roughly 200 characters, and in a numbers-heavy reply the part past the cut routinely reverses
+the part before it. Two leads were misclassified this way on 2026-08-29 (see *Deal talk is
+not buyer intent* in STEP 2). Snippets are safe for the short, plain asks that make up most
+real buyer mail; they are not safe for anyone doing arithmetic.
+
 Results are not sorted by recency; sort by `messageTimestamp` / `internalDate` yourself.
 
 **On volume.** Helen's inbox runs roughly 200 messages/day, the overwhelming majority of it
@@ -162,32 +169,54 @@ Three things earn "Ignore":
 3. **The lead does not want to buy a business** — they are asking about something else
    entirely, even when the words look like a buyer's. See the next section.
 
-#### What they want financed is not always a business
+#### Deal talk is not buyer intent
 
 The deal newsletters go out with headlines like *"$280K/yr biz → 50% seller financed"*, and
-replies come back talking fluently about seller financing, down payments and terms. That
-vocabulary is not a buyer signal on its own. **Ask what asset the money is for.**
+replies come back talking fluently about seller financing, down payments, contingencies and
+terms. **That vocabulary is not a buyer signal.** A reply full of deal language is often a
+reader commenting on the deal, an owner talking about their own asset, or someone reasoning
+from the seller's side of the table. The only question that matters is: **is this person
+asking to buy a business through SMB Deal Hunter, or are they talking about something else?**
 
-Real case from 2026-08-29: Jerome M Limage replied *"I'd like knowing more of the seller
-financing with 50% and would want an opted financing on an investment property that I tend
-to hold."* Read quickly that is a Ready Now buyer discussing financing terms. Read properly,
-he wants financing on **his own investment property, which he intends to keep** — he is not
-buying a business and there is nothing for the setter to do. → **Ignore**.
+Both real cases below are from the *same newsletter thread on the same day*, and both were
+first logged as Tier 1 "Send to Yobani". Both were wrong.
 
-Contrast the same thread on the same day, which *is* a real buyer: J LaMacchia wrote *"I
-would counter offer, to get the conversation going, with a 50% down payment ($1,250,000) and
-2 years funding the balance."* He is making an offer on the featured business. → **Send to
-Yobani**.
+**Their own asset, not a business.** Jerome M Limage wrote *"I'd like knowing more of the
+seller financing with 50% and would want an opted financing on an investment property that I
+tend to hold."* That reads as a buyer discussing financing terms until you notice the asset:
+his **own investment property, which he intends to keep**. He is not buying a business. →
+**Ignore**.
 
-The test that separates them: **is the sender buying the thing in the email, or asking about
-an asset of their own?** Financing questions about a property they already hold, a refinance,
-or their existing portfolio are not buyer leads no matter how much deal language they use.
+**Commenting from the seller's side.** J LaMacchia wrote *"I would counter offer, to get the
+conversation going, with a 50% down payment ($1,250,000) and 2 years funding the balance…
+Any serious offer should be via written letter and a $100,000 deposit check with no more than
+3 contingencies **and I will remove from the market**."* The first sentence looks like a live
+offer. The last clause gives it away — he is talking as an owner about taking a listing off
+the market, not asking to buy one. He is commenting on how the deal should be run, and never
+asks to speak to anyone. → **Ignore**.
 
-The related judgement call, recorded because it recurs and has no clean answer: *"I'm
-interested to talk to you, we own a few businesses in the Albany NY area"* (narinder Singh,
-same day). An explicit ask to talk, so Ready Now is defensible — but someone who already owns
-businesses may be an operator or a future seller rather than a buyer. Classify on the ask,
-flag it in the digest, and let a human decide rather than dropping it.
+> ⚠️ **The truncated snippet inverted the meaning.** `verbose: false` returns
+> `preview.body` cut at roughly 200 characters. J LaMacchia's preview ended at *"Any serious
+> offer should be vi…"* — everything that revealed his actual position was past the cut.
+> **So: whenever a reply contains deal terms — dollar figures, down payments, financing
+> structures, contingencies, deadlines — hydrate the full message with
+> `GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID` before classifying it.** Do not classify a
+> numbers-heavy reply from a snippet. This is the one category of email where the second
+> sentence routinely reverses the first, and it is cheap to check: read the sender's own
+> words up to the quoted newsletter and ignore the quoted text below it.
+
+For contrast, a genuine buyer replying to the same kind of newsletter states the ask plainly
+and briefly, with no deal analysis at all: *"I'm looking for local business in 94538 area
+code, ready to invest"* (Zing Beam LLC), *"Do you have a company like this in Colorado,
+preferred in Denver area"* (Christopher Terry), *"Helen I want to buy a business show me."*
+(Daniel Spencer). **Length and financial sophistication correlate negatively with buyer
+intent here.** The real buyers ask for deals; the commentators explain deals.
+
+The related judgement call, recorded because it recurs and has no clean answer: *"You do
+great things i am interested to talk to you we own few businesses in albany ny area"*
+(narinder Singh, same day). An explicit ask to talk, so Ready Now is defensible — but someone
+who already owns businesses may be an operator or a future seller rather than a buyer.
+Classify on the ask, flag it in the digest for a human eye, and do not drop it.
 
 #### Price Wall: asking the price vs. not having the money
 
