@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
-| **Status** | Unblocked. Access restored, scope narrowed, routine recreated as a cloud Routine. |
+| **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
 | **Last updated** | 2026-09-10 |
 
 ---
@@ -64,6 +64,7 @@ Every row below was confirmed with a live call, not inferred from configuration.
 | Read Helen's mail | Composio `gmail` | `gmail_kath-tiou` → `helen@smbdealhunter.xyz` | `GMAIL_FETCH_EMAILS` on `in:inbox newer_than:1d` returned real mail |
 | Post the digest | Slack connector | channel `C0BTCGZSF9R` (#helen-email-digest) | connector connected and enabled |
 | Read/write tracker | Composio `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | read `Tracker` and `Responsibility` tabs back |
+| Verify booked calls | Close connector (`mcp__Close__*`), read-only | — | `lead_search` + `activity_search` confirmed live meetings for two leads |
 
 Two Gmail accounts are connected to Composio — Helen's and Sheila's — so **account
 selection is required on every Gmail call**. Helen's is currently the default, but that is
@@ -116,6 +117,44 @@ number or a "give me a shout" being misread as Ready Now. Investor is untracked 
 those threads simply drop — but the trap is still live. A phone number inside a
 data-room thread is not a buyer lead.
 
+### The call-booked rule (added 2026-09-10, after the first live run)
+
+Yobani is the setter — his job is to get the call booked. A lead who has already booked
+one is not work for him. So when an email says the sender has scheduled a call, the task
+now checks Close CRM, and on confirmation writes **"Ignore"** in Recommended Action rather
+than "Send to Yobani". Unconfirmed stays "Send to Yobani": a sender can misremember, book
+elsewhere, or cancel.
+
+The one trap worth knowing about, because it will bite anyone who reimplements this:
+**match Close leads by email address, never by display name.** `christopher green
+<cjgreen7904@yahoo.com>` is the Close lead *"CJ Green"*, while a name search for
+"christopher green" surfaces *"Chris Green"* and *"Chris Greene"* as well — different
+people, and picking one gives a confident wrong answer.
+
+This changes column D only. A lead who booked a call is still categorised on the content
+of their email, still appears in the digest, still gets a tracker row.
+
+### Suggested reply drafts (added 2026-09-10)
+
+Every lead that *is* going to Yobani now comes with a ready-to-send reply in Helen's
+voice, so the handoff is one paste rather than one more thing to write. Drafts appear in
+tracker column L and in a **threaded reply** under the Slack digest — in the message body
+they would bury the lead list the digest exists to deliver.
+
+There is one template per category (Buy Box, Ready Now, Price Wall), reproduced verbatim
+in the task file. Three constraints on them are deliberate and should survive future
+edits:
+
+- **The 1% pricing line lives in the Price Wall template and nowhere else.** No other
+  draft may quote a price, fee, range, guarantee or timeline, and the 1% sentence is not
+  to be elaborated on — even when a lead asks directly. Unanswered questions are what the
+  call is for. This is the one place where a plausible-sounding invention would reach a
+  customer as a commercial commitment.
+- **No name is guessed from an email address.** A sender like `ms.raquele@gmail.com` with
+  no display name gets "Hey there," instead. Getting a name wrong in the first three words
+  is worse than not using one.
+- **They/them throughout.** The templates never infer a lead's gender from their name.
+
 ---
 
 ## 5. The tracker
@@ -126,7 +165,9 @@ Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner 
 
 - `Tracker` row 1 is the header; data starts at row 2; last data row is 27 as of
   2026-09-10 (26 rows, all dated 8/29/2026).
-- Columns A–K: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary`
+- Columns A–L: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft`
+- **Column L was added 2026-09-10** and is blank for every earlier row. It is not
+  backfilled, and it stays blank for "Ignore" rows and handover rows.
 - **F and H are formula-driven and must never receive literal values.**
   F is `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`,
   H is `=G2+5`.
@@ -136,7 +177,7 @@ Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner 
   trimming it breaks column F.
 
 Writes go through `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges in three blocks
-(A–E, G, I–K), skipping F and H, which are then filled down with the formulas above and
+(A–E, G, I–L), skipping F and H, which are then filled down with the formulas above and
 verified by re-reading. The old paste-block-to-a-human flow is gone: it assumed someone at
 a keyboard, and nobody is at a keyboard at 8am.
 
@@ -171,31 +212,38 @@ This is the single known scheduled-drift issue.
 
 ## 8. Open items
 
-### ⛔ Blocker — the Routine has no connectors attached
+### ✅ Live as of 2026-09-10
 
-The Routine exists (`trig_012Ap72Z58NHa2m8ahWYUQmt`, cron `3 12 * * *`) but is **created
-disabled**, because the sessions it fires would launch with **no connector tools at all** —
-no Composio, no Slack. It would wake up, be unable to read mail, and be unable to post a
-failure notice saying so. Given this task's history of failing quietly for 8 days, it was
-disabled rather than left to fire into a void.
+The Routine (`trig_012Ap72Z58NHa2m8ahWYUQmt`, cron `3 12 * * *`) is **enabled** and has
+completed an end-to-end run. Getting there took two fixes, both applied from the Routines
+edit form because the API could not do them:
 
-Cause: `create_trigger` rejected the `connectors` parameter outright — *"the connectors
-parameter is not available for this organization"* — and creating without it stores
-`mcp_connections: []`. This is an org-level restriction on the API, not a missing
-connection: Composio and Slack are both connected and working in interactive sessions.
+- **Connectors.** `create_trigger` rejected the `connectors` parameter outright — *"the
+  connectors parameter is not available for this organization"* — and creating without it
+  stored `mcp_connections: []`, meaning fired sessions would have had no Composio and no
+  Slack. It now carries Composio, Slack, GitHub and Close.
+- **Repository.** It was also created with `sources: []`.
 
-**To go live**, attach the connectors from the claude.ai Routines UI:
+**How it actually reads `SKILL.md`.** `sources` is *still* empty — the successful run read
+the file through the **GitHub connector**, not from a clone. The evidence is in Slack: the
+11:37:39 EDT attempt posted `repository not found: ... 404` because the GitHub connector
+wasn't attached yet; the 11:39 run, after it was, succeeded. So the GitHub connector is
+load-bearing. Detaching it breaks the routine, and attaching the repository under
+**Repositories** would give it a second, sturdier route.
 
-1. Open the Routine **"Helen email digest (daily 08:03 ET)"**.
-2. Attach **Composio** and **Slack**.
-3. Enable the Routine.
+**Verified run — 2026-09-10, 11:45:56 EDT.** 8 leads, one Slack message with both sections,
+tracker rows 28–35 appended, columns F and H holding formulas rather than literals, links
+in the `authuser=helen@` format.
 
-Do not enable it before step 2 — a run without connectors produces nothing and reports
-nothing. If the UI does not offer connector attachment either, the fallback is to recreate
-the Routine from the Routines UI directly, pasting the same prompt (it is stored on the
-Routine and in this repo's history).
+⚠️ **A green status in the run list does not mean the task succeeded.** It means the
+session started and exited without an infrastructure error. Blocked network requests,
+missing connector tools and task-level failures all surface only in the transcript — as
+the 11:37 failure shows. Open the run and check that the digest and the tracker rows
+actually appeared.
 
-Verify after enabling by triggering one manual run rather than waiting for 08:03.
+Routines clone each repository **from its default branch**. Until PR #1 is merged,
+`SKILL.md` is not on `main` — the prompt tries `main` first and falls back to the feature
+branch, and reports which ref it used. Once the PR is merged, drop that fallback.
 
 ### Everything else
 

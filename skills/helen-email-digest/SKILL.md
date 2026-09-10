@@ -33,6 +33,12 @@ Gmail call**. Pin it explicitly:
 Omitting `account` on a Gmail call lets it default to whichever account is marked default.
 That is Helen's today, but it is a setting anyone can flip — never rely on it.
 
+One lookup does **not** go through Composio: the call-booked check in STEP 2 reads Close
+CRM through the **first-party Close connector** (`mcp__Close__*`). It is read-only. If the
+Close connector is missing, that is not a reason to abort the run — the check simply fails
+to confirm and every affected lead keeps the default "Send to Yobani" (see STEP 2). Say so
+in the run report.
+
 Before doing anything else, confirm both toolkits report an ACTIVE connection. If either is
 not active, do NOT run a partial digest. Post this to Slack channel `C0BTCGZSF9R` and stop:
 
@@ -142,10 +148,155 @@ A handed-off thread whose original category is **not** one of the three (an Inve
 Kyle is running, a Sellside thread with Bill) is **dropped**, same as any other untracked
 category. Handover tracking follows the tracked categories; it does not widen them.
 
-### Optional field — recommended action
+### Recommended action — and the call-booked check
 
-Add whenever there's a clear next step (e.g. "send to setter"). Not required for every
-email, only when it's obvious.
+Every Tier 1 lead gets a Recommended Action, written to tracker column D. There are two
+values: **"Send to Yobani"** (the default — a real buyer worth the setter's time) and
+**"Ignore"**.
+
+Two things earn "Ignore":
+
+1. **The lead has already disqualified themselves** — declined outright, an obvious
+   tyre-kicker, or someone who says they cannot afford it.
+2. **The lead has already booked a call, verified in Close CRM** — see below.
+
+#### Price Wall: asking the price vs. not having the money
+
+Both look like Price Wall, and they get opposite actions. Sort on **whether the lead has
+told you they lack the funds**, not on whether price came up:
+
+- *"What does it cost?"*, *"I have yet to see what the fees are"* — a live buyer with an
+  unanswered question. **Send to Yobani**, with the Price Wall draft that answers it.
+- *"I don't have the funds"*, *"that's out of my budget"*, *"I can't afford that right
+  now"* — they have disqualified themselves. **Ignore**, no draft.
+
+A statement of not having the money **wins over a pricing question in the same email**.
+Real case from 2026-09-09: Andy Garcia wrote *"I am interested but I don't have the funds,
+I don't know how much it is."* The second half is a pricing question, but the first half
+already settles it → **Ignore**. Sending the 1% answer to someone who has just said they
+have no money is the wrong reply.
+
+#### The call-booked rule
+
+Yobani is the setter; his job is to get the call booked. A lead who has already booked one
+is not work for him, so passing them along is wasted effort. When an email says the sender
+has scheduled a call — "I have a call scheduled", "I have booked a call", "we're speaking
+Thursday" — check Close, and if it is confirmed there, write **"Ignore"** instead of "Send
+to Yobani".
+
+**Verify in Close before writing "Ignore". Never take the claim at face value** — a sender
+can misremember, book with someone else, or have cancelled since writing.
+
+Procedure (verified 2026-09-10):
+
+1. `mcp__Close__lead_search` with `full_text: "<the sender's email address>"`.
+
+   **Match on the email address, never the display name.** Gmail display names and Close
+   lead names routinely disagree, and a fuzzy name match produces a confidently wrong
+   answer. Real case from this inbox: `christopher green <cjgreen7904@yahoo.com>` is the
+   Close lead **"CJ Green"** — but a name search for "christopher green" returns *"Chris
+   Green"*, *"Chris Greene"* and *"CJ Green"* as three separate leads, and two of them are
+   other people. The email search returns exactly one.
+
+2. Take the `lead_id` from that result and call `mcp__Close__activity_search` with
+   `lead_ids: ["<lead_id>"]` and `activity_types: ["activity.meeting"]`.
+
+3. Read `activity_at` / `starts_at` on the returned meetings. Write **"Ignore"** only if a
+   meeting is dated **today or later**. A meeting entirely in the past is a call that
+   already happened, not the one the sender is describing — that is not a verification.
+
+4. **If any of this fails to confirm** — the email address matches no lead, the lead has no
+   meeting, the only meeting is in the past, or the Close lookup errors — leave the action
+   as **"Send to Yobani"**. Unverified is not the same as false, and the safe default is to
+   let the setter look.
+
+In the final run report, list every lead that claimed a booked call and whether each one
+verified. A lead claiming a call that Close doesn't show is worth a human's attention.
+
+Worked examples, both verified 2026-09-10:
+
+| Sender | Claim | Close lead | Meeting found | Action |
+|---|---|---|---|---|
+| Jim Jacobsen | "I have a call scheduled but I have yet to see what the fees are" | Jim Jacobsen | 2026-09-14 14:00 UTC — Discovery Call | Ignore |
+| christopher green (`cjgreen7904@yahoo.com`) | "I am still interested and have booked a call" | **CJ Green** | 2026-09-11 16:00 UTC — Welcome Call | Ignore |
+
+**This rule changes column D only.** It does not change classification: a lead who has
+booked a call is still Buy Box / Ready Now / Price Wall on the content of their email,
+still appears in the Slack digest under Tier 1, and still gets a tracker row. The
+Recommended Action is not shown in Slack.
+
+### Suggested Helen email draft
+
+Every lead whose Recommended Action is **"Send to Yobani"** also gets a ready-to-send
+reply draft, so Helen can paste it, cc Yobani, and send. Rows marked "Ignore" and Tracking
+Handover Progress rows get **no draft** — leave the cell empty and omit them from the
+Slack thread.
+
+The draft is a **reply in Helen's voice**, cc'ing Yobani Mendoza
+(`yobani@smbdealhunter.xyz`, the setter). No subject line, no signature, no greeting
+block — Helen is replying inside an existing thread.
+
+#### The three templates
+
+Use the template for the lead's category. Each one is a short, fully written-out message
+to the lead, with Yobani mentioned inside it — not a set of separate notes to different
+people.
+
+**Write it out in full.** No shorthand: "definitely", not "def"; "15 minutes", not
+"15min"; "with you", not "w you". The register is warm and direct, the way Helen writes
+when she has thirty seconds — but in whole words.
+
+**Buy Box**
+
+```
+Hey [First Name], [their ask] is something we can help with. @Yobani on our team can grab 15 minutes with you to better understand what you're looking for.
+```
+
+**Ready Now**
+
+```
+Hey [First Name], we can definitely help. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
+```
+
+**Price Wall**
+
+```
+Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call — @Yobani on our team can find a time that works for you.
+```
+
+The `@Yobani` is literal text in the body of an email, not a Slack or Gmail mention. It
+reads as a nudge to him because he is cc'd.
+
+#### Filling them in
+
+**First name.** In order of preference: the name the sender signs off with in the email
+body, then the first word of their Gmail display name. If the sender has **no display
+name** — a bare address like `ms.raquele@gmail.com` — do not guess a name out of the
+address. Drop the name and open with `Hey there,` instead. Getting someone's name wrong in
+the first three words is worse than not using it.
+
+**Pronouns.** The templates address the lead directly as "you" for exactly this reason.
+Never infer a lead's gender from their name; where a third-person reference is
+unavoidable, use they/them unless the sender's own signature makes it explicit.
+
+**Their ask (Buy Box).** `[their ask]` is the concrete thing they asked for, phrased as a
+gerund and in their own words: "finding deals in Central FL", "finding hotels in
+California", "finding absentee businesses". If their ask is too vague to name in three or
+four words, use "that" — *"Hey Scott, that is something we can help with."* Never inflate
+a vague ask into a specific one.
+
+Ready Now and Price Wall take no personalisation beyond the first name. Do not restructure
+a template to suit the email.
+
+**Never invent commercial terms.** The 1% figure and the success guarantee appear in the
+Price Wall template and nowhere else. Do not quote a price, a fee, a range, a guarantee, a
+timeline, or a deal specific in any other draft, and do not elaborate on the 1% beyond the
+sentence given — even if the lead asked a direct question about it. If a lead asks
+something the template does not answer, send the template as-is and let the call handle it.
+
+**Nothing else goes in.** A finished draft should be the template plus a first name and,
+for Buy Box, their ask — and nothing more. If it says something the template does not,
+take that back out.
 
 ### On borderline mail
 
@@ -181,6 +332,26 @@ Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
   Helen's inbox today" message instead.
 - Use Slack mrkdwn formatting (bold, bullets). Do NOT use `@channel` or `@here`.
 
+### The drafts go in a thread under that message
+
+Post the reply drafts as **one threaded reply** to the digest message, not in the message
+body. Five or six full drafts inline would bury the lead list the digest exists to
+deliver; in the thread they are one click away and still copy-pasteable.
+
+Capture the parent message's `ts` when you post it and reply with that as `thread_ts`.
+
+Thread reply format — one block per lead whose action is "Send to Yobani", in the same
+order as the Tier 1 list, each draft in a Slack code block so it copies cleanly:
+
+> ✍️ *Suggested replies* — paste and send from Helen's inbox, cc yobani@smbdealhunter.xyz
+>
+> *Buy Box — Dean Julia*
+> ```
+> Hey Dean, finding deals in Central FL is something we can help with. @Yobani on our team can grab 15 minutes with you to better understand what you're looking for.
+> ```
+
+If no lead has action "Send to Yobani", post no thread reply at all — not an empty one.
+
 ---
 
 ## STEP 4 — Log to the Google Sheets tracker
@@ -199,7 +370,10 @@ The spreadsheet has **two tabs**: `Tracker` (the data) and `Responsibility` (the
 **`Tracker` tab.** Row 1 is the header. Data starts at **row 2**. As of 2026-09-10 the last
 data row is **row 27** (26 rows, all dated 8/29/2026). Columns A–K:
 
-`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary`
+`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft`
+
+Column **L — "Suggested Helen Email Draft"** was added 2026-09-10 and is empty for every
+row before then. That is expected; do not backfill it.
 
 **`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9`. Buy Box,
 Ready Now and Price Wall all map to **Yobani**; the other rows (Sellside → Bill, Investor
@@ -229,7 +403,7 @@ majority and the documented format.
 ### How to write
 
 1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm the tab is still called `Tracker`.
-2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:K` to read existing rows and find the true last
+2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:L` to read existing rows and find the true last
    data row. Compute your target range explicitly rather than relying on the append API's
    table detection.
 3. **Dedup.** Before writing a row, check it isn't already in the sheet (same sender + same
@@ -239,7 +413,8 @@ majority and the documented format.
    are never overwritten with literals:
    - `Tracker!A<first>:E<last>` — Date, Tier, Category, Recommended Action, Action Taken?
    - `Tracker!G<first>:G<last>` — Last Check-in Date
-   - `Tracker!I<first>:K<last>` — Email Sender, Email Title / Link, Message Summary
+   - `Tracker!I<first>:L<last>` — Email Sender, Email Title / Link, Message Summary,
+     Suggested Helen Email Draft
 
    Use `valueInputOption: "USER_ENTERED"` so dates coerce and `=HYPERLINK(...)` renders.
 5. **Fill down F and H** by writing the same two formulas into the new rows with their row
@@ -248,7 +423,7 @@ majority and the documented format.
    and H is `=G<N>+5`. The lookup ranges are absolute (`$A$2:$A$9`) and must stay exactly
    as written; only the `E<N>`, `C<N>` and `G<N>` references change. Never invent a
    different formula.
-6. **Verify.** Re-read `Tracker!A:K` and confirm: row count increased by exactly the number
+6. **Verify.** Re-read `Tracker!A:L` and confirm: row count increased by exactly the number
    of rows you wrote, F and H are populated and did not spill `#N/A`, and no row was
    duplicated. If verification fails, say so explicitly in Slack — do not report success.
 
@@ -259,11 +434,11 @@ majority and the documented format.
   are the only two values this routine writes. (Historical rows also contain `2`, `3` and
   `Uncategorized`; leave them alone.)
 - **Category** — `Buy Box`, `Ready Now`, or `Price Wall`. No other value.
-- **Recommended Action** — a judgment call, not a fixed lookup. All three tracked
-  categories route to the setter, so this is effectively: is this a real buyer worth
-  Yobani's time (→ "Send to Yobani"), or a lead who has already disqualified themselves —
-  a prospect who declined, an obvious tyre-kicker, someone reacting to price and walking
-  (→ "Ignore")? Read the actual email rather than mapping from the category.
+- **Recommended Action** — `Send to Yobani` or `Ignore`, decided in STEP 2. Not a fixed
+  lookup from the category: read the actual email. "Ignore" covers a lead who has
+  disqualified themselves *and* a lead whose booked call you verified in Close — the
+  call-booked rule in STEP 2 governs, including its requirement to match Close leads by
+  email address rather than name.
 - **Action Taken?** — "Yes" for Tracking Handover Progress ("In Progress") rows, "No" for
   Tier 1 rows
 - **Owner (F)** and **Next Check-in Date (H)** — formula-driven, see fill-down above
@@ -274,6 +449,10 @@ majority and the documented format.
 - **Email Title / Link** — `=HYPERLINK("<gmail thread link>","<subject>")` so it renders as
   a clickable link like the existing rows
 - **Message Summary** — same quoted snippet used in the Slack digest
+- **Suggested Helen Email Draft (L)** — the draft from STEP 2, byte-identical to the one
+  posted in the Slack thread. Write it as plain text with real line breaks, not a formula
+  and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
+  Handover Progress rows.
 
 Match the formatting of the existing rows exactly — do not reformat the sheet, resize
 columns, or change header styling.
@@ -282,9 +461,11 @@ columns, or change header styling.
 
 ## Scope limits
 
-Do not take any action beyond reading emails, posting the Slack digest, and logging rows to
-this tracker. Specifically: do **not** reply to, label, archive, or delete any email, and
-do **not** create Close.com records. The routine is read-only on email.
+Do not take any action beyond reading emails, reading Close CRM, posting the Slack digest,
+and logging rows to this tracker. Specifically: do **not** reply to, label, archive, or
+delete any email, and do **not** create, update, or delete anything in Close — the
+call-booked check in STEP 2 is a read, and Close access stays read-only. The routine is
+read-only on email.
 
 ## Failure reporting
 
