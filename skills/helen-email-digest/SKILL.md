@@ -1,13 +1,18 @@
 ---
 name: helen-email-digest
-description: Daily Slack digest of new emails in Helen Guo's inbox, categorized by urgency tier, plus one row per email in the Google Sheets tracker
+description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall), plus one row per lead in the Google Sheets tracker
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
 
 This routine runs **unattended in the cloud**. There is no human at a keyboard when it
-fires — every step must complete through connectors, or fail loudly to Slack. Never
-leave work parked for a person to finish by hand.
+fires — every step must complete through connectors, or fail loudly to Slack. Never leave
+work parked for a person to finish by hand.
+
+**Scope: buyer leads only.** This routine tracks exactly three categories — **Buy Box**,
+**Ready Now**, and **Price Wall** — plus threads in those three categories that Helen has
+already handed off. Everything else in the inbox is dropped: not digested, not logged, not
+counted. There is no Tier 2, no Tier 3, and no "Uncategorized / needs review" bucket.
 
 ---
 
@@ -17,29 +22,28 @@ All email and tracker access goes through the **Composio connector**. Do not use
 first-party Gmail connector for this routine: it authenticates as
 `sheila@smbdealhunter.xyz` only and cannot reach Helen's mailbox.
 
-Two Gmail accounts are connected to Composio, so **account selection is required on
-every Gmail call**. Pin it explicitly:
+Two Gmail accounts are connected to Composio, so **account selection is required on every
+Gmail call**. Pin it explicitly:
 
 | Purpose | Composio toolkit | Account id | Mailbox |
 |---|---|---|---|
 | Read Helen's mail | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
 | Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
 
-Omitting `account` on a Gmail call lets it default to whichever account is marked
-default. That is Helen's today, but it is a setting anyone can flip — never rely on it.
+Omitting `account` on a Gmail call lets it default to whichever account is marked default.
+That is Helen's today, but it is a setting anyone can flip — never rely on it.
 
-Before doing anything else, confirm both toolkits report an ACTIVE connection. If either
-is not active, do NOT run a partial digest. Post this to Slack channel `C0BTCGZSF9R` and
-stop:
+Before doing anything else, confirm both toolkits report an ACTIVE connection. If either is
+not active, do NOT run a partial digest. Post this to Slack channel `C0BTCGZSF9R` and stop:
 
-> ⚠️ Helen's email digest couldn't run — the Composio `<toolkit>` connection is not
-> active (status: `<status>`). Sheila needs to reconnect it at
-> https://dashboard.composio.dev, then this task can run again.
+> ⚠️ Helen's email digest couldn't run — the Composio `<toolkit>` connection is not active
+> (status: `<status>`). Sheila needs to reconnect it at https://dashboard.composio.dev,
+> then this task can run again.
 
-Substitute the real toolkit name and status. Do not assert a cause you have not
-verified — the previous version of this file hardcoded a diagnosis ("Sheila needs to
-accept the pending delegated-access request") that turned out to be wrong and misled the
-team for 8 consecutive days. Report the status you actually observed, nothing more.
+Substitute the real toolkit name and status. Do not assert a cause you have not verified —
+the previous version of this file hardcoded a diagnosis ("Sheila needs to accept the
+pending delegated-access request") that turned out to be wrong and misled the team for 8
+consecutive days. Report the status you actually observed, nothing more.
 
 **Never substitute Sheila's inbox for Helen's.** A digest built from the wrong mailbox is
 worse than no digest.
@@ -61,25 +65,23 @@ Page through `nextPageToken` until it is absent. Do not stop at the first page �
 `resultSizeEstimate` is approximate and must not be used as a stopping condition.
 
 `verbose: false` returns sender, subject, `threadId`, `messageTimestamp` and a
-`preview.body` snippet. That is enough to classify the large majority of mail. Only when
-a snippet is genuinely ambiguous, hydrate that one message with
+`preview.body` snippet. That is enough to triage the large majority of mail. Only when a
+snippet is genuinely ambiguous, hydrate that one message with
 `GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID` (`format: "metadata"`, or `"full"` if you need the
 body). Do not hydrate the whole batch — it is slow and mostly wasted.
 
 Results are not sorted by recency; sort by `messageTimestamp` / `internalDate` yourself.
 
-**On volume.** Helen's inbox runs roughly 200 messages/day, the overwhelming majority of
-it newsletters, promotions and vendor blasts with no relevance to SMB Deal Hunter. Triage
-in two passes:
+**On volume.** Helen's inbox runs roughly 200 messages/day, the overwhelming majority of it
+newsletters, promotions and vendor blasts. Because this routine now tracks only three
+categories, expect to drop the large majority of each day's mail. That is the intended
+behaviour, not a bug — a digest of five real buyer leads is the goal.
 
-1. **Drop pass.** Discard obvious noise before classifying — anything whose only Gmail
-   category is `CATEGORY_PROMOTIONS` or `CATEGORY_SOCIAL`, bulk newsletters, transactional
-   receipts, and automated notifications. These are not "Uncategorized"; they are not
-   logged, not digested, not counted.
-2. **Classify pass.** Everything that survives goes through Step 2.
-
-If a message is borderline, keep it — under-filtering costs a line in the digest,
-over-filtering loses a lead.
+Discard, without logging: anything whose only Gmail category is `CATEGORY_PROMOTIONS` or
+`CATEGORY_SOCIAL`; bulk newsletters; transactional receipts and automated notifications;
+and — new in this version — everything that would previously have been Tier 2 or Tier 3
+(Bleeding, Sellside, Investor, Operators, Pitches, Engaged Reader). Those categories are no
+longer tracked anywhere.
 
 **Gmail links.** Build thread links as:
 
@@ -105,12 +107,14 @@ those links may now be dead. Do not reproduce that format for new rows.
 
 ## STEP 2 — Classify
 
-Classify each surviving email into exactly ONE of these categories.
+Every email that survives Step 1 is either one of the three tracked categories, a handover
+of one of them, or dropped. There is no other outcome.
 
-### TIER 1 (urgent)
+### TIER 1 — the only tracked tier
+
 - **Buy Box** — volunteers geography/industry/budget/financing criteria, asks if SMB Deal
-  Hunter has matching deals (e.g. "anything in California?", "$50K down for a laundromat
-  in NYC")
+  Hunter has matching deals (e.g. "anything in California?", "$50K down for a laundromat in
+  NYC")
 - **Ready Now** — gave a phone number, explicitly asked for a call, used enrollment
   language ("enroll me", "call me"), OR replies with clear interest/readiness to a
   newsletter or prior outreach about a specific deal (even without a direct call ask or
@@ -118,48 +122,45 @@ Classify each surviving email into exactly ONE of these categories.
 - **Price Wall** — asks for pricing/cost directly without booking a call ("what does it
   cost", "price before scheduling")
 
-### TIER 2
-- **Bleeding** — existing customer/prospect complaining: about a specific
-  salesperson/setter, unresolved technical/product issues, payment problems, or an
-  unanswered prior reply
-- **Sellside** — business owners offering their business for sale, or brokers offering
-  deal flow / asking about exclusivity arrangements
+### TRACKING HANDOVER PROGRESS (🟢)
 
-### TIER 3
-- **Investor** — fundraising questions: accreditation, minimum check size, IRR, data room
-  access. Any thread involving Kyle Hopkins and/or Hunter Equity Partners-related deals
-  (e.g. Corven Holdings, FortySix Capital, or other data-room/investor threads Kyle is
-  corresponding on) belongs here regardless of surface phrasing — e.g. a phone number or
-  "give me a shout" in one of these threads is still Investor, not Ready Now.
-- **Operators** — offering operating experience/expertise rather than capital (e.g. "I
-  have 10 years as a Chief of Staff and want to run operations")
-- **Pitches** — unsolicited vendor/lender/referral-partner/marketplace pitches
-- **Engaged Reader** — replies thoughtfully or critically to a newsletter/deal content:
-  detailed questions, pointing out inconsistencies, discussing deal specifics — but with
-  no clear next-step ask. Lower urgency than the other Tier 3 categories; worth tracking,
-  not worth a hot handoff.
+Threads **in one of the three categories above** where Helen has already made the intro and
+handed off to someone else at SMB Deal Hunter. Signals: a teammate (e.g. Kyle Hopkins,
+Yobani) is now an active participant replying in the thread, or Helen has explicitly
+forwarded/looped a teammate in.
 
-### TRACKING HANDOVER PROGRESS (🟢, separate from Tier 1–3)
-Emails where Helen has already made the intro and handed the thread off to someone else at
-SMB Deal Hunter to run with. Signals: a teammate (e.g. Kyle Hopkins, Yobani) is now an
-active participant replying in the thread, or Helen has explicitly forwarded/looped a
-teammate in. When this is the case, the email goes here **instead of** its normal
-tier/category — do not double-list it. For each entry also record:
+When this is the case the email goes here **instead of** Tier 1 — do not double-list it.
+For each entry also record:
 
-- **category** — what type of lead this originally was (investor, buy box, etc.): classify
-  as if Helen were still handling it directly, then note the handover
-- **owner** — who at SMB Deal Hunter now owns this thread: "helen" if she's still following
-  up herself post-intro, or the teammate's name if she's handed it off (e.g. "kyle
-  hopkins", "yobani" — yobani is a setter, so threads owned by yobani usually arrived
-  there via "send to setter")
+- **category** — which of Buy Box / Ready Now / Price Wall this lead was: classify as if
+  Helen were still handling it directly, then note the handover
+- **owner** — who at SMB Deal Hunter now owns the thread: "helen" if she's still following
+  up herself post-intro, or the teammate's name if she's handed it off (e.g. "yobani" — a
+  setter, so threads owned by yobani usually arrived there via "send to setter")
+
+A handed-off thread whose original category is **not** one of the three (an Investor thread
+Kyle is running, a Sellside thread with Bill) is **dropped**, same as any other untracked
+category. Handover tracking follows the tracked categories; it does not widen them.
 
 ### Optional field — recommended action
+
 Add whenever there's a clear next step (e.g. "send to setter"). Not required for every
 email, only when it's obvious.
 
-If an email doesn't clearly fit any category, put it in **"Uncategorized / needs review"**
-rather than forcing a guess. This is for genuinely ambiguous business mail — not for the
-newsletter noise already dropped in Step 1.
+### On borderline mail
+
+If you cannot confidently place an email in one of the three categories, **drop it**. There
+is no Uncategorized bucket to park it in. This is a deliberate trade: the digest stays
+short and unambiguous, and the cost is that an occasional vaguely-worded buyer reply gets
+missed. Lean toward including a genuine buyer signal you're 70% sure of; drop anything
+below that rather than inventing a category for it.
+
+Note the historical exception that no longer applies: Kyle Hopkins / Hunter Equity Partners
+threads used to be force-classified as Investor to stop them being misread as Ready Now.
+Investor is no longer tracked, so these threads are simply dropped — but keep the
+underlying caution in mind. A phone number or "give me a shout" inside a Hunter Equity /
+data-room thread is **not** a Ready Now buyer lead, and must not be pulled into Tier 1 on
+the strength of that phrasing.
 
 ---
 
@@ -167,20 +168,17 @@ newsletter noise already dropped in Step 1.
 
 Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
 
-- **Header:** date + total count of new emails classified (the post-drop-pass count, not
-  raw inbox volume)
-- One section per tier, using bold headers "🔴 Tier 1", "🟡 Tier 2", "🔵 Tier 3" — each
-  listing its categories as sub-bullets in this exact format:
+- **Header:** date + total count of leads found (the post-drop count, not raw inbox volume)
+- **🔴 Tier 1** — bold header, categories as sub-bullets in this exact format:
   `*Category* — Sender: "subject line" — snippet`
   with the subject line as the Gmail thread link. Do NOT include the recommended-action
   field in the visible digest text, even when it's set internally.
-- After the numbered tiers, a "🟢 Tracking Handover Progress" section (if it has entries),
-  formatted the same way but with owner inserted right after the category:
+- **🟢 Tracking Handover Progress** — same bullet format, with owner inserted right after
+  the category:
   `*Category* — Owner: Name — Sender: "subject line" — snippet`
-- Skip a tier's section entirely if it has zero emails that day
-- If "Uncategorized / needs review" has entries, list it last
-- If there were zero relevant new emails in the last 24h, post a short "No new emails in
-  Helen's inbox today" message instead
+- These are the only two sections. Skip either one entirely if it has zero entries.
+- If there were zero tracked leads in the last 24h, post a short "No new buyer leads in
+  Helen's inbox today" message instead.
 - Use Slack mrkdwn formatting (bold, bullets). Do NOT use `@channel` or `@here`.
 
 ---
@@ -190,10 +188,9 @@ Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
 Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit
 Spreadsheet ID: `1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ`
 
-Add ONE new row per email classified in Step 2 — every tier (1, 2, 3), Tracking Handover
-Progress, and Uncategorized / needs review all get a row. Do not skip low-urgency
-categories: it's easier to filter out unimportant rows later than to backfill them. Noise
-dropped in Step 1's drop pass gets no row.
+Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and Tracking
+Handover Progress rows. Nothing else gets a row. What was dropped in Steps 1–2 is not
+logged.
 
 ### Sheet layout — verified 2026-09-10
 
@@ -204,19 +201,22 @@ data row is **row 27** (26 rows, all dated 8/29/2026). Columns A–K:
 
 `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary`
 
-**`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9` — Buy Box,
-Ready Now, Price Wall → Yobani; Sellside → Bill; Investor, Operators → Kyle; Pitches,
-Engaged Reader → Helen. It is **not** below the data block on `Tracker`, so appending to
-`Tracker` cannot collide with it. (An earlier handoff doc claimed row 1 was blank with the
-header on row 2, and that the lookup sat below the data — both are wrong. Trust this
-section.)
+**`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9`. Buy Box,
+Ready Now and Price Wall all map to **Yobani**; the other rows (Sellside → Bill, Investor
+and Operators → Kyle, Pitches and Engaged Reader → Helen) are now unused by this routine
+but must be left in place — the `xlookup` range is absolute and shrinking it would break
+column F. It is **not** below the data block on `Tracker`, so appending to `Tracker` cannot
+collide with it. (An earlier handoff doc claimed row 1 was blank with the header on row 2,
+and that the lookup sat below the data — both are wrong. Trust this section.)
 
 **Columns F and H are formula-driven. Never write literal values to them.** The formulas,
 read verbatim from row 2:
 
 - **F (Owner):** `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
-  — note the logic: rows where Action Taken? is "No" resolve to Helen regardless of
-  category; only handed-over rows get the category's owner.
+  — rows where Action Taken? is "No" resolve to Helen regardless of category; only
+  handed-over rows get the category's owner. Since all three tracked categories map to
+  Yobani, in practice column F now reads Helen for Tier 1 rows and Yobani for handover
+  rows.
 - **H (Next Check-in Date):** `=G2+5` — five days after the last check-in.
 
 Dates in A and G are stored as Google serial numbers and displayed as dates; writing a
@@ -245,10 +245,9 @@ majority and the documented format.
 5. **Fill down F and H** by writing the same two formulas into the new rows with their row
    references incremented — for a new row `N`, F is
    `=if(E<N>="No","Helen",xlookup(C<N>,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
-   and H is `=G<N>+5`. Note the lookup ranges are absolute (`$A$2:$A$9`) and must stay
-   exactly as written; only the `E<N>`, `C<N>` and `G<N>` references change. Never invent a
-   different formula. Uncategorized rows resolve to the "Helen" fallback rather than
-   erroring — that's expected, leave it.
+   and H is `=G<N>+5`. The lookup ranges are absolute (`$A$2:$A$9`) and must stay exactly
+   as written; only the `E<N>`, `C<N>` and `G<N>` references change. Never invent a
+   different formula.
 6. **Verify.** Re-read `Tracker!A:K` and confirm: row count increased by exactly the number
    of rows you wrote, F and H are populated and did not spill `#N/A`, and no row was
    duplicated. If verification fails, say so explicitly in Slack — do not report success.
@@ -256,23 +255,20 @@ majority and the documented format.
 ### Column contents
 
 - **Date** — today's digest date
-- **Tier** — "1", "2", "3", "In Progress" (Tracking Handover Progress rows), or
-  "Uncategorized" — matches the Slack digest's tier/section for that email
-- **Category** — same category label used in the Slack digest (use "Uncategorized / needs
-  review" as the category text for those rows)
-- **Recommended Action** — a judgment call, not a fixed lookup table. Read the actual email
-  and ask: is this a targeted, exclusive opportunity specifically for SMB Deal Hunter
-  (route it to that category's usual owner — a broker offering first look at their deals →
-  "Send to Bill"; someone with directly relevant hands-on expertise offering to help →
-  "Send to Kyle"), or generic/mass outreach with no real 1-on-1 opportunity — a
-  mailing-list blast, a cold vendor pitch, a prospect who already declined (→ "Ignore")?
-  Apply this reasoning across every category, not just Sellside. For Uncategorized rows,
-  use "Needs review" rather than guessing.
+- **Tier** — `1` for Tier 1 rows, `In Progress` for Tracking Handover Progress rows. These
+  are the only two values this routine writes. (Historical rows also contain `2`, `3` and
+  `Uncategorized`; leave them alone.)
+- **Category** — `Buy Box`, `Ready Now`, or `Price Wall`. No other value.
+- **Recommended Action** — a judgment call, not a fixed lookup. All three tracked
+  categories route to the setter, so this is effectively: is this a real buyer worth
+  Yobani's time (→ "Send to Yobani"), or a lead who has already disqualified themselves —
+  a prospect who declined, an obvious tyre-kicker, someone reacting to price and walking
+  (→ "Ignore")? Read the actual email rather than mapping from the category.
 - **Action Taken?** — "Yes" for Tracking Handover Progress ("In Progress") rows, "No" for
-  everything else
+  Tier 1 rows
 - **Owner (F)** and **Next Check-in Date (H)** — formula-driven, see fill-down above
 - **Last Check-in Date** — the last date anyone at SMB Deal Hunter actually replied to this
-  sender. If there's no reply yet (true for most brand-new Tier 1/3 leads), use today's
+  sender. If there's no reply yet (true for most brand-new Tier 1 leads), use today's
   digest date.
 - **Email Sender** — same sender name used in the Slack digest
 - **Email Title / Link** — `=HYPERLINK("<gmail thread link>","<subject>")` so it renders as
@@ -287,11 +283,11 @@ columns, or change header styling.
 ## Scope limits
 
 Do not take any action beyond reading emails, posting the Slack digest, and logging rows to
-this tracker. Specifically: do **not** reply to, label, archive, or delete any email, and do
-**not** create Close.com records. The routine is read-only on email.
+this tracker. Specifically: do **not** reply to, label, archive, or delete any email, and
+do **not** create Close.com records. The routine is read-only on email.
 
 ## Failure reporting
 
-If any step fails, post what actually happened to `C0BTCGZSF9R` — the failing step, the tool
-that errored, and the error text. Never post a success digest for a run that only partly
-completed, and never assert a cause you have not verified.
+If any step fails, post what actually happened to `C0BTCGZSF9R` — the failing step, the
+tool that errored, and the error text. Never post a success digest for a run that only
+partly completed, and never assert a cause you have not verified.
