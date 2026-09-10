@@ -9,12 +9,14 @@ Google Sheets tracker.
 | **Task definition** | [`skills/helen-email-digest/SKILL.md`](skills/helen-email-digest/SKILL.md) — the single source of truth. The cloud Routine reads this file at run time. |
 | **Handoff / context** | [`docs/handoff-helen-email-digest.md`](docs/handoff-helen-email-digest.md) — why it is built this way, what broke before, what is still open. |
 | **Schedule** | Daily 08:03 America/New_York (cron `3 12 * * *` UTC — see the DST note in the handoff). |
-| **Status** | ⛔ Routine created but **disabled** — connectors must be attached from the claude.ai Routines UI first. See the blocker in the handoff. |
+| **Status** | ✅ Live — enabled and verified end-to-end on 2026-09-10 (8 leads, digest posted, tracker rows 28–35 written). |
 | **Scope** | Buy Box, Ready Now, Price Wall, and handovers of those three. Everything else is dropped. |
 
 Email access runs through the **Composio** connector (account `gmail_kath-tiou` =
 `helen@smbdealhunter.xyz`), not the first-party Gmail connector, which can only reach
-`sheila@smbdealhunter.xyz`.
+`sheila@smbdealhunter.xyz`. **Close CRM** is read (never written) to confirm whether a
+lead who says they booked a call actually did — if so the recommended action becomes
+"Ignore" rather than sending them to the setter.
 
 Changing the routine's behaviour means editing `SKILL.md` — the Routine picks up the
 change on its next run, with no need to recreate it.

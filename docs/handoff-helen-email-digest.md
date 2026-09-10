@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
-| **Status** | Unblocked. Access restored, scope narrowed, routine recreated as a cloud Routine. |
+| **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
 | **Last updated** | 2026-09-10 |
 
 ---
@@ -64,6 +64,7 @@ Every row below was confirmed with a live call, not inferred from configuration.
 | Read Helen's mail | Composio `gmail` | `gmail_kath-tiou` → `helen@smbdealhunter.xyz` | `GMAIL_FETCH_EMAILS` on `in:inbox newer_than:1d` returned real mail |
 | Post the digest | Slack connector | channel `C0BTCGZSF9R` (#helen-email-digest) | connector connected and enabled |
 | Read/write tracker | Composio `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | read `Tracker` and `Responsibility` tabs back |
+| Verify booked calls | Close connector (`mcp__Close__*`), read-only | — | `lead_search` + `activity_search` confirmed live meetings for two leads |
 
 Two Gmail accounts are connected to Composio — Helen's and Sheila's — so **account
 selection is required on every Gmail call**. Helen's is currently the default, but that is
@@ -115,6 +116,23 @@ Partners threads used to be force-classified as Investor specifically to stop a 
 number or a "give me a shout" being misread as Ready Now. Investor is untracked now, so
 those threads simply drop — but the trap is still live. A phone number inside a
 data-room thread is not a buyer lead.
+
+### The call-booked rule (added 2026-09-10, after the first live run)
+
+Yobani is the setter — his job is to get the call booked. A lead who has already booked
+one is not work for him. So when an email says the sender has scheduled a call, the task
+now checks Close CRM, and on confirmation writes **"Ignore"** in Recommended Action rather
+than "Send to Yobani". Unconfirmed stays "Send to Yobani": a sender can misremember, book
+elsewhere, or cancel.
+
+The one trap worth knowing about, because it will bite anyone who reimplements this:
+**match Close leads by email address, never by display name.** `christopher green
+<cjgreen7904@yahoo.com>` is the Close lead *"CJ Green"*, while a name search for
+"christopher green" surfaces *"Chris Green"* and *"Chris Greene"* as well — different
+people, and picking one gives a confident wrong answer.
+
+This changes column D only. A lead who booked a call is still categorised on the content
+of their email, still appears in the digest, still gets a tracker row.
 
 ---
 
@@ -171,48 +189,38 @@ This is the single known scheduled-drift issue.
 
 ## 8. Open items
 
-### ⛔ Blocker — the Routine has no connectors attached
+### ✅ Live as of 2026-09-10
 
-The Routine exists (`trig_012Ap72Z58NHa2m8ahWYUQmt`, cron `3 12 * * *`) but is **created
-disabled**, because the sessions it fires would launch with **no connector tools at all** —
-no Composio, no Slack. It would wake up, be unable to read mail, and be unable to post a
-failure notice saying so. Given this task's history of failing quietly for 8 days, it was
-disabled rather than left to fire into a void.
+The Routine (`trig_012Ap72Z58NHa2m8ahWYUQmt`, cron `3 12 * * *`) is **enabled** and has
+completed an end-to-end run. Getting there took two fixes, both applied from the Routines
+edit form because the API could not do them:
 
-Cause: `create_trigger` rejected the `connectors` parameter outright — *"the connectors
-parameter is not available for this organization"* — and creating without it stores
-`mcp_connections: []`. This is an org-level restriction on the API, not a missing
-connection: Composio and Slack are both connected and working in interactive sessions.
+- **Connectors.** `create_trigger` rejected the `connectors` parameter outright — *"the
+  connectors parameter is not available for this organization"* — and creating without it
+  stored `mcp_connections: []`, meaning fired sessions would have had no Composio and no
+  Slack. It now carries Composio, Slack, GitHub and Close.
+- **Repository.** It was also created with `sources: []`.
 
-It was also created with **no repository attached** (`sources: []`). Routines clone their
-selected repositories at the start of each run, so without one there is nothing to read
-`SKILL.md` from. Both gaps are fixed in the same edit form.
+**How it actually reads `SKILL.md`.** `sources` is *still* empty — the successful run read
+the file through the **GitHub connector**, not from a clone. The evidence is in Slack: the
+11:37:39 EDT attempt posted `repository not found: ... 404` because the GitHub connector
+wasn't attached yet; the 11:39 run, after it was, succeeded. So the GitHub connector is
+load-bearing. Detaching it breaks the routine, and attaching the repository under
+**Repositories** would give it a second, sturdier route.
 
-**To go live** — at [claude.ai/code/routines](https://claude.ai/code/routines):
-
-1. Click the Routine **"Helen email digest (daily 08:03 ET)"**, then the **pencil icon**
-   to open **Edit routine**.
-2. Under **Repositories**, add **`sheila-smbdh/email-triage`**.
-3. Under **Connectors** at the bottom of the form, make sure **Composio** and **Slack**
-   are included. (The web form includes all connected connectors by default; this Routine
-   has none because it was created through the API. Remove any the routine doesn't need —
-   Claude can call every tool from an included connector, writes included, without asking
-   during a run.)
-4. Save, then use the toggle in the **Repeats** section to resume the schedule.
-5. Click **Run now** on the detail page to test immediately rather than waiting for 08:03.
-
-Do not enable it before steps 2–3 — a run without them produces nothing and reports
-nothing.
+**Verified run — 2026-09-10, 11:45:56 EDT.** 8 leads, one Slack message with both sections,
+tracker rows 28–35 appended, columns F and H holding formulas rather than literals, links
+in the `authuser=helen@` format.
 
 ⚠️ **A green status in the run list does not mean the task succeeded.** It means the
 session started and exited without an infrastructure error. Blocked network requests,
-missing connector tools and task-level failures all surface only in the transcript. Open
-the run and read it, and check that the Slack digest and the tracker rows actually appeared.
+missing connector tools and task-level failures all surface only in the transcript — as
+the 11:37 failure shows. Open the run and check that the digest and the tracker rows
+actually appeared.
 
-Note that routines clone each repository **from its default branch**. Until PR #1 is
-merged, `SKILL.md` is not on `main` — the Routine prompt handles this by trying `main`
-first and falling back to the feature branch, and reports which ref it used. Once the PR
-is merged, that fallback can be dropped from the prompt.
+Routines clone each repository **from its default branch**. Until PR #1 is merged,
+`SKILL.md` is not on `main` — the prompt tries `main` first and falls back to the feature
+branch, and reports which ref it used. Once the PR is merged, drop that fallback.
 
 ### Everything else
 

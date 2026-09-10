@@ -33,6 +33,12 @@ Gmail call**. Pin it explicitly:
 Omitting `account` on a Gmail call lets it default to whichever account is marked default.
 That is Helen's today, but it is a setting anyone can flip — never rely on it.
 
+One lookup does **not** go through Composio: the call-booked check in STEP 2 reads Close
+CRM through the **first-party Close connector** (`mcp__Close__*`). It is read-only. If the
+Close connector is missing, that is not a reason to abort the run — the check simply fails
+to confirm and every affected lead keeps the default "Send to Yobani" (see STEP 2). Say so
+in the run report.
+
 Before doing anything else, confirm both toolkits report an ACTIVE connection. If either is
 not active, do NOT run a partial digest. Post this to Slack channel `C0BTCGZSF9R` and stop:
 
@@ -142,10 +148,66 @@ A handed-off thread whose original category is **not** one of the three (an Inve
 Kyle is running, a Sellside thread with Bill) is **dropped**, same as any other untracked
 category. Handover tracking follows the tracked categories; it does not widen them.
 
-### Optional field — recommended action
+### Recommended action — and the call-booked check
 
-Add whenever there's a clear next step (e.g. "send to setter"). Not required for every
-email, only when it's obvious.
+Every Tier 1 lead gets a Recommended Action, written to tracker column D. There are two
+values: **"Send to Yobani"** (the default — a real buyer worth the setter's time) and
+**"Ignore"**.
+
+Two things earn "Ignore":
+
+1. **The lead has already disqualified themselves** — declined outright, an obvious
+   tyre-kicker, someone reacting to price and walking away.
+2. **The lead has already booked a call, verified in Close CRM** — see below.
+
+#### The call-booked rule
+
+Yobani is the setter; his job is to get the call booked. A lead who has already booked one
+is not work for him, so passing them along is wasted effort. When an email says the sender
+has scheduled a call — "I have a call scheduled", "I have booked a call", "we're speaking
+Thursday" — check Close, and if it is confirmed there, write **"Ignore"** instead of "Send
+to Yobani".
+
+**Verify in Close before writing "Ignore". Never take the claim at face value** — a sender
+can misremember, book with someone else, or have cancelled since writing.
+
+Procedure (verified 2026-09-10):
+
+1. `mcp__Close__lead_search` with `full_text: "<the sender's email address>"`.
+
+   **Match on the email address, never the display name.** Gmail display names and Close
+   lead names routinely disagree, and a fuzzy name match produces a confidently wrong
+   answer. Real case from this inbox: `christopher green <cjgreen7904@yahoo.com>` is the
+   Close lead **"CJ Green"** — but a name search for "christopher green" returns *"Chris
+   Green"*, *"Chris Greene"* and *"CJ Green"* as three separate leads, and two of them are
+   other people. The email search returns exactly one.
+
+2. Take the `lead_id` from that result and call `mcp__Close__activity_search` with
+   `lead_ids: ["<lead_id>"]` and `activity_types: ["activity.meeting"]`.
+
+3. Read `activity_at` / `starts_at` on the returned meetings. Write **"Ignore"** only if a
+   meeting is dated **today or later**. A meeting entirely in the past is a call that
+   already happened, not the one the sender is describing — that is not a verification.
+
+4. **If any of this fails to confirm** — the email address matches no lead, the lead has no
+   meeting, the only meeting is in the past, or the Close lookup errors — leave the action
+   as **"Send to Yobani"**. Unverified is not the same as false, and the safe default is to
+   let the setter look.
+
+In the final run report, list every lead that claimed a booked call and whether each one
+verified. A lead claiming a call that Close doesn't show is worth a human's attention.
+
+Worked examples, both verified 2026-09-10:
+
+| Sender | Claim | Close lead | Meeting found | Action |
+|---|---|---|---|---|
+| Jim Jacobsen | "I have a call scheduled but I have yet to see what the fees are" | Jim Jacobsen | 2026-09-14 14:00 UTC — Discovery Call | Ignore |
+| christopher green (`cjgreen7904@yahoo.com`) | "I am still interested and have booked a call" | **CJ Green** | 2026-09-11 16:00 UTC — Welcome Call | Ignore |
+
+**This rule changes column D only.** It does not change classification: a lead who has
+booked a call is still Buy Box / Ready Now / Price Wall on the content of their email,
+still appears in the Slack digest under Tier 1, and still gets a tracker row. The
+Recommended Action is not shown in Slack.
 
 ### On borderline mail
 
@@ -259,11 +321,11 @@ majority and the documented format.
   are the only two values this routine writes. (Historical rows also contain `2`, `3` and
   `Uncategorized`; leave them alone.)
 - **Category** — `Buy Box`, `Ready Now`, or `Price Wall`. No other value.
-- **Recommended Action** — a judgment call, not a fixed lookup. All three tracked
-  categories route to the setter, so this is effectively: is this a real buyer worth
-  Yobani's time (→ "Send to Yobani"), or a lead who has already disqualified themselves —
-  a prospect who declined, an obvious tyre-kicker, someone reacting to price and walking
-  (→ "Ignore")? Read the actual email rather than mapping from the category.
+- **Recommended Action** — `Send to Yobani` or `Ignore`, decided in STEP 2. Not a fixed
+  lookup from the category: read the actual email. "Ignore" covers a lead who has
+  disqualified themselves *and* a lead whose booked call you verified in Close — the
+  call-booked rule in STEP 2 governs, including its requirement to match Close leads by
+  email address rather than name.
 - **Action Taken?** — "Yes" for Tracking Handover Progress ("In Progress") rows, "No" for
   Tier 1 rows
 - **Owner (F)** and **Next Check-in Date (H)** — formula-driven, see fill-down above
@@ -282,9 +344,11 @@ columns, or change header styling.
 
 ## Scope limits
 
-Do not take any action beyond reading emails, posting the Slack digest, and logging rows to
-this tracker. Specifically: do **not** reply to, label, archive, or delete any email, and
-do **not** create Close.com records. The routine is read-only on email.
+Do not take any action beyond reading emails, reading Close CRM, posting the Slack digest,
+and logging rows to this tracker. Specifically: do **not** reply to, label, archive, or
+delete any email, and do **not** create, update, or delete anything in Close — the
+call-booked check in STEP 2 is a read, and Close access stays read-only. The routine is
+read-only on email.
 
 ## Failure reporting
 
