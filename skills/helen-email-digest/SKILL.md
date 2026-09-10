@@ -89,7 +89,17 @@ https://mail.google.com/mail/u/?authuser=helen@smbdealhunter.xyz#all/<threadId>
 
 The `display_url` Composio returns uses `/mail/u/0/`, which resolves to whichever account
 happens to be first in the reader's browser — for anyone but Helen that opens the wrong
-mailbox or a 404. The `authuser=` form pins it. Verify one link by hand on the first run.
+mailbox or a 404. The `authuser=` form pins it to Helen's mailbox for any reader who has
+access to it.
+
+Existing tracker rows from the 8/29 run use a third form,
+`https://mail.google.com/mail/u/0/d/<delegation-token>/#inbox/<threadId>`. That token came
+from Sheila's delegated view of Helen's mailbox — the same delegation that later lapsed, so
+those links may now be dead. Do not reproduce that format for new rows.
+
+**Verify one link by hand on the first run** and report in Slack whether it resolved. If
+`authuser=` does not work for the people reading the channel, fall back to plain
+`https://mail.google.com/mail/u/0/#inbox/<threadId>` and note the change here.
 
 ---
 
@@ -185,44 +195,63 @@ Progress, and Uncategorized / needs review all get a row. Do not skip low-urgenc
 categories: it's easier to filter out unimportant rows later than to backfill them. Noise
 dropped in Step 1's drop pass gets no row.
 
-### Sheet layout — read this before writing
+### Sheet layout — verified 2026-09-10
 
-- Row 1 is a blank formatting row; **row 2 is the header**; data rows follow.
-- Columns, left to right:
-  `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary`
-  (A through K)
-- **Columns F (Owner) and H (Next Check-in Date) are formula-driven. Never write to them.**
-- A `Category → Owner` lookup table sits **below the data block in the same sheet**: Buy
-  Box, Ready Now, Price Wall → Yobani; Sellside → Bill; Investor, Operators → Kyle;
-  Pitches, Engaged Reader → Helen. Appending blindly at "the next empty row" can collide
-  with it.
+The spreadsheet has **two tabs**: `Tracker` (the data) and `Responsibility` (the lookup).
+
+**`Tracker` tab.** Row 1 is the header. Data starts at **row 2**. As of 2026-09-10 the last
+data row is **row 27** (26 rows, all dated 8/29/2026). Columns A–K:
+
+`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary`
+
+**`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9` — Buy Box,
+Ready Now, Price Wall → Yobani; Sellside → Bill; Investor, Operators → Kyle; Pitches,
+Engaged Reader → Helen. It is **not** below the data block on `Tracker`, so appending to
+`Tracker` cannot collide with it. (An earlier handoff doc claimed row 1 was blank with the
+header on row 2, and that the lookup sat below the data — both are wrong. Trust this
+section.)
+
+**Columns F and H are formula-driven. Never write literal values to them.** The formulas,
+read verbatim from row 2:
+
+- **F (Owner):** `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
+  — note the logic: rows where Action Taken? is "No" resolve to Helen regardless of
+  category; only handed-over rows get the category's owner.
+- **H (Next Check-in Date):** `=G2+5` — five days after the last check-in.
+
+Dates in A and G are stored as Google serial numbers and displayed as dates; writing a
+plain `9/11/2026` string with `valueInputOption: "USER_ENTERED"` is coerced correctly.
+
+Column J is inconsistent in the existing data: rows 2–5 hold plain quoted subject text,
+rows 6–27 hold `=HYPERLINK(...)`. Write new rows as `=HYPERLINK(...)`, matching the
+majority and the documented format.
 
 ### How to write
 
-1. `GOOGLESHEETS_GET_SHEET_NAMES` on the spreadsheet ID to get the exact tab title
-   (case-sensitive; do not guess "Sheet1").
-2. `GOOGLESHEETS_VALUES_GET` on columns A:K to read the existing rows, find the true last
-   data row, and locate where the lookup table starts. Compute your target row range
-   explicitly — do not rely on the append API's table detection, which will happily land
-   rows inside the lookup table.
+1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm the tab is still called `Tracker`.
+2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:K` to read existing rows and find the true last
+   data row. Compute your target range explicitly rather than relying on the append API's
+   table detection.
 3. **Dedup.** Before writing a row, check it isn't already in the sheet (same sender + same
    subject + same date, e.g. a recurring broker broadcast logged earlier the same day).
    Skip duplicates rather than creating a second row.
-4. Write with `GOOGLESHEETS_VALUES_UPDATE` (not append) at explicit ranges, in three
-   blocks, so F and H are never touched:
-   - `<Tab>!A<firstRow>:E<lastRow>` — Date, Tier, Category, Recommended Action, Action Taken?
-   - `<Tab>!G<firstRow>:G<lastRow>` — Last Check-in Date
-   - `<Tab>!I<firstRow>:K<lastRow>` — Email Sender, Email Title / Link, Message Summary
-   Use `valueInputOption: "USER_ENTERED"` so the `=HYPERLINK(...)` in column J renders.
-5. **Fill down F and H.** Copy the formulas from the last pre-existing data row into
-   F/H of the new rows using `GOOGLESHEETS_VALUES_GET` with
-   `value_render_option: "FORMULA"` to read them, then `GOOGLESHEETS_VALUES_UPDATE` to
-   write the same formulas (with row references adjusted) into the new rows. Never invent
-   a new formula or alter the existing one. Uncategorized rows may resolve to a fallback
-   owner (e.g. "Helen") rather than erroring — that's expected, leave it as-is.
-6. **Verify.** Re-read A:K and confirm: row count increased by exactly the number of rows
-   you wrote, F and H are populated, no row was duplicated, and the lookup table below is
-   intact. If verification fails, say so explicitly in Slack — do not report success.
+4. Write with `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges, in three blocks, so F and H
+   are never overwritten with literals:
+   - `Tracker!A<first>:E<last>` — Date, Tier, Category, Recommended Action, Action Taken?
+   - `Tracker!G<first>:G<last>` — Last Check-in Date
+   - `Tracker!I<first>:K<last>` — Email Sender, Email Title / Link, Message Summary
+
+   Use `valueInputOption: "USER_ENTERED"` so dates coerce and `=HYPERLINK(...)` renders.
+5. **Fill down F and H** by writing the same two formulas into the new rows with their row
+   references incremented — for a new row `N`, F is
+   `=if(E<N>="No","Helen",xlookup(C<N>,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
+   and H is `=G<N>+5`. Note the lookup ranges are absolute (`$A$2:$A$9`) and must stay
+   exactly as written; only the `E<N>`, `C<N>` and `G<N>` references change. Never invent a
+   different formula. Uncategorized rows resolve to the "Helen" fallback rather than
+   erroring — that's expected, leave it.
+6. **Verify.** Re-read `Tracker!A:K` and confirm: row count increased by exactly the number
+   of rows you wrote, F and H are populated and did not spill `#N/A`, and no row was
+   duplicated. If verification fails, say so explicitly in Slack — do not report success.
 
 ### Column contents
 
