@@ -157,8 +157,24 @@ values: **"Send to Yobani"** (the default — a real buyer worth the setter's ti
 Two things earn "Ignore":
 
 1. **The lead has already disqualified themselves** — declined outright, an obvious
-   tyre-kicker, someone reacting to price and walking away.
+   tyre-kicker, or someone who says they cannot afford it.
 2. **The lead has already booked a call, verified in Close CRM** — see below.
+
+#### Price Wall: asking the price vs. not having the money
+
+Both look like Price Wall, and they get opposite actions. Sort on **whether the lead has
+told you they lack the funds**, not on whether price came up:
+
+- *"What does it cost?"*, *"I have yet to see what the fees are"* — a live buyer with an
+  unanswered question. **Send to Yobani**, with the Price Wall draft that answers it.
+- *"I don't have the funds"*, *"that's out of my budget"*, *"I can't afford that right
+  now"* — they have disqualified themselves. **Ignore**, no draft.
+
+A statement of not having the money **wins over a pricing question in the same email**.
+Real case from 2026-09-09: Andy Garcia wrote *"I am interested but I don't have the funds,
+I don't know how much it is."* The second half is a pricing question, but the first half
+already settles it → **Ignore**. Sending the 1% answer to someone who has just said they
+have no money is the wrong reply.
 
 #### The call-booked rule
 
