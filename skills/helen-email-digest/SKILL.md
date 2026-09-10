@@ -222,37 +222,34 @@ block — Helen is replying inside an existing thread.
 
 #### The three templates
 
-Use the template for the lead's category. Keep the wording, the contractions and the
-casual register — this is Helen's voice, not a polished marketing email. Do not add
-pleasantries, calls to action, or links that aren't here.
+Use the template for the lead's category. Each one is a short, fully written-out message
+to the lead, with Yobani mentioned inside it — not a set of separate notes to different
+people.
+
+**Write it out in full.** No shorthand: "definitely", not "def"; "15 minutes", not
+"15min"; "with you", not "w you". The register is warm and direct, the way Helen writes
+when she has thirty seconds — but in whole words.
 
 **Buy Box**
 
 ```
-Hey [First Name], that sounds like something we can help with. Intro to Yobani.
-
-Hey Yobani, can you grab 15min w [First Name] to better understand what they're looking for?
-
-[First Name], we can find you customized deals after we know your buy box better.
+Hey [First Name], [their ask] is something we can help with. @Yobani on our team can grab 15 minutes with you to better understand what you're looking for.
 ```
 
 **Ready Now**
 
 ```
-Hey [First Name], we can def help. Looping in Yobani.
-
-@ Yobani, do you mind giving [First Name] a call?
+Hey [First Name], we can definitely help. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
 ```
 
 **Price Wall**
 
 ```
-Hey [First Name],
-
-Fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call.
-
-Yobani, can you find time with [First Name]?
+Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call — @Yobani on our team can find a time that works for you.
 ```
+
+The `@Yobani` is literal text in the body of an email, not a Slack or Gmail mention. It
+reads as a nudge to him because he is cc'd.
 
 #### Filling them in
 
@@ -262,14 +259,18 @@ name** — a bare address like `ms.raquele@gmail.com` — do not guess a name ou
 address. Drop the name and open with `Hey there,` instead. Getting someone's name wrong in
 the first three words is worse than not using it.
 
-**Pronouns.** The templates say "what they're looking for" on purpose. Never infer a
-sender's gender from their name — keep they/them unless the sender's own signature makes
-it explicit.
+**Pronouns.** The templates address the lead directly as "you" for exactly this reason.
+Never infer a lead's gender from their name; where a third-person reference is
+unavoidable, use they/them unless the sender's own signature makes it explicit.
 
-**Personalisation.** One light touch is allowed and welcome: echo the concrete thing they
-asked about, in their words, when it fits the opening line — "deals in Central FL", "hotels
-in California", "absentee businesses". Swap nothing else. Do not restructure the template
-to suit the email.
+**Their ask (Buy Box).** `[their ask]` is the concrete thing they asked for, phrased as a
+gerund and in their own words: "finding deals in Central FL", "finding hotels in
+California", "finding absentee businesses". If their ask is too vague to name in three or
+four words, use "that" — *"Hey Scott, that is something we can help with."* Never inflate
+a vague ask into a specific one.
+
+Ready Now and Price Wall take no personalisation beyond the first name. Do not restructure
+a template to suit the email.
 
 **Never invent commercial terms.** The 1% figure and the success guarantee appear in the
 Price Wall template and nowhere else. Do not quote a price, a fee, a range, a guarantee, a
@@ -277,8 +278,9 @@ timeline, or a deal specific in any other draft, and do not elaborate on the 1% 
 sentence given — even if the lead asked a direct question about it. If a lead asks
 something the template does not answer, send the template as-is and let the call handle it.
 
-**Length.** If a draft runs longer than the template it came from, you have added
-something. Take it back out.
+**Nothing else goes in.** A finished draft should be the template plus a first name and,
+for Buy Box, their ask — and nothing more. If it says something the template does not,
+take that back out.
 
 ### On borderline mail
 
@@ -329,8 +331,7 @@ order as the Tier 1 list, each draft in a Slack code block so it copies cleanly:
 >
 > *Buy Box — Dean Julia*
 > ```
-> Hey Dean, that sounds like something we can help with. Intro to Yobani.
-> ...
+> Hey Dean, finding deals in Central FL is something we can help with. @Yobani on our team can grab 15 minutes with you to better understand what you're looking for.
 > ```
 
 If no lead has action "Send to Yobani", post no thread reply at all — not an empty one.
