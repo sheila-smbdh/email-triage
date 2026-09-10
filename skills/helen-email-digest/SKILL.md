@@ -209,6 +209,77 @@ booked a call is still Buy Box / Ready Now / Price Wall on the content of their 
 still appears in the Slack digest under Tier 1, and still gets a tracker row. The
 Recommended Action is not shown in Slack.
 
+### Suggested Helen email draft
+
+Every lead whose Recommended Action is **"Send to Yobani"** also gets a ready-to-send
+reply draft, so Helen can paste it, cc Yobani, and send. Rows marked "Ignore" and Tracking
+Handover Progress rows get **no draft** — leave the cell empty and omit them from the
+Slack thread.
+
+The draft is a **reply in Helen's voice**, cc'ing Yobani Mendoza
+(`yobani@smbdealhunter.xyz`, the setter). No subject line, no signature, no greeting
+block — Helen is replying inside an existing thread.
+
+#### The three templates
+
+Use the template for the lead's category. Keep the wording, the contractions and the
+casual register — this is Helen's voice, not a polished marketing email. Do not add
+pleasantries, calls to action, or links that aren't here.
+
+**Buy Box**
+
+```
+Hey [First Name], that sounds like something we can help with. Intro to Yobani.
+
+Hey Yobani, can you grab 15min w [First Name] to better understand what they're looking for?
+
+[First Name], we can find you customized deals after we know your buy box better.
+```
+
+**Ready Now**
+
+```
+Hey [First Name], we can def help. Looping in Yobani.
+
+@ Yobani, do you mind giving [First Name] a call?
+```
+
+**Price Wall**
+
+```
+Hey [First Name],
+
+Fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call.
+
+Yobani, can you find time with [First Name]?
+```
+
+#### Filling them in
+
+**First name.** In order of preference: the name the sender signs off with in the email
+body, then the first word of their Gmail display name. If the sender has **no display
+name** — a bare address like `ms.raquele@gmail.com` — do not guess a name out of the
+address. Drop the name and open with `Hey there,` instead. Getting someone's name wrong in
+the first three words is worse than not using it.
+
+**Pronouns.** The templates say "what they're looking for" on purpose. Never infer a
+sender's gender from their name — keep they/them unless the sender's own signature makes
+it explicit.
+
+**Personalisation.** One light touch is allowed and welcome: echo the concrete thing they
+asked about, in their words, when it fits the opening line — "deals in Central FL", "hotels
+in California", "absentee businesses". Swap nothing else. Do not restructure the template
+to suit the email.
+
+**Never invent commercial terms.** The 1% figure and the success guarantee appear in the
+Price Wall template and nowhere else. Do not quote a price, a fee, a range, a guarantee, a
+timeline, or a deal specific in any other draft, and do not elaborate on the 1% beyond the
+sentence given — even if the lead asked a direct question about it. If a lead asks
+something the template does not answer, send the template as-is and let the call handle it.
+
+**Length.** If a draft runs longer than the template it came from, you have added
+something. Take it back out.
+
 ### On borderline mail
 
 If you cannot confidently place an email in one of the three categories, **drop it**. There
@@ -243,6 +314,27 @@ Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
   Helen's inbox today" message instead.
 - Use Slack mrkdwn formatting (bold, bullets). Do NOT use `@channel` or `@here`.
 
+### The drafts go in a thread under that message
+
+Post the reply drafts as **one threaded reply** to the digest message, not in the message
+body. Five or six full drafts inline would bury the lead list the digest exists to
+deliver; in the thread they are one click away and still copy-pasteable.
+
+Capture the parent message's `ts` when you post it and reply with that as `thread_ts`.
+
+Thread reply format — one block per lead whose action is "Send to Yobani", in the same
+order as the Tier 1 list, each draft in a Slack code block so it copies cleanly:
+
+> ✍️ *Suggested replies* — paste and send from Helen's inbox, cc yobani@smbdealhunter.xyz
+>
+> *Buy Box — Dean Julia*
+> ```
+> Hey Dean, that sounds like something we can help with. Intro to Yobani.
+> ...
+> ```
+
+If no lead has action "Send to Yobani", post no thread reply at all — not an empty one.
+
 ---
 
 ## STEP 4 — Log to the Google Sheets tracker
@@ -261,7 +353,10 @@ The spreadsheet has **two tabs**: `Tracker` (the data) and `Responsibility` (the
 **`Tracker` tab.** Row 1 is the header. Data starts at **row 2**. As of 2026-09-10 the last
 data row is **row 27** (26 rows, all dated 8/29/2026). Columns A–K:
 
-`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary`
+`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft`
+
+Column **L — "Suggested Helen Email Draft"** was added 2026-09-10 and is empty for every
+row before then. That is expected; do not backfill it.
 
 **`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9`. Buy Box,
 Ready Now and Price Wall all map to **Yobani**; the other rows (Sellside → Bill, Investor
@@ -291,7 +386,7 @@ majority and the documented format.
 ### How to write
 
 1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm the tab is still called `Tracker`.
-2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:K` to read existing rows and find the true last
+2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:L` to read existing rows and find the true last
    data row. Compute your target range explicitly rather than relying on the append API's
    table detection.
 3. **Dedup.** Before writing a row, check it isn't already in the sheet (same sender + same
@@ -301,7 +396,8 @@ majority and the documented format.
    are never overwritten with literals:
    - `Tracker!A<first>:E<last>` — Date, Tier, Category, Recommended Action, Action Taken?
    - `Tracker!G<first>:G<last>` — Last Check-in Date
-   - `Tracker!I<first>:K<last>` — Email Sender, Email Title / Link, Message Summary
+   - `Tracker!I<first>:L<last>` — Email Sender, Email Title / Link, Message Summary,
+     Suggested Helen Email Draft
 
    Use `valueInputOption: "USER_ENTERED"` so dates coerce and `=HYPERLINK(...)` renders.
 5. **Fill down F and H** by writing the same two formulas into the new rows with their row
@@ -310,7 +406,7 @@ majority and the documented format.
    and H is `=G<N>+5`. The lookup ranges are absolute (`$A$2:$A$9`) and must stay exactly
    as written; only the `E<N>`, `C<N>` and `G<N>` references change. Never invent a
    different formula.
-6. **Verify.** Re-read `Tracker!A:K` and confirm: row count increased by exactly the number
+6. **Verify.** Re-read `Tracker!A:L` and confirm: row count increased by exactly the number
    of rows you wrote, F and H are populated and did not spill `#N/A`, and no row was
    duplicated. If verification fails, say so explicitly in Slack — do not report success.
 
@@ -336,6 +432,10 @@ majority and the documented format.
 - **Email Title / Link** — `=HYPERLINK("<gmail thread link>","<subject>")` so it renders as
   a clickable link like the existing rows
 - **Message Summary** — same quoted snippet used in the Slack digest
+- **Suggested Helen Email Draft (L)** — the draft from STEP 2, byte-identical to the one
+  posted in the Slack thread. Write it as plain text with real line breaks, not a formula
+  and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
+  Handover Progress rows.
 
 Match the formatting of the existing rows exactly — do not reformat the sheet, resize
 columns, or change header styling.

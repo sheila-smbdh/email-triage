@@ -134,6 +134,27 @@ people, and picking one gives a confident wrong answer.
 This changes column D only. A lead who booked a call is still categorised on the content
 of their email, still appears in the digest, still gets a tracker row.
 
+### Suggested reply drafts (added 2026-09-10)
+
+Every lead that *is* going to Yobani now comes with a ready-to-send reply in Helen's
+voice, so the handoff is one paste rather than one more thing to write. Drafts appear in
+tracker column L and in a **threaded reply** under the Slack digest — in the message body
+they would bury the lead list the digest exists to deliver.
+
+There is one template per category (Buy Box, Ready Now, Price Wall), reproduced verbatim
+in the task file. Three constraints on them are deliberate and should survive future
+edits:
+
+- **The 1% pricing line lives in the Price Wall template and nowhere else.** No other
+  draft may quote a price, fee, range, guarantee or timeline, and the 1% sentence is not
+  to be elaborated on — even when a lead asks directly. Unanswered questions are what the
+  call is for. This is the one place where a plausible-sounding invention would reach a
+  customer as a commercial commitment.
+- **No name is guessed from an email address.** A sender like `ms.raquele@gmail.com` with
+  no display name gets "Hey there," instead. Getting a name wrong in the first three words
+  is worse than not using one.
+- **They/them throughout.** The templates never infer a lead's gender from their name.
+
 ---
 
 ## 5. The tracker
@@ -144,7 +165,9 @@ Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner 
 
 - `Tracker` row 1 is the header; data starts at row 2; last data row is 27 as of
   2026-09-10 (26 rows, all dated 8/29/2026).
-- Columns A–K: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary`
+- Columns A–L: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft`
+- **Column L was added 2026-09-10** and is blank for every earlier row. It is not
+  backfilled, and it stays blank for "Ignore" rows and handover rows.
 - **F and H are formula-driven and must never receive literal values.**
   F is `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`,
   H is `=G2+5`.
@@ -154,7 +177,7 @@ Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner 
   trimming it breaks column F.
 
 Writes go through `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges in three blocks
-(A–E, G, I–K), skipping F and H, which are then filled down with the formulas above and
+(A–E, G, I–L), skipping F and H, which are then filled down with the formulas above and
 verified by re-reading. The old paste-block-to-a-human flow is gone: it assumed someone at
 a keyboard, and nobody is at a keyboard at 8am.
 

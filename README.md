@@ -11,6 +11,7 @@ Google Sheets tracker.
 | **Schedule** | Daily 08:03 America/New_York (cron `3 12 * * *` UTC — see the DST note in the handoff). |
 | **Status** | ✅ Live — enabled and verified end-to-end on 2026-09-10 (8 leads, digest posted, tracker rows 28–35 written). |
 | **Scope** | Buy Box, Ready Now, Price Wall, and handovers of those three. Everything else is dropped. |
+| **Output** | One Slack message (Tier 1 + handovers), a threaded reply holding ready-to-send drafts for Helen, and one tracker row per lead. |
 
 Email access runs through the **Composio** connector (account `gmail_kath-tiou` =
 `helen@smbdealhunter.xyz`), not the first-party Gmail connector, which can only reach
