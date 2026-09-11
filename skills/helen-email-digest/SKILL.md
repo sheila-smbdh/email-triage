@@ -1,6 +1,6 @@
 ---
 name: helen-email-digest
-description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, and one row per lead in the Google Sheets tracker carrying both the Helen and Yobani reply drafts
+description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, with Helen's reply created as a Gmail draft on each lead's thread with Yobani cc'd, and one row per lead in the Google Sheets tracker carrying both the Helen and Yobani reply drafts
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
@@ -8,6 +8,11 @@ You are running the daily "Helen email digest" task for SMB Deal Hunter.
 This routine runs **unattended in the cloud**. There is no human at a keyboard when it
 fires — every step must complete through connectors, or fail loudly to Slack. Never leave
 work parked for a person to finish by hand.
+
+**It writes drafts, and only drafts.** Since 2026-09-11 the reply for each lead is created
+as a Gmail draft on that lead's thread in Helen's mailbox, with Yobani cc'd, so her whole
+job is to open the thread, read it, and send. Nothing in this task sends email. See STEP 3,
+and *Scope limits* at the end.
 
 **Scope: buyer leads only.** This routine tracks exactly three categories — **Buy Box**,
 **Ready Now**, and **Price Wall** — plus threads in those three categories that Helen has
@@ -17,8 +22,9 @@ counted. There is no Tier 2, no Tier 3, and no "Uncategorized / needs review" bu
 **One non-lead exception: bonus claims.** A bare "Yes" reply from someone who has just
 joined is normally answered by Helen's canned-response automation within seconds. When the
 "Yes" lands on the wrong email the automation never fires and a new member silently gets no
-bonuses. Those are surfaced in the digest with a ready-to-send reply. They are not buyer
-leads: no tracker row, no Yobani, no Recommended Action. See *Bonus claims* in STEP 2.
+bonuses. Those are surfaced in the digest, and their reply is drafted in Gmail like any
+other — but **without Yobani cc'd**. They are not buyer leads: no tracker row, no Yobani, no
+Recommended Action. See *Bonus claims* in STEP 2.
 
 ---
 
@@ -28,16 +34,22 @@ All email and tracker access goes through the **Composio connector**. Do not use
 first-party Gmail connector for this routine: it authenticates as
 `sheila@smbdealhunter.xyz` only and cannot reach Helen's mailbox.
 
-Two Gmail accounts are connected to Composio, so **account selection is required on every
-Gmail call**. Pin it explicitly:
+Several Gmail accounts are connected to Composio, so **account selection is required on
+every Gmail call**. Pin it explicitly:
 
 | Purpose | Composio toolkit | Account id | Mailbox |
 |---|---|---|---|
 | Read Helen's mail | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
+| Create Helen's reply drafts (STEP 3) | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
 | Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
 
-Omitting `account` on a Gmail call lets it default to whichever account is marked default.
-That is Helen's today, but it is a setting anyone can flip — never rely on it.
+Omitting `account` on a Gmail call lets it default to whichever account is marked default,
+and **that is no longer Helen's.** Three Gmail accounts are connected: Helen's, Sheila's
+(`gmail_uncast-hoop`), and — added 2026-09-11 — Yobani's (`gmail_nickle-quaver`), which is
+currently the default. This used to be a "never rely on it" caution; since STEP 3 began
+writing drafts it is a live hazard, because an unpinned call would create a reply to a lead,
+in Helen's words, sitting in **Yobani's** drafts. Pin `gmail_kath-tiou` on every call,
+reads and drafts alike.
 
 One lookup does **not** go through Composio: the call-booked check in STEP 2 reads Close
 CRM through the **first-party Close connector** (`mcp__Close__*`). It is read-only. If the
@@ -361,9 +373,11 @@ Recommended Action is not shown in Slack.
 ### Suggested Helen email draft
 
 Every lead whose Recommended Action is **"Send to Yobani"** also gets a ready-to-send
-reply draft, so Helen can paste it, cc Yobani, and send. Rows marked "Ignore" and Tracking
-Handover Progress rows get **no draft** — leave the cell empty and omit them from the
-Slack thread.
+reply draft. It is written twice: into tracker column L, and — as of 2026-09-11 — into
+**Helen's Gmail as a real draft on the lead's own thread, with Yobani cc'd** (STEP 3), so
+she opens the thread, reviews, and sends. Rows marked "Ignore" and Tracking Handover
+Progress rows get **no draft** — leave the cell empty, and create nothing in Gmail for
+them.
 
 🎁 **Bonus claims also get a draft**, and they are the one kind that is not a lead: no
 tracker row, no Recommended Action, no cc. Their template is *The bonus reply*, below.
@@ -375,6 +389,11 @@ block — Helen is replying inside an existing thread.
 **Two drafts do not cc Yobani**: the Price Wall call-pushback variant, which asks the lead's
 permission to loop someone in rather than doing it, and the bonus reply, which has nothing
 to do with him. Both say so where they are defined. Every other draft cc's him.
+
+The cc is now real, not an instruction to Helen: STEP 3 puts `yobani@smbdealhunter.xyz` on
+the Cc line of the Gmail draft itself, and leaves it off for those two. Getting that wrong
+is not cosmetic — a bonus claim or a call-pushback reply that goes out with the setter on it
+contradicts what the message says.
 
 #### The templates
 
@@ -522,9 +541,9 @@ in, so looping him in pre-emptively contradicts that too. The forward follows th
 
 ⚠️ **Flag this one for Helen's eye.** The emails that earn this template are long, specific
 and often from sophisticated buyers, and the reply is a considered position rather than a
-one-liner — she may want to adjust it for the particular person. Mark it in the Slack thread
-as needing her review before sending. Every other draft is paste-and-send; this one is a
-starting point.
+one-liner — she may want to adjust it for the particular person. Its Gmail draft is created
+like any other, but the lead's bullet in the Slack digest is marked as needing her review
+before sending (STEP 4). Every other draft is open-and-send; this one is a starting point.
 
 The lead is still **Price Wall**, still **Send to Yobani**, and still gets a tracker row and
 a Yobani draft in column N. Only Helen's opening move changes.
@@ -557,9 +576,12 @@ later pass picked the row up. Both drafts now come out of this run, so a lead's 
 is written the morning it arrives.
 
 **Same gate as Helen's draft.** Every lead whose Recommended Action is `Send to Yobani`
-gets one. `Ignore` rows and Tracking Handover Progress rows get none — leave M empty, and
-omit them from the Slack thread. 🎁 Bonus claims are not leads and have no row, so there is
-nothing to write: they get no Yobani draft at all.
+gets one. `Ignore` rows and Tracking Handover Progress rows get none — leave N empty. 🎁
+Bonus claims are not leads and have no row, so there is nothing to write: they get no Yobani
+draft at all.
+
+**Yobani's draft is not created in Gmail.** STEP 3 drafts Helen's reply only. Yobani sends
+his from his own mailbox after she forwards, and column N is where he reads it from.
 
 **The draft is provisional, and writing it resolves nothing.** At digest time the lead has
 not been forwarded yet and no setter-call check has run for them. `tracker-followup` still
@@ -664,8 +686,10 @@ still applies to `[Calendly Link]` — do not substitute a real link. His schedu
 `https://calendly.com/yobani-smbdealhunter` if this is ever revisited, but leave the
 placeholder unless Sheila says otherwise.
 
-Say in the Slack thread that `[Calendly Link]` and `[today/tomorrow]` both need filling
-before sending, so nobody pastes a draft with a bracket still in it.
+Both `[Calendly Link]` and `[today/tomorrow]` stay bracketed in column N and are filled in
+by Yobani before he sends. This draft is not posted to Slack and is not created in Gmail, so
+there is nothing here for Helen to send by accident — but leave the brackets literal so it is
+obvious to him that they need filling.
 
 **First name.** Resolved exactly as for Helen's draft: the name the sender signs off with,
 else the first word of their Gmail display name, else — for a bare address like
@@ -718,7 +742,137 @@ the strength of that phrasing.
 
 ---
 
-## STEP 3 — Post ONE Slack digest
+## STEP 3 — Create Helen's reply as a Gmail draft
+
+Every draft written in STEP 2 is also created as a **real Gmail draft in Helen's mailbox**,
+sitting on the lead's own thread with Yobani cc'd. Helen opens the thread, finds the reply
+already written in the box, edits it if she wants, and hits send. **She never pastes
+anything** — which is why the drafts no longer go in a Slack thread (STEP 4).
+
+This step runs **before** the Slack digest so the digest reports what actually landed, and
+before the tracker write so column L records text that is known to exist in Gmail.
+
+### Which messages get a draft
+
+Exactly the ones that got a draft in STEP 2, and nothing else. The cc follows the same rule
+stated there — every lead draft cc's Yobani except the two that say they do not:
+
+| | Gmail draft | Cc Yobani |
+|---|---|---|
+| Tier 1, Recommended Action `Send to Yobani` | Yes | **Yes** |
+| Tier 1, Price Wall **call-pushback** variant | Yes | **No** — it asks the lead's permission to loop someone in |
+| 🎁 Bonus claim | Yes | **No** — nothing to do with him |
+| Tier 1, Recommended Action `Ignore` | No | — |
+| 🟢 Tracking Handover Progress | No | — |
+
+A draft in Gmail for an `Ignore` lead is worse than no draft: it puts a ready-to-send reply
+in front of Helen for someone the routine decided not to pursue. The gate here is the same
+gate as column L — if STEP 2 wrote no draft, create none.
+
+### First, check the thread for a draft already there
+
+**Never create a second draft on a thread that already has one.** A duplicate is not
+harmless: Gmail shows both in the thread, and Helen cannot tell which one is current or
+whether she already edited one of them.
+
+Before creating, call `GMAIL_FETCH_MESSAGE_BY_THREAD_ID` (`account: "gmail_kath-tiou"`) on
+the lead's `threadId` and look for a message carrying the `DRAFT` label. If there is one:
+
+- **Leave it exactly as it is.** Do not update it, do not delete it, do not create another.
+  It is either a draft this routine wrote on an earlier run, or something Helen started
+  herself — and overwriting either is worse than skipping.
+- Count the lead as "draft already present" in the run report, and treat it as done for
+  STEP 4's purposes: no ⚠️ in the digest.
+
+This is what makes the step safe to re-run. The same thread can surface on two consecutive
+days — a lead who writes twice, or a rerun after a partial failure — and the 24-hour window
+in STEP 1 does not protect against it.
+
+### The call
+
+```
+GMAIL_CREATE_EMAIL_DRAFT
+  account:          gmail_kath-tiou
+  thread_id:        <the lead's threadId>
+  recipient_email:  <the lead's own email address>
+  cc:               ["yobani@smbdealhunter.xyz"]     # omit entirely for the two no-cc rows above
+  body:             <the STEP 2 draft, verbatim>
+  is_html:          false
+  subject:          (omit — see below)
+```
+
+**Omit `subject`.** With `thread_id` set, a non-empty subject makes Gmail start a *new*
+conversation instead of replying inside the existing one. The lead would get a bare email
+with no context and the thread would fork. Leave it out.
+
+**`recipient_email` is the lead, and only the lead.** Use the address the email came from,
+taken from STEP 1 — not a name, not a display string, and never a second address pulled out
+of the thread. Several of these threads are replies to a newsletter blast; **this is a reply
+to the person, not a reply-all to everyone the blast touched.** No `extra_recipients`, ever,
+and no `bcc`.
+
+**`cc` is Yobani, and only Yobani** — `yobani@smbdealhunter.xyz`. For the two no-cc cases,
+omit the field rather than passing an empty list with a placeholder in it.
+
+**`body` is the STEP 2 draft, character for character**, with `is_html: false` so the plain
+text is converted to line breaks for you. Do not add a greeting, a signature, a subject line
+or a sign-off that the template does not have — Helen is replying inside a thread she is
+already part of, and the template is the whole message. The same text goes in tracker column
+L in STEP 5, and the two must match.
+
+The call returns both a draft id and a nested message id. **Keep the draft id** — it is what
+`GMAIL_GET_DRAFT` takes, and the message id will not work there.
+
+If drafts are being created in quick succession and a call comes back HTTP 429, back off and
+retry that one draft rather than abandoning it.
+
+### Verify every draft you create
+
+Read each one back with `GMAIL_GET_DRAFT` (`account: "gmail_kath-tiou"`, `format: "full"`,
+the draft id from the create call) and confirm four things:
+
+1. It is **on the lead's thread** — the draft's `threadId` matches the one you passed.
+2. The **To** is the lead's address, and nobody else is on the To line.
+3. The **Cc** is exactly `yobani@smbdealhunter.xyz` — or, for the call-pushback and bonus
+   drafts, that there is **no Cc at all**. A bonus claim or a pushback reply that goes out
+   with Yobani on it is a wrong send, not a cosmetic slip.
+4. The **body** matches the STEP 2 draft.
+
+A draft that fails verification is reported as a failure (below). Do not quietly fix it by
+creating a second one.
+
+### Never send, and never touch anything else
+
+This step creates drafts. It does **not** send them, and it is the only write this routine
+makes to email.
+
+- **Never call `GMAIL_SEND_DRAFT` or `GMAIL_REPLY_TO_THREAD`**, for any lead, for any
+  reason, however confident the draft looks. Every one of these messages is Helen's to send,
+  and a routine that can send email unattended out of her mailbox is a different and much
+  more dangerous thing than one that writes drafts.
+- **Never update or delete a draft** — not one of Helen's, and not one of this routine's own
+  from an earlier run. `GMAIL_UPDATE_DRAFT` and `GMAIL_DELETE_DRAFT` are not used here.
+- Still no labelling, archiving, replying or deleting of any message.
+
+### When a draft fails
+
+If a draft cannot be created or does not verify — the Gmail call errors, the thread id is
+rejected, the cc comes back wrong — that lead has lost its safety net, because the Slack
+thread that used to carry the text is gone. So put the text back:
+
+1. Mark that lead with `⚠️ draft not created` in the Slack digest (STEP 4).
+2. Post the affected drafts as **one threaded reply** under the digest, in the old format —
+   one labelled code block per lead — so Helen can still paste. This is the **only** case in
+   which this task posts a thread reply.
+3. Say in the same reply what failed and for which leads, in the words the tool actually
+   returned.
+
+Everything else still runs. A Gmail failure on two leads does not stop the digest, the
+tracker write, or the drafts that did land.
+
+---
+
+## STEP 4 — Post ONE Slack digest
 
 Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
 
@@ -739,78 +893,61 @@ Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
   new buyer leads in Helen's inbox today" message instead.
 - Use Slack mrkdwn formatting (bold, bullets). Do NOT use `@channel` or `@here`.
 
-### The drafts go in a thread under that message
+### The drafts are not in this message, and not in a thread under it
 
-Post the reply drafts as **one threaded reply** to the digest message, not in the message
-body. Five or six full drafts inline would bury the lead list the digest exists to
-deliver; in the thread they are one click away and still copy-pasteable.
+**Do not post the reply drafts to Slack.** As of 2026-09-11 they are waiting in Helen's
+Gmail, on each lead's own thread with Yobani already cc'd (STEP 3) — she opens the thread and
+sends, so there is nothing to paste and nothing to copy out of Slack. Posting them again here
+would give her two copies to reconcile, and the one in Slack would be the stale one the
+moment she edits the real draft.
 
-Capture the parent message's `ts` when you post it and reply with that as `thread_ts`.
+The **only** thread reply this task ever posts is the failure fallback in STEP 3: the drafts
+that could not be created in Gmail, so they are not lost. If every draft landed, post no
+thread reply at all.
 
-Thread reply format — one block per lead whose action is "Send to Yobani", in the same
-order as the Tier 1 list, then one block per 🎁 bonus claim. **Each lead now carries both
-drafts**: Helen's reply, and the reply Yobani sends once she has forwarded it. Put each draft
-in its own Slack code block so it copies cleanly, and label whose it is — the two are sent by
-different people at different times, and an unlabelled pair invites Helen to paste the wrong
-one. A bonus claim carries one draft and no Yobani block.
+Yobani's day-1 reply is not posted to Slack either. It lives in tracker column N, which is
+where it went before and where `tracker-followup` picks it up; posting it here was only ever
+a preview. Do not tag or DM him from this task — the `tracker-followup` pass is what surfaces
+a row once it is actually his.
 
-Two drafts need a word of warning next to them, because pasting them blind is the failure
-mode:
+### Say, once, where the drafts are
 
-- A **Price Wall call-pushback** draft → prefix it with `⚠️ Needs Helen's review — long,
-  specific email; this reply deliberately answers none of it.` It is also the one lead draft
-  with no cc, so say `Do not cc Yobani on this one.`
-- A **bonus claim** draft → say the automation missed this one and Yobani is not involved.
+Under the 🔴 Tier 1 header, one line:
 
-> ✍️ *Suggested replies* — Helen's to send now, cc yobani@smbdealhunter.xyz. Yobani's is
-> for after the forward, as a reply on the same thread with Helen kept on it.
-> **Fill in `[Calendly Link]` and `[today/tomorrow]` before sending Yobani's** — and call
-> them the same day if they gave a number.
->
-> *Buy Box — Dean Julia*
-> Helen:
-> ```
-> Hey Dean, finding deals in Central FL is something we can help with. @Yobani on our team can grab 15 minutes with you to better understand what you're looking for.
-> ```
-> Yobani:
-> ```
-> Hi Dean,
->
-> Sounds like you're interested in deals in Central FL, and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
->
-> What's the best number to reach you at? I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
-> ```
-> *(Dean gave no number, so the Buy Box "best number" branch is written out. Had he given
-> one, that sentence would be gone and the line would open at "I will give you a call".)*
->
-> 🎁 *Bonus link — Jason Smith* — replied "Yes" to a newsletter, so the automation never
-> fired. Helen's to send; Yobani is not involved.
-> ```
-> Hey - thanks so much for joining! Here's the link to the bonuses: https://smbdealhunter.notion.site/SMB-Deal-Hunter-Welcome-Bonuses-18b3787936d0805eb0b4c1a88c7d2c40
-> ```
+> ✍️ _Drafts are waiting in Helen's Gmail — open the thread, review, send. Yobani is cc'd._
 
-If no lead has action "Send to Yobani" and there are no bonus claims, post no thread reply
-at all — not an empty one.
+Then mark only the exceptions, inline on the lead's own bullet. The default case needs no
+marker; a bullet with nothing after it means a normal draft is sitting in Gmail ready to go.
 
-Yobani's draft is posted here as a preview of what is waiting in column N, not as something
-to send today — the lead has not been forwarded yet. Do not tag or DM him from this task;
-the `tracker-followup` pass is what surfaces a row once it is actually his.
+| Case | Marker on that lead's bullet |
+|---|---|
+| **Price Wall call-pushback** draft | `⚠️ Needs your review before sending — long, specific email, and this reply deliberately answers none of it. Yobani is not cc'd; the forward follows their reply.` |
+| Draft **could not be created** (STEP 3 failure) | `⚠️ Draft not created — text is in the thread below.` |
+| Lead's action was **Ignore** | no bullet marker, and no draft — the digest does not show the action, and an `Ignore` lead with no draft is the intended outcome, not a gap |
+
+The 🎁 section takes its own one-liner in the header rather than per-bullet markers: say the
+reply is drafted in Gmail, that it is the same text the automation would have sent, and that
+Yobani is not cc'd on these.
+
+Every other draft is open-and-send. The call-pushback one is a starting point for Helen, and
+it is the one that must not go out unread — it is the only lead draft in the set that states
+a position rather than making an offer.
 
 ---
 
-## STEP 4 — Log to the Google Sheets tracker
+## STEP 5 — Log to the Google Sheets tracker
 
 Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit
 Spreadsheet ID: `1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ`
 
 Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and Tracking
-Handover Progress rows. Nothing else gets a row. What was dropped in Steps 1–2 is not
+Handover Progress rows. Nothing else gets a row. What was dropped in STEP 1–2 is not
 logged.
 
 **🎁 Bonus claims get no row**, even though they appear in the digest. They are the one thing
 this task surfaces that is not a lead: nothing to chase, no stages to move through, no owner
 to flip. A row for one would sit permanently due and would either nag Helen forever or be
-skipped forever. The Slack thread is the whole record.
+skipped forever. The digest bullet and the Gmail draft are the whole record.
 
 **The cost of that, stated plainly:** STEP 1 reads `newer_than:1d`, so a bonus claim is
 surfaced on the day it arrives and never again. If nobody acts on that thread reply, that
@@ -993,21 +1130,22 @@ majority and the documented format.
 - **Email Title / Link** — `=HYPERLINK("<gmail thread link>","<subject>")` so it renders as
   a clickable link like the existing rows
 - **Message Summary** — same quoted snippet used in the Slack digest
-- **Suggested Helen Email Draft (L)** — the draft from STEP 2, byte-identical to the one
-  posted in the Slack thread. Write it as plain text with real line breaks, not a formula
-  and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
+- **Suggested Helen Email Draft (L)** — the draft from STEP 2, byte-identical to the Gmail
+  draft created for that lead in STEP 3. Write it as plain text with real line breaks, not a
+  formula and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
   Handover Progress rows.
 - **Helen Forward Date (M)** — **leave empty.** Owned by `tracker-followup`, which writes
   the date Helen actually forwarded the lead once it has confirmed the forward. The
   follow-up cadence in O–R keys off this cell, so a guessed or optimistic date here starts
   a chase clock for a handover that never happened.
-- **Suggested Yobani 1st Response (N)** — the Yobani draft from STEP 2, byte-identical to
-  the one posted in the Slack thread, with `[Calendly Link]` and `[today/tomorrow]` still as
+- **Suggested Yobani 1st Response (N)** — the Yobani draft from STEP 2, with
+  `[Calendly Link]` and `[today/tomorrow]` still as
   literal placeholders and every `[If they …]` branch already resolved. Same format rule as
   L: plain text with real line breaks, no formula, no surrounding quotes. Same gate as L too
   — **empty** for "Ignore" rows and for Tracking Handover Progress rows. A row gets both
   drafts or neither; L populated with N blank on a "Send to Yobani" row is a bug worth
-  reporting in Slack. This is the *first* of three touches; the 3-day and 5-day follow-ups
+  reporting in Slack. N is not posted to Slack and not drafted in Gmail — this column is
+  where Yobani reads it. This is the *first* of three touches; the 3-day and 5-day follow-ups
   are tracked as dates and status only, and **no draft is written for them** — there is no
   column for one and this task does not generate one.
 - **Yobani 1st Response Done? (O)** — **leave empty.** Owned by `tracker-followup`. `Yes`
@@ -1027,11 +1165,19 @@ columns, or change header styling.
 
 ## Scope limits
 
-Do not take any action beyond reading emails, reading Close CRM, posting the Slack digest,
-and logging rows to this tracker. Specifically: do **not** reply to, label, archive, or
-delete any email, and do **not** create, update, or delete anything in Close — the
-call-booked check in STEP 2 is a read, and Close access stays read-only. The routine is
-read-only on email.
+Do not take any action beyond reading emails, **creating the reply drafts in STEP 3**,
+reading Close CRM, posting the Slack digest, and logging rows to this tracker.
+
+Specifically: do **not** send any email — not a draft, not a reply, not a forward — and do
+**not** label, archive, delete, or mark anything in Helen's mailbox. Do **not** update or
+delete an existing draft, including one this routine created on an earlier run. Do **not**
+create, update, or delete anything in Close: the call-booked check in STEP 2 is a read, and
+Close access stays read-only.
+
+**The one write this routine makes to email is a draft.** It was read-only on email until
+2026-09-11, when drafting Helen's reply moved into it. That is the whole of the change:
+drafts are created and left sitting for Helen. Nothing in this task sends mail from her
+mailbox, and nothing should be added that does.
 
 ## Failure reporting
 

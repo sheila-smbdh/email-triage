@@ -339,15 +339,15 @@ writing the Yobani draft at log time, most rows reaching this step already have 
 
 | N as read in STEP 1 | Do |
 |---|---|
-| Holds a draft matching the row's category, in one of the current templates below, with every `[If they …]` branch already resolved | **Keep it, unchanged.** Write nothing to N. It is already in the Slack thread from the digest run and may already be pasted |
+| Holds a draft matching the row's category, in one of the current templates below, with every `[If they …]` branch already resolved | **Keep it, unchanged.** Write nothing to N. It has been sitting in the sheet since the digest run and may already have been used |
 | Holds a draft on the **superseded** templates — the tell is `[time slot]`, `Are you free`, or `Can I give you a call at` | **Replace it** with the current template for that category, and say in Slack that you did. Every row logged before the day-1 rules landed is in this state |
 | Empty — a row logged before this change, or a digest run that skipped it | **Write the draft**, exactly as below |
 | Holds something that is not one of these templates, or the wrong category's template | **Replace it** with the right one, and say in Slack that you did and why |
 
-Rewriting a draft that is already correct is not free: a lead in the Slack thread on Monday
-and a different wording in the sheet on Friday reads as two different people replying, and
-whoever pastes has to work out which is current. Byte-identical is the goal — if you would
-produce the same text that is already there, leave it.
+Rewriting a draft that is already correct is not free: one wording in the sheet on Monday
+and a different one on Friday reads as two different people replying, and whoever pastes has
+to work out which is current. Byte-identical is the goal — if you would produce the same text
+that is already there, leave it.
 
 The draft is **a reply on the existing thread, keeping Helen on it** so the handoff stays
 tracked. Not a fresh email. The lead has been talking to Helen, so the reply picks up from
@@ -501,8 +501,11 @@ Capture the parent message's `ts` and post the drafts as **one threaded reply** 
 `thread_ts`. Full drafts inline would bury the flags the message exists to deliver.
 
 Include a lead here only when **this pass** wrote or replaced its draft. A draft carried
-over unchanged from the digest run has already been posted in that run's thread; reposting
-it on every pass turns the channel into an echo and makes it unclear which copy is live.
+over unchanged from the digest run is already sitting in column N, where Yobani reads it;
+reposting it on every pass turns the channel into an echo and makes it unclear which copy is
+live. (The digest run stopped posting drafts to Slack on 2026-09-11, when Helen's reply moved
+into her Gmail as a draft — Yobani's has always lived in the sheet, and now that is the only
+place it appears until a pass here changes it.)
 If the section would be empty because every due row's draft was already correct, say so in
 one line in the parent message instead ("3 drafts already current, unchanged").
 
