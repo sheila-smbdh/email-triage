@@ -197,7 +197,7 @@ lead actually asked for:
   team…"*
 - **A question about a specific deal Helen featured** — in the newsletter, on X, or in prior
   outreach — opens with scarcity instead: *"Hey [First Name], deals like these go pretty
-  quickly, but we can help you take action quickly. Looping in Yobani from our team…"*
+  quickly, but we can help you move fast. Looping in Yobani from our team…"*
 
 The rest of the message, the `@Yobani` nudge and the 15-minute ask, is identical in both.
 Category, Recommended Action and the tracker row are unaffected: this is still Ready Now,

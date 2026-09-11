@@ -404,7 +404,7 @@ Hey [First Name], we can definitely help. Looping in Yobani from our team. @Yoba
 about a deal Helen featured, rather than signalling readiness in general)
 
 ```
-Hey [First Name], deals like these go pretty quickly, but we can help you take action quickly. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
+Hey [First Name], deals like these go pretty quickly, but we can help you move fast. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
 ```
 
 **Price Wall**
