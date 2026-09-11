@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). |
+| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). |
 
 ---
 
@@ -180,7 +180,8 @@ Three things this deliberately does **not** change:
   A stale "let's grab 15 minutes" sitting next to a completed call is the exact failure the
   old rule existed to prevent, and pre-writing the draft is what makes it possible.
 - **The templates are untouched** — the same three, with `[time slot]` and `[Calendly Link]`
-  still literal placeholders for the reasons in the follow-up handoff §5.
+  still literal placeholders for the reasons in the follow-up handoff §5. *(Superseded the
+  same day — see* Yobani's day-1 rules *below.)*
 
 One new hazard worth naming: **both Price Wall templates now live in this file**, and only
 Helen's carries the 1% line. Yobani's deliberately moves to a call instead of answering the
@@ -310,6 +311,47 @@ One risk recorded rather than solved: a bare "Yes" on a newsletter could be answ
 question the newsletter itself asked rather than claiming bonuses, and the word "Yes" cannot
 tell you which. Sending a welcome-bonus link to someone who meant something else costs
 nothing; leaving a member without their bonuses costs a lot. The routine sends.
+
+### Yobani's day-1 rules replace his three templates (2026-09-11)
+
+Sheila supplied a written spec for Yobani's response drafts, and it replaces the *Suggested
+Yobani response* section outright in both task files. What it changes:
+
+**Day 1 is an email *and* a phone call**, where before it was an email proposing a time. The
+branch is whether the lead put a number in the email they sent:
+
+| Number in their initial email? | Day 1 |
+|---|---|
+| Yes | Email, then call them — today or tomorrow |
+| No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
+
+A signature block counts as a number; one dug out of Close or the web does not. **No texting
+on day 1** — if he has the number he calls, and if he doesn't there is nothing to text.
+
+**`[time slot]` is retired.** The templates now commit to a call `[today/tomorrow]` instead
+of proposing a window, so there is no slot to fill. `[Calendly Link]` is still a literal
+placeholder, and `[today/tomorrow]` becomes one — this task cannot know which day Yobani is
+free, which is the same Calendly-permission constraint that retired `[time slot]`'s original
+rationale rather than the placeholder itself.
+
+**The templates now carry `[If they …]` branches**, and those are instructions rather than
+copy. The task picks the branch and writes the sentence out; a draft that still contains the
+words "If they" is unfinished. That is a new failure mode worth watching in the first few
+runs — it reaches a customer as visible scaffolding if it slips through.
+
+Two consequences that are easy to miss:
+
+- **Every column-M draft written before today is on the superseded templates.** The tell is
+  `[time slot]`, `Are you free`, or `Can I give you a call at`. `tracker-followup`'s
+  keep-or-replace table now has a row for exactly this, so those get replaced on the next
+  pass rather than kept as "matching the category".
+- **`tracker-followup` needs the lead's own first message** to pick the number branch, and
+  column K's summary usually will not settle it. It already has the thread ID from its
+  forward check, so it reads the message rather than guessing.
+
+Ready Now remains the one category that does not ask for a number when it is missing — it
+sends the Calendly link. That is deliberate and the file says so, because the obvious "fix"
+is to paste the Buy Box line into it.
 
 ---
 

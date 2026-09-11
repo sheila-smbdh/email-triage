@@ -547,6 +547,9 @@ all. If a draft says something the template does not, take that back out.
 Produced in the **same run as Helen's draft, for the same leads**, and written to tracker
 column M.
 
+Everything here is Yobani's **day-1 response**: the first contact he makes after Helen
+forwards her reply. Later touches are not covered here — `tracker-followup` owns those.
+
 This draft used to be written days later, by the `tracker-followup` pass, once Helen's
 forward had been confirmed and Close showed no call. That left every new row half-ready:
 Helen's handoff was one paste away on day one, and Yobani's reply did not exist until a
@@ -565,14 +568,41 @@ it **clears** M rather than leave a stale "let's grab 15 minutes" pointed at som
 already had their call. Writing M here does not mark the row handled and does not exempt it
 from the follow-up pass.
 
-The draft is **a reply on the existing thread, keeping Helen on it** so the handoff stays
-tracked. Not a fresh email. The lead has been talking to Helen, so the reply picks up from
-her rather than introducing a stranger.
+#### When it goes out
+
+As soon as Helen forwards. Yobani replies on the **same thread**, with Helen kept on it — so
+the handoff stays tracked. Not a fresh email: the lead has been talking to Helen, so the
+reply picks up from her rather than introducing a stranger.
+
+#### What day 1 is
+
+An **email, and a phone call** if he has a number to call.
+
+| Phone number in their initial email? | Day 1 |
+|---|---|
+| Yes | Email, then call them — today or tomorrow |
+| No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
+
+**No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
+text. Either way the text is redundant.
+
+"Number provided" means a number in the **initial email they sent** — a signature block
+counts, a number dug out of the CRM or the web does not. This task is reading that email
+already, so settle the branch while writing the draft rather than leaving the choice to
+whoever pastes it.
+
+#### Reading the templates
+
+The `[If they …]` blocks are instructions, not copy. Pick the branch that matches the row,
+write out that sentence, and delete the marker and the brackets around it. The other branch
+disappears. **A draft that still contains the words "If they" has not been finished.**
+
+`[today/tomorrow]` is pick-one, not literal text.
 
 #### The three templates
 
-One per category, reproduced verbatim. Use the template for the lead's category — the same
-category that chose Helen's draft.
+One per category. Use the template for the row's category — the same category that chose
+Helen's draft.
 
 **There are no variants here.** Helen's Ready Now and Price Wall drafts each have two
 openings; Yobani's have one apiece.
@@ -592,7 +622,7 @@ Hi [First Name],
 
 Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
 
-Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+[If they didn't provide a number: What's the best number to reach you at?] I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
 ```
 
 **Ready Now**
@@ -600,33 +630,42 @@ Are you free [time slot] so I can give you a call? Alternatively, find a time sl
 ```
 Hi [First Name],
 
-Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. Grab 15 minutes here: [Calendly Link].
+Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. [If they provided a number: I will give you a call [today/tomorrow].] [If they didn't provide a number: Grab 15 minutes here: [Calendly Link].]
 
 I want to get sharper on where things stand and figure out the fastest next step.
 ```
+
+Ready Now is the one category that **doesn't ask for a number** when it's missing — it sends
+the link. That's deliberate; don't borrow the Buy Box line to "fix" it.
 
 **Price Wall**
 
 ```
 Hi [First Name],
 
-Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do.
-
-Can I give you a call at [time slot]? If that time doesn't work, book a time with me here [Calendly link].
+Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do. [If they didn't provide a number: What's the best number to reach you at?] I can give you a call [today/tomorrow]. Alternatively, book a time with me here [Calendly link].
 ```
 
-#### Filling them in
+#### Placeholders
 
-**`[time slot]` and `[Calendly Link]` stay as literal bracketed placeholders.** Yobani fills
-them in himself. Do **not** substitute a real time or a real link: Sheila's Calendly token is
-role `user` and cannot read Yobani's event types or availability
-(`event_types-list_event_types` returns Permission Denied for another user), so any time
-proposed here would be invented. A slot he is not free for is worse than a blank he fills in
-five seconds. His scheduling page is `https://calendly.com/yobani-smbdealhunter` if this is
-ever revisited — but leave the placeholder unless Sheila says otherwise.
+- `[First Name]`, `[buy box criteria]`, `[their own words]` — filled in when the draft is
+  written, per the rules below.
+- `[Calendly Link]` — stays a literal bracketed placeholder; Yobani fills it in before
+  sending.
+- `[today/tomorrow]` — stays bracketed too, and Yobani picks one before sending. This task
+  has no way to know which day he is free.
 
-Say in the Slack thread that both brackets need filling before sending, so nobody pastes a
-draft with `[time slot]` still in it.
+**There is no `[time slot]` placeholder any more.** The templates commit to a call today or
+tomorrow rather than proposing a window, so nothing needs slotting. This also retires the
+old reason for leaving it blank: Sheila's Calendly token is role `user` and cannot read
+Yobani's event types or availability (`event_types-list_event_types` returns Permission
+Denied for another user), so any time proposed here would have been invented. That constraint
+still applies to `[Calendly Link]` — do not substitute a real link. His scheduling page is
+`https://calendly.com/yobani-smbdealhunter` if this is ever revisited, but leave the
+placeholder unless Sheila says otherwise.
+
+Say in the Slack thread that `[Calendly Link]` and `[today/tomorrow]` both need filling
+before sending, so nobody pastes a draft with a bracket still in it.
 
 **First name.** Resolved exactly as for Helen's draft: the name the sender signs off with,
 else the first word of their Gmail display name, else — for a bare address like
@@ -647,15 +686,18 @@ readiness, from the email or the message summary: `buying a business`, `the Beth
 deal`, `the 50% seller financing terms`. Never invent a deal, a location or a number they
 did not mention.
 
-**Never invent commercial terms.** No draft here quotes a price, a fee, a range, a guarantee
-or a timeline. In particular, **Yobani's Price Wall template deliberately does not answer the
-pricing question** — it moves to a call. Helen's Price Wall template, a few paragraphs above,
-*does* carry the 1% line. Now that both live in this file, keep them apart: never import the
-1% sentence into Yobani's template. If a lead asked a direct pricing question, Helen's reply
+#### What day 1 never does
+
+No price, fee, range, guarantee or timeline — including in Price Wall, which moves to a call
+and nothing else. **The 1% line is Helen's and hers only**; it sits a few hundred lines above
+in this same file, and importing it here would put a commercial commitment in a message that
+is supposed to be an invitation. If a lead asked a direct pricing question, Helen's reply
 answers it and the call handles the rest.
 
-**Nothing else goes in.** A finished draft is the template plus the substitutions above. If
-it says something the template does not, take that back out.
+**Nothing else goes in.** A finished draft is the template plus the substitutions above, with
+every `[If they …]` branch resolved. If it says something the template does not, take that
+back out.
+
 
 ### On borderline mail
 
@@ -722,7 +764,8 @@ mode:
 
 > ✍️ *Suggested replies* — Helen's to send now, cc yobani@smbdealhunter.xyz. Yobani's is
 > for after the forward, as a reply on the same thread with Helen kept on it.
-> **Fill in `[time slot]` and `[Calendly Link]` before sending Yobani's.**
+> **Fill in `[Calendly Link]` and `[today/tomorrow]` before sending Yobani's** — and call
+> them the same day if they gave a number.
 >
 > *Buy Box — Dean Julia*
 > Helen:
@@ -735,8 +778,10 @@ mode:
 >
 > Sounds like you're interested in deals in Central FL, and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
 >
-> Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+> What's the best number to reach you at? I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
 > ```
+> *(Dean gave no number, so the Buy Box "best number" branch is written out. Had he given
+> one, that sentence would be gone and the line would open at "I will give you a call".)*
 >
 > 🎁 *Bonus link — Jason Smith* — replied "Yes" to a newsletter, so the automation never
 > fired. Helen's to send; Yobani is not involved.
@@ -879,8 +924,8 @@ majority and the documented format.
   and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
   Handover Progress rows.
 - **Suggested Yobani Response (M)** — the Yobani draft from STEP 2, byte-identical to the
-  one posted in the Slack thread, `[time slot]` and `[Calendly Link]` still as literal
-  placeholders. Same format rule as L: plain text with real line breaks, no formula, no
+  one posted in the Slack thread, with `[Calendly Link]` and `[today/tomorrow]` still as
+  literal placeholders and every `[If they …]` branch already resolved. Same format rule as L: plain text with real line breaks, no formula, no
   surrounding quotes. Same gate as L too — **empty** for "Ignore" rows and for Tracking
   Handover Progress rows. A row gets both drafts or neither; L populated with M blank on a
   "Send to Yobani" row is a bug worth reporting in Slack.
