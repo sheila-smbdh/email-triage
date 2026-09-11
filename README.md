@@ -13,7 +13,7 @@ looks **backward** at leads already logged.
 | **Follow-up task** | [`skills/tracker-followup/SKILL.md`](skills/tracker-followup/SKILL.md) — walks due tracker rows: chases Helen's un-forwarded handoffs, checks Yobani's booking progress in Close, and keeps his draft current (clears it once the call is booked). Built and verified 2026-09-10, and running in the Routine alongside the digest. |
 | **Handoff / context** | [`docs/handoff-helen-email-digest.md`](docs/handoff-helen-email-digest.md) and [`docs/handoff-tracker-followup.md`](docs/handoff-tracker-followup.md) — why it is built this way, what broke before, what is still open. |
 | **Schedule** | Daily 08:03 America/New_York (cron `3 12 * * *` UTC — see the DST note in the handoff). |
-| **Status** | ✅ Live — both tasks enabled and verified end-to-end on 2026-09-10. ⚠️ The Routine currently reads both specs from the branch `claude/sleepy-hamilton-bch8b6`, not `main`, because `main` holds a stale digest spec and no follow-up spec. Merge that branch, then repoint the Routine at `main`. |
+| **Status** | ✅ Live — both tasks enabled and verified end-to-end on 2026-09-10. The Routine reads both specs from **`main`** (repointed 2026-09-10 once `claude/sleepy-hamilton-bch8b6` merged), so a spec change is live on the next run once it lands on `main`. |
 | **Scope** | Buy Box, Ready Now, Price Wall, and handovers of those three. Everything else is dropped. |
 | **Output** | One Slack message (Tier 1 + handovers), a threaded reply holding ready-to-send drafts — **both Helen's and Yobani's, generated in the same first run** — and one tracker row per lead carrying both (columns L and M). |
 
