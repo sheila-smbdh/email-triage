@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-10 |
+| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task (§4). |
 
 ---
 
@@ -155,6 +155,38 @@ edits:
   is worse than not using one.
 - **They/them throughout.** The templates never infer a lead's gender from their name.
 
+### Yobani's draft moved into this task (2026-09-11)
+
+Sheila's call: generate Yobani's reply in the **first** run, alongside Helen's, rather than
+days later.
+
+It used to be written by `tracker-followup`, on the pass after Helen's forward was confirmed
+and Close showed no call. That was tidy — the draft appeared exactly when it became usable —
+but it left every new row half-ready. Helen's handoff was one paste away on day one, and the
+reply she was handing *to* did not exist yet. Worse, a lead she forwarded the same morning
+could sit for up to five days before the follow-up pass caught up and produced Yobani
+anything to send.
+
+So both drafts now come out of the digest run: Helen's to column L, Yobani's to column M,
+both posted in the same Slack thread under the day's digest, labelled by sender.
+
+Three things this deliberately does **not** change:
+
+- **Yobani's draft is provisional.** At digest time the lead has not been forwarded and no
+  setter-call check has run for them. `tracker-followup` still owns the verification and
+  still owns column M on every later pass.
+- **The resolve rule got stricter, not looser.** A setter call on the board used to mean
+  "write no draft"; on a row that now arrives with one already in M, it means **clear M**.
+  A stale "let's grab 15 minutes" sitting next to a completed call is the exact failure the
+  old rule existed to prevent, and pre-writing the draft is what makes it possible.
+- **The templates are untouched** — the same three, with `[time slot]` and `[Calendly Link]`
+  still literal placeholders for the reasons in the follow-up handoff §5.
+
+One new hazard worth naming: **both Price Wall templates now live in this file**, and only
+Helen's carries the 1% line. Yobani's deliberately moves to a call instead of answering the
+pricing question. They sit a few hundred lines apart under similar headings, and merging them
+would put a commercial commitment in a draft that is supposed to be an invitation.
+
 ---
 
 ## 5. The tracker
@@ -165,9 +197,12 @@ Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner 
 
 - `Tracker` row 1 is the header; data starts at row 2; last data row is 27 as of
   2026-09-10 (26 rows, all dated 8/29/2026).
-- Columns A–L: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft`
+- Columns A–M: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Suggested Yobani Response`
 - **Column L was added 2026-09-10** and is blank for every earlier row. It is not
   backfilled, and it stays blank for "Ignore" rows and handover rows.
+- **Column M is written by this task as of 2026-09-11.** Same gate as L — both drafts or
+  neither. `tracker-followup` still owns M on every later pass and is the only thing that
+  clears it. Rows logged before 2026-09-11 have M blank; not backfilled.
 - **F and H are formula-driven and must never receive literal values.**
   F is `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`,
   H is `=G2+5`.
@@ -177,7 +212,7 @@ Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner 
   trimming it breaks column F.
 
 Writes go through `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges in three blocks
-(A–E, G, I–L), skipping F and H, which are then filled down with the formulas above and
+(A–E, G, I–M), skipping F and H, which are then filled down with the formulas above and
 verified by re-reading. The old paste-block-to-a-human flow is gone: it assumed someone at
 a keyboard, and nobody is at a keyboard at 8am.
 

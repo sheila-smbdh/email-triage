@@ -1,6 +1,6 @@
 ---
 name: tracker-followup
-description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Yobani's booking progress in Close, and draft Yobani's reply for leads he now owns
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Yobani's booking progress in Close, and keep column M's Yobani draft current: clear it once the setter call is booked, write it where the digest did not
 ---
 
 You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
@@ -26,11 +26,18 @@ Each tracked lead moves along one path:
 ```
 Tier 1, owner Helen  ──Helen forwards to Yobani──▶  In Progress, owner Yobani  ──setter call on the board──▶  resolved
         │                                                    │
-        └── not forwarded → nag Helen in Slack               └── no setter call → draft Yobani's reply
+        └── not forwarded → nag Helen in Slack               └── no setter call → Yobani's draft stands
 ```
 
 This task's whole job is to work out where each due lead sits on that path, record it, and
-produce the one artefact that unblocks the next step.
+keep the one artefact that unblocks the next step correct.
+
+**The draft itself now arrives earlier than this pass.** `helen-email-digest` writes both
+Helen's draft (column L) and Yobani's (column M) the morning a lead is logged, so a lead no
+longer waits for this pass to have a reply ready. What is left here is the part only a later
+check can know: whether the call actually got booked. So this task's relationship to column M
+is now mostly **subtractive** — it clears the draft on a row the setter call has resolved,
+and writes one only where the digest left a gap.
 
 ---
 
@@ -63,10 +70,12 @@ an earlier version of the digest task hardcoded a wrong diagnosis and sent the t
 looking in the wrong place for eight days.
 
 If the **Close** connector is missing, that is not a reason to abort — but it is a reason
-not to draft. Every Yobani check fails to confirm, and an unconfirmed check is **not**
-evidence that no call was booked. Write no drafts for those rows, note in column O that
+to leave column M alone. Every Yobani check fails to confirm, and an unconfirmed check is
+**not** evidence either way. Write no new drafts for those rows, and **do not clear the
+draft the digest already wrote** — leave M exactly as you found it. Note in column O that
 the check could not run, and say so in Slack. Treating a Close outage as "no call booked"
-would send "let's grab 15 minutes" to leads who have already had their call.
+would send "let's grab 15 minutes" to leads who have already had their call; treating it as
+"call booked" would silently delete a draft nobody has used yet.
 
 ---
 
@@ -239,26 +248,53 @@ one as progress.
 
 | What Close shows | N/O (setter) | P/Q (closer) | M (draft) |
 |---|---|---|---|
-| A setter call, upcoming or already held | its date + who with, event name, any lead note | closer call if one exists | **empty — resolved** |
-| A setter call held **and** a cancelled closer call | the setter call | the cancelled call's date + that it was cancelled and by whom | **empty — resolved.** Surface in Slack |
-| No setter call, or the only one was cancelled | empty, or `No call booked` | — | **write the draft** (STEP 4) |
-| No Close record for the address | `No Close record for <address>` | — | **write the draft** |
-| Close lookup failed | that the check could not run | — | empty — say so in Slack |
+| A setter call, upcoming or already held | its date + who with, event name, any lead note | closer call if one exists | **clear it — resolved** |
+| A setter call held **and** a cancelled closer call | the setter call | the cancelled call's date + that it was cancelled and by whom | **clear it — resolved.** Surface in Slack |
+| No setter call, or the only one was cancelled | empty, or `No call booked` | — | **keep or write the draft** (STEP 4) |
+| No Close record for the address | `No Close record for <address>` | — | **keep or write the draft** |
+| Close lookup failed | that the check could not run | — | **leave exactly as found** — say so in Slack |
+
+**"Clear it" means write an empty string to M**, not leave whatever is there. The
+`helen-email-digest` task now writes the Yobani draft when it first logs the lead, so a
+resolved row will usually *have* a draft sitting in M that has to be taken back out. Leaving
+it is how a "let's grab 15 minutes" ends up next to a completed call, which is exactly the
+thing this rule exists to prevent.
+
+**On a failed Close lookup, change nothing in M** — do not clear it and do not write a new
+one. An unconfirmed check is not evidence either way, and a draft the digest already wrote
+is not made wrong by this task failing to reach Close.
 
 Always write **G → today** for a row you checked.
 
 **A setter call on the board resolves the row.** Once a lead has had their intro call,
-Yobani's job is done and there is nothing for him to draft. Do **not** write a "let's grab
-15 minutes" reply to someone who has already had a call — it would reach a real customer
-and read as nobody paying attention. That holds even when the *closer* call then fell
-through: a cancelled discovery call needs re-booking by whoever owns that stage, which is
-not a setter intro. Record it in P/Q, mention it in Slack, and write no draft.
+Yobani's job is done and there is nothing for him to draft. Do **not** leave a "let's grab
+15 minutes" reply sitting against someone who has already had a call — it would reach a real
+customer and read as nobody paying attention. Since the digest wrote that draft days ago,
+resolving a row now means **taking the draft out**, not merely declining to add one: clear M.
+That holds even when the *closer* call then fell through — a cancelled discovery call needs
+re-booking by whoever owns that stage, which is not a setter intro. Record it in P/Q, mention
+it in Slack, and clear the draft.
 
 ---
 
-## STEP 4 — Draft Yobani's reply
+## STEP 4 — Yobani's reply: keep, write, or clear
 
-Only for a Yobani-owned row with **no call booked**.
+Only for a Yobani-owned row with **no call booked**. A row with a setter call on the board
+skips this step entirely and has M cleared in STEP 6.
+
+**Check what is already in M before writing anything.** Since `helen-email-digest` began
+writing the Yobani draft at log time, most rows reaching this step already have one:
+
+| M as read in STEP 1 | Do |
+|---|---|
+| Holds a draft matching the row's category, in one of the three templates below | **Keep it, unchanged.** Write nothing to M. It is already in the Slack thread from the digest run and may already be pasted |
+| Empty — a row logged before this change, or a digest run that skipped it | **Write the draft**, exactly as below |
+| Holds something that is not one of these templates, or the wrong category's template | **Replace it** with the right one, and say in Slack that you did and why |
+
+Rewriting a draft that is already correct is not free: a lead in the Slack thread on Monday
+and a different wording in the sheet on Friday reads as two different people replying, and
+whoever pastes has to work out which is current. Byte-identical is the goal — if you would
+produce the same text that is already there, leave it.
 
 The draft is **a reply on the existing thread, keeping Helen on it** so the handoff stays
 tracked. Not a fresh email. The lead has been talking to Helen, so the reply picks up from
@@ -362,7 +398,9 @@ Sections, each skipped entirely when empty:
   resolve to a Close lead, a failed Close lookup.
 - **🟢 Moving** — rows with a setter call on the board. One line each: who with, and when.
   Where the closer call was cancelled, say so on the same line — it is the one actionable
-  fact on an otherwise resolved row.
+  fact on an otherwise resolved row. These are the rows whose draft you cleared; no need to
+  say so per row, but give the count once ("2 resolved, drafts cleared") so a cleared draft
+  never looks like a lost one.
 - **✍️ Drafts** — *not in the message body.* See below.
 
 Write the message in standard markdown (`**bold**`, `_italic_`, `[text](url)`); the Slack
@@ -377,6 +415,12 @@ also carries the lead digest is noise. Say it in the run report instead.
 Capture the parent message's `ts` and post the drafts as **one threaded reply** with
 `thread_ts`. Full drafts inline would bury the flags the message exists to deliver.
 
+Include a lead here only when **this pass** wrote or replaced its draft. A draft carried
+over unchanged from the digest run has already been posted in that run's thread; reposting
+it every five days turns the channel into an echo and makes it unclear which copy is live.
+If the section would be empty because every due row's draft was already correct, say so in
+one line in the parent message instead ("3 drafts already current, unchanged").
+
 Format — one block per draft, each in a code block so it copies cleanly:
 
 > ✍️ *Suggested replies for Yobani* — reply on the existing thread and keep Helen on it.
@@ -388,7 +432,8 @@ Format — one block per draft, each in a code block so it copies cleanly:
 > …
 > ```
 
-If no row produced a draft, **post no thread reply at all** — not an empty one.
+If this pass wrote or replaced no draft, **post no thread reply at all** — not an empty one.
+A pass where every draft was already current is the normal case, not a failure.
 
 Do not use `@channel` or `@here`.
 
@@ -419,7 +464,7 @@ Investor and Operators → Kyle, Pitches and Engaged Reader → Helen) **must st
 | **B** Tier | `In Progress` — only on a row whose forward you just confirmed |
 | **E** Action Taken? | `Yes` — same rows only. Match the existing casing exactly |
 | **G** Last Check-in Date | today, on **every** row you checked (including not-forwarded rows) |
-| **M** Suggested Yobani Response | the STEP 4 draft, plain text with real line breaks — not a formula, not quote-wrapped. Empty when no draft |
+| **M** Suggested Yobani Response | per STEP 4: **omit the cell from the write** when the existing draft stands; the new draft (plain text with real line breaks, not a formula, not quote-wrapped) when you wrote or replaced one; an **empty string** when the row resolved — a setter call on the board means the draft comes out. On a failed Close lookup, omit it: leave what is there |
 | **N** Setter Call Date | the intro call's date. Empty when there is none |
 | **O** Setter Progress | short factual context: who with, event name, any note the lead left |
 | **P** Closer Call Date | the discovery/closing call's date. Empty when there is none |
@@ -432,7 +477,15 @@ Do not touch A, C, D, I, J, K or L. Do not touch a row whose D is `Ignore`.
 Use `GOOGLESHEETS_VALUES_UPDATE` with `value_input_option: "USER_ENTERED"` so dates coerce
 to real dates. Because the due rows are usually contiguous but the columns are not, write
 in per-column blocks — `Tracker!B<a>:B<b>`, `Tracker!E<a>:E<b>`, `Tracker!G<a>:G<b>`,
-`Tracker!M<a>:Q<b>` — which keeps F and H untouched by construction. For scattered rows use
+`Tracker!M<a>:Q<b>` — which keeps F and H untouched by construction.
+
+**The M–Q block overwrites every cell in its rectangle, including M on rows whose draft you
+decided to keep.** A block write has no "leave this one alone". So for each row in the block,
+put in the M slot the value that should end up there: the **exact string you read in STEP 1**
+for a kept draft, your new text for one you wrote or replaced, and `""` for a resolved row.
+Round-tripping the value you read is what "keep unchanged" means mechanically. If echoing a
+long draft back is awkward, write the resolved and rewritten rows individually instead — but
+never send a block that blanks M on a row you meant to leave alone. For scattered rows use
 `GOOGLESHEETS_UPDATE_VALUES_BATCH` (note: it takes `valueInputOption` in camelCase, unlike
 the singular tool's `value_input_option`) and check every entry in `data.responses[*]`.
 
@@ -446,6 +499,9 @@ Re-read `Tracker!A1:Q<n>` with `valueRenderOption: "FORMULA"` and confirm:
 - every F is still the `if(...xlookup(...))` formula, and none of them spilled `#N/A`
 - B and E changed on exactly the rows you meant, and nowhere else
 - M/N/O landed on the right rows
+- **M is empty on every row you resolved**, and **unchanged — byte for byte — on every row
+  whose draft you kept**. A kept draft that came back altered or blank means the block write
+  clobbered it; restore it from what you read in STEP 1 and say so in Slack
 - no row was added or removed
 
 If verification fails, **say so explicitly in Slack**. Never post a success digest for a

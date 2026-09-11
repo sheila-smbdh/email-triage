@@ -1,6 +1,6 @@
 ---
 name: helen-email-digest
-description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall), plus one row per lead in the Google Sheets tracker
+description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall), plus one row per lead in the Google Sheets tracker carrying both the Helen and Yobani reply drafts
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
@@ -356,6 +356,109 @@ something the template does not answer, send the template as-is and let the call
 for Buy Box, their ask — and nothing more. If it says something the template does not,
 take that back out.
 
+### Suggested Yobani response
+
+Produced in the **same run as Helen's draft, for the same leads**, and written to tracker
+column M.
+
+This draft used to be written days later, by the `tracker-followup` pass, once Helen's
+forward had been confirmed and Close showed no call. That left every new row half-ready:
+Helen's handoff was one paste away on day one, and Yobani's reply did not exist until a
+later pass picked the row up. Both drafts now come out of this run, so a lead's whole path
+is written the morning it arrives.
+
+**Same gate as Helen's draft.** Every lead whose Recommended Action is `Send to Yobani`
+gets one. `Ignore` rows and Tracking Handover Progress rows get none — leave M empty, and
+omit them from the Slack thread.
+
+**The draft is provisional, and writing it resolves nothing.** At digest time the lead has
+not been forwarded yet and no setter-call check has run for them. `tracker-followup` still
+runs that check on a later pass and remains the authority: when Close shows a setter call,
+it **clears** M rather than leave a stale "let's grab 15 minutes" pointed at someone who has
+already had their call. Writing M here does not mark the row handled and does not exempt it
+from the follow-up pass.
+
+The draft is **a reply on the existing thread, keeping Helen on it** so the handoff stays
+tracked. Not a fresh email. The lead has been talking to Helen, so the reply picks up from
+her rather than introducing a stranger.
+
+#### The three templates
+
+One per category, reproduced verbatim. Use the template for the lead's category — the same
+category that chose Helen's draft.
+
+**Buy Box**
+
+```
+Hi [First Name],
+
+Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
+
+Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+```
+
+**Ready Now**
+
+```
+Hi [First Name],
+
+Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. Grab 15 minutes here: [Calendly Link].
+
+I want to get sharper on where things stand and figure out the fastest next step.
+```
+
+**Price Wall**
+
+```
+Hi [First Name],
+
+Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do.
+
+Can I give you a call at [time slot]? If that time doesn't work, book a time with me here [Calendly link].
+```
+
+#### Filling them in
+
+**`[time slot]` and `[Calendly Link]` stay as literal bracketed placeholders.** Yobani fills
+them in himself. Do **not** substitute a real time or a real link: Sheila's Calendly token is
+role `user` and cannot read Yobani's event types or availability
+(`event_types-list_event_types` returns Permission Denied for another user), so any time
+proposed here would be invented. A slot he is not free for is worse than a blank he fills in
+five seconds. His scheduling page is `https://calendly.com/yobani-smbdealhunter` if this is
+ever revisited — but leave the placeholder unless Sheila says otherwise.
+
+Say in the Slack thread that both brackets need filling before sending, so nobody pastes a
+draft with `[time slot]` still in it.
+
+**First name.** Resolved exactly as for Helen's draft: the name the sender signs off with,
+else the first word of their Gmail display name, else — for a bare address like
+`ms.raquele@gmail.com` — open with `Hi there,` and drop the name.
+
+**Pronouns.** The templates address the lead as "you" for this reason. Never infer a lead's
+gender from their name; where a third-person reference is unavoidable, use they/them unless
+the sender's own signature makes it explicit.
+
+**`[buy box criteria]`** (Buy Box) — the concrete thing they asked for, in their own words,
+phrased to follow "interested in": `hotels in California`, `deals in Central FL`, `absentee
+businesses`. Note this reads differently from Helen's `[their ask]`, which is a gerund
+("finding deals in Central FL"); do not paste one into the other. If the ask is too vague to
+name in a few words, write `what we've got` rather than inflating it into a specific.
+
+**`[their own words]`** (Ready Now) — a short quote or close paraphrase of their stated
+readiness, from the email or the message summary: `buying a business`, `the Bethlehem PA
+deal`, `the 50% seller financing terms`. Never invent a deal, a location or a number they
+did not mention.
+
+**Never invent commercial terms.** No draft here quotes a price, a fee, a range, a guarantee
+or a timeline. In particular, **Yobani's Price Wall template deliberately does not answer the
+pricing question** — it moves to a call. Helen's Price Wall template, a few paragraphs above,
+*does* carry the 1% line. Now that both live in this file, keep them apart: never import the
+1% sentence into Yobani's template. If a lead asked a direct pricing question, Helen's reply
+answers it and the call handles the rest.
+
+**Nothing else goes in.** A finished draft is the template plus the substitutions above. If
+it says something the template does not, take that back out.
+
 ### On borderline mail
 
 If you cannot confidently place an email in one of the three categories, **drop it**. There
@@ -399,16 +502,34 @@ deliver; in the thread they are one click away and still copy-pasteable.
 Capture the parent message's `ts` when you post it and reply with that as `thread_ts`.
 
 Thread reply format — one block per lead whose action is "Send to Yobani", in the same
-order as the Tier 1 list, each draft in a Slack code block so it copies cleanly:
+order as the Tier 1 list. **Each lead now carries both drafts**: Helen's reply, and the
+reply Yobani sends once she has forwarded it. Put each draft in its own Slack code block so
+it copies cleanly, and label whose it is — the two are sent by different people at different
+times, and an unlabelled pair invites Helen to paste the wrong one.
 
-> ✍️ *Suggested replies* — paste and send from Helen's inbox, cc yobani@smbdealhunter.xyz
+> ✍️ *Suggested replies* — Helen's to send now, cc yobani@smbdealhunter.xyz. Yobani's is
+> for after the forward, as a reply on the same thread with Helen kept on it.
+> **Fill in `[time slot]` and `[Calendly Link]` before sending Yobani's.**
 >
 > *Buy Box — Dean Julia*
+> Helen:
 > ```
 > Hey Dean, finding deals in Central FL is something we can help with. @Yobani on our team can grab 15 minutes with you to better understand what you're looking for.
 > ```
+> Yobani:
+> ```
+> Hi Dean,
+>
+> Sounds like you're interested in deals in Central FL, and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
+>
+> Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+> ```
 
 If no lead has action "Send to Yobani", post no thread reply at all — not an empty one.
+
+Yobani's draft is posted here as a preview of what is waiting in column M, not as something
+to send today — the lead has not been forwarded yet. Do not tag or DM him from this task;
+the `tracker-followup` pass is what surfaces a row once it is actually his.
 
 ---
 
@@ -426,18 +547,25 @@ logged.
 The spreadsheet has **two tabs**: `Tracker` (the data) and `Responsibility` (the lookup).
 
 **`Tracker` tab.** Row 1 is the header. Data starts at **row 2**. As of 2026-09-10 the last
-data row is **row 27** (26 rows, all dated 8/29/2026). Columns A–K:
+data row is **row 27** (26 rows, all dated 8/29/2026). Columns A–M:
 
-`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft`
+`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Suggested Yobani Response`
 
 Column **L — "Suggested Helen Email Draft"** was added 2026-09-10 and is empty for every
 row before then. That is expected; do not backfill it.
 
-**The sheet now runs to column Q.** M–Q (`Suggested Yobani Response`, `Setter Call Date`,
-`Setter Progress`, `Closer Call Date`, `Closer Progress`) belong to the `tracker-followup`
-task, which fills them in on later passes. This task writes A–L only and leaves M–Q empty
-on the rows it appends. Do not widen this task's writes into them, and do not "fix" them
-when they are blank on a new row — they are meant to be.
+**Column M — "Suggested Yobani Response" — is written by this task too**, as of the change
+that moved Yobani's draft forward into the digest run. It used to be filled in days later by
+`tracker-followup`. That task still owns M on every later pass — it revises the draft when
+one is missing and **clears** it when Close shows the setter call has happened — but on a
+row this task creates, M arrives populated. Like L, it is empty on every row logged before
+the change and is not backfilled.
+
+**The sheet runs to column Q.** N–Q (`Setter Call Date`, `Setter Progress`,
+`Closer Call Date`, `Closer Progress`) belong to `tracker-followup`, which fills them in on
+later passes. This task writes **A–M** and leaves N–Q empty on the rows it appends. Do not
+widen this task's writes into them, and do not "fix" them when they are blank on a new row —
+they are meant to be.
 
 **`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9`. Buy Box,
 Ready Now and Price Wall all map to **Yobani**; the other rows (Sellside → Bill, Investor
@@ -467,7 +595,7 @@ majority and the documented format.
 ### How to write
 
 1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm the tab is still called `Tracker`.
-2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:L` to read existing rows and find the true last
+2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:M` to read existing rows and find the true last
    data row. Compute your target range explicitly rather than relying on the append API's
    table detection.
 3. **Dedup.** Before writing a row, check it isn't already in the sheet (same sender + same
@@ -477,8 +605,8 @@ majority and the documented format.
    are never overwritten with literals:
    - `Tracker!A<first>:E<last>` — Date, Tier, Category, Recommended Action, Action Taken?
    - `Tracker!G<first>:G<last>` — Last Check-in Date
-   - `Tracker!I<first>:L<last>` — Email Sender, Email Title / Link, Message Summary,
-     Suggested Helen Email Draft
+   - `Tracker!I<first>:M<last>` — Email Sender, Email Title / Link, Message Summary,
+     Suggested Helen Email Draft, Suggested Yobani Response
 
    Use `valueInputOption: "USER_ENTERED"` so dates coerce and `=HYPERLINK(...)` renders.
 5. **Fill down F and H** by writing the same two formulas into the new rows with their row
@@ -487,9 +615,10 @@ majority and the documented format.
    and H is `=G<N>+5`. The lookup ranges are absolute (`$A$2:$A$9`) and must stay exactly
    as written; only the `E<N>`, `C<N>` and `G<N>` references change. Never invent a
    different formula.
-6. **Verify.** Re-read `Tracker!A:L` and confirm: row count increased by exactly the number
-   of rows you wrote, F and H are populated and did not spill `#N/A`, and no row was
-   duplicated. If verification fails, say so explicitly in Slack — do not report success.
+6. **Verify.** Re-read `Tracker!A:M` and confirm: row count increased by exactly the number
+   of rows you wrote, F and H are populated and did not spill `#N/A`, L and M landed on
+   exactly the "Send to Yobani" rows and are empty on the others, and no row was duplicated.
+   If verification fails, say so explicitly in Slack — do not report success.
 
 ### Column contents
 
@@ -517,6 +646,12 @@ majority and the documented format.
   posted in the Slack thread. Write it as plain text with real line breaks, not a formula
   and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
   Handover Progress rows.
+- **Suggested Yobani Response (M)** — the Yobani draft from STEP 2, byte-identical to the
+  one posted in the Slack thread, `[time slot]` and `[Calendly Link]` still as literal
+  placeholders. Same format rule as L: plain text with real line breaks, no formula, no
+  surrounding quotes. Same gate as L too — **empty** for "Ignore" rows and for Tracking
+  Handover Progress rows. A row gets both drafts or neither; L populated with M blank on a
+  "Send to Yobani" row is a bug worth reporting in Slack.
 
 Match the formatting of the existing rows exactly — do not reformat the sheet, resize
 columns, or change header styling.
