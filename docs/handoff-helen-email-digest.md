@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task (§4). |
+| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task, and Helen's Ready Now draft gained a specific-deal opening (§4). |
 
 ---
 
@@ -186,6 +186,44 @@ One new hazard worth naming: **both Price Wall templates now live in this file**
 Helen's carries the 1% line. Yobani's deliberately moves to a call instead of answering the
 pricing question. They sit a few hundred lines apart under similar headings, and merging them
 would put a commercial commitment in a draft that is supposed to be an invitation.
+
+### A second Ready Now opening, for specific-deal asks (2026-09-11)
+
+Helen's Ready Now draft now has two openings, and the task picks between them on what the
+lead actually asked for:
+
+- **A readiness signal in general** — phone number, "call me", "enroll me" — keeps the
+  existing line: *"Hey [First Name], we can definitely help. Looping in Yobani from our
+  team…"*
+- **A question about a specific deal Helen featured** — in the newsletter, on X, or in prior
+  outreach — opens with scarcity instead: *"Hey [First Name], deals like these go pretty
+  quickly, but we can help you take action quickly. Looping in Yobani from our team…"*
+
+The rest of the message, the `@Yobani` nudge and the 15-minute ask, is identical in both.
+Category, Recommended Action and the tracker row are unaffected: this is still Ready Now,
+still "Send to Yobani", still one row.
+
+The case that prompted it: Damian Olive, 2026-09-10, *"is that wellness center in Virginia
+that you mentioned on X still available for sale?"* — a lead who had already picked one deal
+out of the newsletter and got the generic "we can definitely help" back. Sheila's call is
+that someone that far along should hear the scarcity first.
+
+Two constraints on the new opening, both deliberate:
+
+- **It does not answer the availability question.** The task has no way to know whether a
+  featured deal is still on the market, and a confident answer either way costs the lead.
+  "Deals like these go pretty quickly" is all that is said about it. This is the same rule
+  that keeps the 1% line out of every draft but Price Wall — a plausible-sounding invention
+  reaching a customer as a commitment.
+- **Yobani's draft did not change.** He has one Ready Now template, and a specific-deal lead
+  takes it with `[their own words]` set to the deal they named. The scarcity line is Helen's
+  opening only. Both files now carry a Ready Now template that must not drift into the
+  other's, the same hazard as the two Price Wall templates above.
+
+Asking whether a featured deal is available is also, explicitly, a buyer signal — recorded
+in *Deal talk is not buyer intent* alongside the two leads who discussed deal terms and were
+not buying. The line is between analysing a deal and asking for one, not between mentioning
+a deal and not mentioning one.
 
 ---
 

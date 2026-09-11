@@ -131,7 +131,8 @@ of one of them, or dropped. There is no other outcome.
 - **Ready Now** — gave a phone number, explicitly asked for a call, used enrollment
   language ("enroll me", "call me"), OR replies with clear interest/readiness to a
   newsletter or prior outreach about a specific deal (even without a direct call ask or
-  phone number). For this last case, set recommended action to "send to setter".
+  phone number). For this last case, set recommended action to "send to setter", and use the
+  specific-deal variant of Helen's Ready Now draft — see *Which Ready Now template* below.
 - **Price Wall** — asks for pricing/cost directly without booking a call ("what does it
   cost", "price before scheduling")
 
@@ -211,6 +212,12 @@ code, ready to invest"* (Zing Beam LLC), *"Do you have a company like this in Co
 preferred in Denver area"* (Christopher Terry), *"Helen I want to buy a business show me."*
 (Daniel Spencer). **Length and financial sophistication correlate negatively with buyer
 intent here.** The real buyers ask for deals; the commentators explain deals.
+
+**Asking whether a featured deal is still available is buyer intent.** The line this section
+draws is between analysing a deal and asking to buy one, not between mentioning a deal and
+not mentioning one. *"Is that wellness center in Virginia that you mentioned on X still
+available for sale?"* (Damian Olive, 2026-09-10) names a specific listing and asks for it →
+**Ready Now**, and it takes its own opening line: see *Which Ready Now template* below.
 
 The related judgement call, recorded because it recurs and has no clean answer: *"You do
 great things i am interested to talk to you we own few businesses in albany ny area"*
@@ -294,11 +301,11 @@ The draft is a **reply in Helen's voice**, cc'ing Yobani Mendoza
 (`yobani@smbdealhunter.xyz`, the setter). No subject line, no signature, no greeting
 block — Helen is replying inside an existing thread.
 
-#### The three templates
+#### The templates
 
-Use the template for the lead's category. Each one is a short, fully written-out message
-to the lead, with Yobani mentioned inside it — not a set of separate notes to different
-people.
+Use the template for the lead's category — and, for Ready Now, the variant that matches what
+the lead asked for. Each one is a short, fully written-out message to the lead, with Yobani
+mentioned inside it — not a set of separate notes to different people.
 
 **Write it out in full.** No shorthand: "definitely", not "def"; "15 minutes", not
 "15min"; "with you", not "w you". The register is warm and direct, the way Helen writes
@@ -314,6 +321,13 @@ Hey [First Name], [their ask] is something we can help with. @Yobani on our team
 
 ```
 Hey [First Name], we can definitely help. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
+```
+
+**Ready Now — asking about a specific deal** (use this one instead when the lead is asking
+about a deal Helen featured, rather than signalling readiness in general)
+
+```
+Hey [First Name], deals like these go pretty quickly, but we can help you take action quickly. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
 ```
 
 **Price Wall**
@@ -345,6 +359,33 @@ a vague ask into a specific one.
 
 Ready Now and Price Wall take no personalisation beyond the first name. Do not restructure
 a template to suit the email.
+
+**Which Ready Now template.** Ready Now covers two different asks, and they open
+differently:
+
+- **A readiness signal in general** — a phone number, "call me", "enroll me", "I want to buy
+  a business", a reply that says they are ready without naming anything. → the plain
+  **Ready Now** template.
+- **A question about a specific deal Helen featured** — in the newsletter, on X, or in prior
+  outreach: *"is that wellness center in Virginia still available?"*, *"is the laundromat
+  still for sale?"*, *"tell me more about the $280K/yr biz"*. → the **specific deal**
+  template.
+
+Real case, 2026-09-10. Damian Olive wrote *"I'm a business owner based in Arlington,
+Virginia. Question: is that wellness center in Virginia that you mentioned on X still
+available for sale?"* Helen's reply went out on the plain Ready Now template the next
+morning. Sheila's call is that a lead asking about one specific listing should hear the
+scarcity first — it is true, and it is what moves someone who has already picked a deal out
+of the newsletter.
+
+**Do not answer the availability question.** The template says nothing about whether the
+deal is still on the market, and neither should you: this task does not know, and a wrong
+answer in either direction costs the lead. *"Deals like these go pretty quickly"* is the
+whole of what gets said about it, and the call handles the rest — the same bar as every
+other draft, no price, no deal specific, no timeline the template does not carry.
+
+Damian also opened with *"I'm a business owner"*. That does not move him out of Ready Now —
+classify on the ask, the same judgement as narinder Singh in STEP 2.
 
 **Never invent commercial terms.** The 1% figure and the success guarantee appear in the
 Price Wall template and nowhere else. Do not quote a price, a fee, a range, a guarantee, a
@@ -386,6 +427,12 @@ her rather than introducing a stranger.
 
 One per category, reproduced verbatim. Use the template for the lead's category — the same
 category that chose Helen's draft.
+
+**There is no specific-deal variant here.** Helen's Ready Now draft has two openings;
+Yobani's has one. A lead who asked about a deal Helen featured takes the plain Ready Now
+template below, with `[their own words]` set to the deal they named — *the wellness center
+in Virginia*. The scarcity line is Helen's opening only; do not carry it into Yobani's
+reply.
 
 **Buy Box**
 
