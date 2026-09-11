@@ -824,21 +824,33 @@ window.
 The spreadsheet has **two tabs**: `Tracker` (the data) and `Responsibility` (the lookup).
 
 **`Tracker` tab.** Row 1 is the header. Data starts at **row 2**. As of 2026-09-11 the last
-data row is **row 32** (31 rows). **The sheet runs to column V** — five columns were added
-on 2026-09-11, so any column letter you remember from before that date is wrong. Columns
-A–V:
+data row is **row 32** (31 rows). **The sheet runs to column W** — the layout was changed
+twice on 2026-09-11, so any column letter you remember from before that date is wrong.
+Columns A–W:
 
-`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
+`Date | Tier | Category | Recommended Action | Forwarded to Yobani? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 1st Response Done? | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
 
-What moved on 2026-09-11, stated as a map so nothing is written to the wrong cell:
+What moved on 2026-09-11, stated as a map so nothing is written to the wrong cell. The
+sheet went A–Q → A–V → A–W in two edits the same day; only the final column is the one to
+write to.
 
-| Was | Is now | What changed |
+| Was (A–Q) | Is now (A–W) | What changed |
 |---|---|---|
-| A–L | A–L | unchanged |
+| A–D | A–D | unchanged |
+| E Action Taken? | **E** Forwarded to Yobani? | renamed |
+| F–L | F–L | unchanged |
 | — | **M** Helen Forward Date | new |
 | M Suggested Yobani Response | **N** Suggested Yobani 1st Response | moved one right, renamed |
-| — | **O–R** the 3-day and 5-day follow-up columns | new |
-| N–Q Setter/Closer | **S–V** Setter/Closer | moved four right |
+| — | **O** Yobani 1st Response Done? | new |
+| — | **P–S** the 3-day and 5-day follow-up columns | new |
+| N–Q Setter/Closer | **T–W** Setter/Closer | moved six right |
+
+**Column E was renamed, not repurposed.** `Action Taken?` → `Forwarded to Yobani?` names
+the question it was always answering: has Helen handed this lead to Yobani. Same `Yes`/`No`
+values, same rule for this task (`No` on Tier 1 rows, `Yes` on Tracking Handover Progress
+rows), and column F still keys off `E="No"`. The rename matters because there is now a
+second, easily confused "is it done?" column — **O**, which asks whether *Yobani* replied.
+E is Helen's action; O is Yobani's.
 
 Column **L — "Suggested Helen Email Draft"** was added 2026-09-10 and is empty for every
 row before then. That is expected; do not backfill it.
@@ -846,26 +858,43 @@ row before then. That is expected; do not backfill it.
 **Column N — "Suggested Yobani 1st Response" — is written by this task too**, as of the
 change that moved Yobani's draft forward into the digest run. It used to be filled in days
 later by `tracker-followup`. That task still owns N on every later pass — it revises the
-draft when one is missing and **clears** it when Close shows the setter call has happened —
-but on a row this task creates, N arrives populated. Like L, it is empty on every row logged
-before the change and is not backfilled. It was called "Suggested Yobani Response" and sat
-in column M until 2026-09-11; the rename to **1st** marks it as the opening message in a
-three-touch sequence, not a new field.
+draft when one is missing — but on a row this task creates, N arrives populated. Like L, it
+is empty on every row logged before the change and is not backfilled. It was called
+"Suggested Yobani Response" and sat in column M until 2026-09-11; the rename to **1st**
+marks it as the opening message in a three-touch sequence, not a new field.
+
+**Drafts in L and N are never deleted.** Confirmed with Sheila on 2026-09-11: once a draft
+is written it stays, whatever happens to the lead afterwards. `tracker-followup` used to
+clear N when a setter call showed up in Close; **that rule is gone.** A draft sitting next
+to a completed call is not a bug — the `done?` columns are what say whether it was acted
+on, and the draft is kept as a record of what was offered.
 
 **Column M — "Helen Forward Date" — is not this task's to write.** It records the date
 Helen *actually* forwarded the lead to Yobani, verified from the thread — not the date the
 handover was recommended. `tracker-followup` writes it on the pass where it confirms the
-forward and flips Action Taken? to `Yes`. On a row this task appends, M is **empty**, which
-is correct: at logging time the forward has not happened yet.
+forward and flips Forwarded to Yobani? to `Yes`. On a row this task appends, M is **empty**,
+which is correct: at logging time the forward has not happened yet.
 
-**Columns O–R are the Yobani follow-up cadence**, and they hang off M. O (`=M+3`) and Q
-(`=M+5`) are **formulas**, filled down like F and H — see below. P and R are the matching
-`done?` flags, owned by `tracker-followup`. This task never writes P or R.
+**Column O — "Yobani 1st Response Done?" — is not this task's either.** It is `Yes` once
+Yobani has **actually sent a reply to the prospect**, `No` until then — those two values
+only, no third state and no free text. It is not a copy of E: Helen can forward a lead
+(E = `Yes`) and Yobani not get to it for days (O = `No`). On a row this task appends, O is
+**empty**.
 
-**S–V** (`Setter Call Date`, `Setter Progress`, `Closer Call Date`, `Closer Progress`)
+> **The O values in the sheet today are a one-off backfill, not observed data.** Sheila set
+> O = `Yes` on every forwarded row on 2026-09-11 because Yobani reported he had cleared
+> everything Helen had sent him at that point. That is why O currently matches E exactly on
+> all 31 rows. It will not stay true, and nothing should infer "forwarded ⇒ responded" from
+> it.
+
+**Columns P–S are the Yobani follow-up cadence**, and they hang off M. P (`=M+3`) and R
+(`=M+5`) are **formulas**, filled down like F and H — see below. Q and S are the matching
+`done?` flags, owned by `tracker-followup`. This task never writes Q or S.
+
+**T–W** (`Setter Call Date`, `Setter Progress`, `Closer Call Date`, `Closer Progress`)
 belong to `tracker-followup`, which fills them in on later passes. This task writes
-**A–L and N**, fills down the four formula columns (F, H, O, Q), and leaves M, P, R and
-S–V empty on the rows it appends. Do not widen this task's writes into them, and do not
+**A–L and N**, fills down the four formula columns (F, H, P, R), and leaves M, O, Q, S and
+T–W empty on the rows it appends. Do not widen this task's writes into them, and do not
 "fix" them when they are blank on a new row — they are meant to be.
 
 **`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9`. Buy Box,
@@ -876,20 +905,20 @@ column F. It is **not** below the data block on `Tracker`, so appending to `Trac
 collide with it. (An earlier handoff doc claimed row 1 was blank with the header on row 2,
 and that the lookup sat below the data — both are wrong. Trust this section.)
 
-**Columns F, H, O and Q are formula-driven. Never write literal values to them.** The
+**Columns F, H, P and R are formula-driven. Never write literal values to them.** The
 formulas, read verbatim from row 2:
 
 - **F (Owner):** `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
-  — rows where Action Taken? is "No" resolve to Helen regardless of category; only
+  — rows where Forwarded to Yobani? is "No" resolve to Helen regardless of category; only
   handed-over rows get the category's owner. Since all three tracked categories map to
   Yobani, in practice column F now reads Helen for Tier 1 rows and Yobani for handover
   rows.
 - **H (Next Check-in Date):** `=G2+1` — the day after the last check-in, so an open lead
   comes due on every follow-up pass. (This was `=G2+5` until 2026-09-11.)
-- **O (Yobani 3-day follow-up date):** `=M2+3` — three days after Helen's forward.
-- **Q (Yobani 5-day follow-up date):** `=M2+5` — five days after Helen's forward.
+- **P (Yobani 3-day follow-up date):** `=M2+3` — three days after Helen's forward.
+- **R (Yobani 5-day follow-up date):** `=M2+5` — five days after Helen's forward.
 
-O and Q read `3` and `5` on every row where M is still empty. That is the formula doing
+P and R read `3` and `5` on every row where M is still empty. That is the formula doing
 arithmetic on a blank cell, not a stray literal — leave it. Both light up as real dates the
 moment `tracker-followup` writes the forward date into M.
 
@@ -903,7 +932,7 @@ majority and the documented format.
 ### How to write
 
 1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm the tab is still called `Tracker`.
-2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:V` to read existing rows and find the true last
+2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:W` to read existing rows and find the true last
    data row. Compute your target range explicitly rather than relying on the append API's
    table detection.
 3. **Dedup.** Before writing a row, check it isn't already in the sheet (same sender + same
@@ -911,7 +940,7 @@ majority and the documented format.
    Skip duplicates rather than creating a second row.
 4. Write with `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges, in three blocks, so F and H
    are never overwritten with literals:
-   - `Tracker!A<first>:E<last>` — Date, Tier, Category, Recommended Action, Action Taken?
+   - `Tracker!A<first>:E<last>` — Date, Tier, Category, Recommended Action, Forwarded to Yobani?
    - `Tracker!G<first>:G<last>` — Last Check-in Date
    - `Tracker!I<first>:L<last>` — Email Sender, Email Title / Link, Message Summary,
      Suggested Helen Email Draft
@@ -923,21 +952,21 @@ majority and the documented format.
    column — do not use it.
 
    Use `valueInputOption: "USER_ENTERED"` so dates coerce and `=HYPERLINK(...)` renders.
-5. **Fill down F, H, O and Q** by writing the same four formulas into the new rows with
+5. **Fill down F, H, P and R** by writing the same four formulas into the new rows with
    their row references incremented — for a new row `<n>`:
    - F: `=if(E<n>="No","Helen",xlookup(C<n>,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
    - H: `=G<n>+1`
-   - O: `=M<n>+3`
-   - Q: `=M<n>+5`
+   - P: `=M<n>+3`
+   - R: `=M<n>+5`
 
    The lookup ranges are absolute (`$A$2:$A$9`) and must stay exactly as written; only the
    `E<n>`, `C<n>`, `G<n>` and `M<n>` references change. Never invent a different formula.
-   O and Q go in as formulas even though M is empty — they are meant to sit dormant until
+   P and R go in as formulas even though M is empty — they are meant to sit dormant until
    the forward date arrives.
-6. **Verify.** Re-read `Tracker!A:V` and confirm: row count increased by exactly the number
-   of rows you wrote, F and H are populated and did not spill `#N/A`, O and Q hold their
+6. **Verify.** Re-read `Tracker!A:W` and confirm: row count increased by exactly the number
+   of rows you wrote, F and H are populated and did not spill `#N/A`, P and R hold their
    formulas, L and N landed on exactly the "Send to Yobani" rows and are empty on the
-   others, M/P/R and S–V are empty on every new row, and no row was duplicated. If
+   others, M/O/Q/S and T–W are empty on every new row, and no row was duplicated. If
    verification fails, say so explicitly in Slack — do not report success.
 
 ### Column contents
@@ -952,8 +981,10 @@ majority and the documented format.
   disqualified themselves *and* a lead whose booked call you verified in Close — the
   call-booked rule in STEP 2 governs, including its requirement to match Close leads by
   email address rather than name.
-- **Action Taken?** — "Yes" for Tracking Handover Progress ("In Progress") rows, "No" for
-  Tier 1 rows
+- **Forwarded to Yobani? (E)** — "Yes" for Tracking Handover Progress ("In Progress") rows,
+  "No" for Tier 1 rows. Called `Action Taken?` before 2026-09-11; the values and the rule
+  are unchanged. It answers whether **Helen** forwarded — not whether Yobani replied, which
+  is column O.
 - **Owner (F)** and **Next Check-in Date (H)** — formula-driven, see fill-down above
 - **Last Check-in Date** — the last date anyone at SMB Deal Hunter actually replied to this
   sender. If there's no reply yet (true for most brand-new Tier 1 leads), use today's
@@ -979,12 +1010,15 @@ majority and the documented format.
   reporting in Slack. This is the *first* of three touches; the 3-day and 5-day follow-ups
   are tracked as dates and status only, and **no draft is written for them** — there is no
   column for one and this task does not generate one.
-- **Yobani 3-day / 5-day follow-up dates (O, Q)** — formula-driven, see fill-down above
-- **Yobani 3-day / 5-day follow-up done? (P, R)** — **leave empty.** Owned by
+- **Yobani 1st Response Done? (O)** — **leave empty.** Owned by `tracker-followup`. `Yes`
+  only once Yobani has actually sent a reply to the prospect, `No` until then — those two
+  values, nothing else. Never mirror E into it.
+- **Yobani 3-day / 5-day follow-up dates (P, R)** — formula-driven, see fill-down above
+- **Yobani 3-day / 5-day follow-up done? (Q, S)** — **leave empty.** Owned by
   `tracker-followup`. The allowed values are `Yes`, `No`, and `Not Needed - Connected`
   (used when the lead is already connected and the touch is moot) — no other text, and no
-  free-form notes.
-- **Setter/Closer columns (S–V)** — **leave empty.** Owned by `tracker-followup`.
+  free-form notes. Note these take a third value that O does not.
+- **Setter/Closer columns (T–W)** — **leave empty.** Owned by `tracker-followup`.
 
 Match the formatting of the existing rows exactly — do not reformat the sheet, resize
 columns, or change header styling.

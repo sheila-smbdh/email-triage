@@ -5,7 +5,7 @@
 | **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
-| **Last updated** | 2026-09-11 — the sheet grew to **A–V**: a `Helen Forward Date` and a 3-day/5-day Yobani chase cadence were added, the Yobani draft moved M → N, and the setter/closer block moved N–Q → S–V. Docs only; the routine does not write the new columns yet (§3). |
+| **Last updated** | 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
 
 ---
 
@@ -20,7 +20,7 @@ This task closes that gap. It walks rows that have come due and asks whether eac
 actually moved:
 
 - **Tier 1 / owner Helen** — has she forwarded it to Yobani yet? If yes, promote the row
-  (`Tier` → `In Progress`, `Action Taken?` → `Yes`) and continue to the Yobani check in the
+  (`Tier` → `In Progress`, `Forwarded to Yobani?` → `Yes`) and continue to the Yobani check in the
   same pass. If no, flag it to Helen in Slack.
 - **In Progress / owner Yobani** — does Close show a setter call? If yes, the row is
   resolved and column M is **cleared**. If no, the draft already in M stands, and one is
@@ -53,23 +53,52 @@ Pitches/Engaged Reader → Helen) must stay — the `xlookup` range is absolute.
 
 ---
 
-## 3. The tracker grew to A–Q, then to A–V
+## 3. The tracker grew to A–Q, then to A–V, then to A–W
 
 Columns M–Q were added across 2026-09-10 as the task was specified. On **2026-09-11** Sheila
-added five more and everything after L shifted right, so the sheet now runs to **V**:
+changed the layout twice — first adding five columns (A–V), then a sixth (A–W) — and
+everything after L shifted right. The final state:
 
 | Col | Header | Written by |
 |---|---|---|
+| E | Forwarded to Yobani? | renamed from `Action Taken?`; same values, same writers |
 | M | Helen Forward Date | this task — **not yet implemented** |
 | N | Suggested Yobani 1st Response | **`helen-email-digest` writes it first** (2026-09-11); this task keeps it current |
-| O | Yobani 3-day follow-up date | formula `=M+3` — nobody writes it |
-| P | Yobani 3-day follow-up done? | this task — **not yet implemented** |
-| Q | Yobani 5-day follow-up date | formula `=M+5` — nobody writes it |
-| R | Yobani 5-day follow-up done? | this task — **not yet implemented** |
-| S | Setter Call Date | this task |
-| T | Setter Progress | this task |
-| U | Closer Call Date | this task |
-| V | Closer Progress | this task |
+| O | Yobani 1st Response Done? | this task — **not yet implemented** |
+| P | Yobani 3-day follow-up date | formula `=M+3` — nobody writes it |
+| Q | Yobani 3-day follow-up done? | this task — **not yet implemented** |
+| R | Yobani 5-day follow-up date | formula `=M+5` — nobody writes it |
+| S | Yobani 5-day follow-up done? | this task — **not yet implemented** |
+| T | Setter Call Date | this task |
+| U | Setter Progress | this task |
+| V | Closer Call Date | this task |
+| W | Closer Progress | this task |
+
+### The second edit: column O, and the end of clearing drafts
+
+Two things came out of the follow-up round with Sheila on 2026-09-11:
+
+**`Action Taken?` became `Forwarded to Yobani?` (E).** A rename, not a repurpose — it names
+the question the column always answered. Same `Yes`/`No`, same writers, and F still keys off
+`E="No"`. It matters because the sheet now has a second "is it done?" column asking a
+different question: **E is Helen's action, O is Yobani's.**
+
+**`Yobani 1st Response Done?` (O)** is `Yes` once Yobani has actually sent a reply to the
+prospect, `No` until then. **Two values only** — unlike Q and S it does not take
+`Not Needed - Connected`.
+
+> **O currently mirrors E on all 31 rows, and that is not a rule.** Sheila backfilled
+> O = `Yes` on every forwarded row because Yobani reported he had cleared everything Helen
+> had sent him at that point. In her words, "this isn't going to always be the case,
+> sometimes Helen can forward an email and Yobani hasn't gotten the time to respond yet."
+> Nothing should derive O from E, and the existing values should not be treated as observed
+> data.
+
+**Drafts in L and N are never deleted.** Asked directly whether O = `Yes` should retire the
+draft in N, Sheila said the draft "can always stay there, you don't ever need to remove
+drafts in L or N". This **reverses** the rule that ran through the previous version of the
+task spec, where a setter call appearing in Close meant writing an empty string to N. See
+§3.1 below for what that changes.
 
 ### The 2026-09-11 column additions
 
@@ -101,37 +130,40 @@ this task's Slack nag a daily one for anything sitting un-forwarded.
 them, but Sheila asked for the docs first and the routine change separately. Until that
 lands the three sit blank, and the O/Q cadence stays dormant because it keys off M.
 
-### Column M — now N — changed hands on 2026-09-11
+### 3.1 Column M — now N — changed hands on 2026-09-11
 
 Sheila asked for Yobani's draft to be generated in the **first** digest run, next to Helen's,
 instead of waiting for this pass. So the digest now writes M at log time, and what is left
 here is the part only a later check can know — whether the call actually got booked.
 
-This task's relationship to that draft is therefore mostly **subtractive** now (the column
-was M until the 2026-09-11 shift; it is **N** now):
+What is left for this task on that draft is narrow — write one where the digest left a gap,
+and never remove one (the column was M until the 2026-09-11 shift; it is **N** now):
 
 | Close says | N |
 |---|---|
-| Setter call on the board | **clear it** — write `""` |
+| Setter call on the board | **leave it** — resolved, draft stays |
 | No setter call, draft already present and correct | keep, byte for byte; write nothing |
 | No setter call, N empty (pre-2026-09-11 row, or a gap) | write the draft, as before |
-| Lookup failed | leave exactly as found — neither clear nor rewrite |
+| Lookup failed | leave exactly as found |
 
 Two consequences worth carrying forward:
 
-1. **"Resolved" now means deleting something.** The old rule was "a setter call on the board
-   → write no draft", which was satisfied by doing nothing. Against a row that arrives with a
-   draft already in it, doing nothing leaves a "let's grab 15 minutes" pointed at someone who
-   has already had their call. Clearing N is now an action this task must actually take.
+1. **"Resolved" means writing nothing, not deleting something.** This flipped twice in one
+   day. The original rule was "a setter call on the board → write no draft". The 2026-09-11
+   morning revision made resolving *subtractive* — clear N, so a "let's grab 15 minutes"
+   never sits next to a completed call. Sheila then rejected that outright: drafts stay.
+   **A draft beside a completed call is expected**, and the `done?` columns are what record
+   whether anything was sent. Any spec text telling you to blank a draft cell is stale.
 2. **A block write has no "skip this cell".** It overwrites its whole rectangle, so a
    row whose draft is being kept must have that exact string echoed back into the block —
    otherwise the keep silently blanks it. The task file spells this out; it is the most
    likely way to lose a draft here. **The old `M:Q` block is now actively destructive** —
-   that rectangle covers Helen Forward Date and both follow-up formulas. The draft (N) and
-   the setter/closer pair (S–V) are no longer adjacent and need two separate blocks.
+   that rectangle covers Helen Forward Date, the 1st-response flag and both follow-up
+   formulas. The draft (N) and the setter/closer pair (T–W) are no longer adjacent and need
+   two separate blocks.
 
-**S/T vs U/V is a real distinction, not a rename.** S/T are the **setter** stage — the
-~15-minute intro call that gets a lead onto the board, which is Yobani's job. U/V are the
+**T/U vs V/W is a real distinction, not a rename.** T/U are the **setter** stage — the
+~15-minute intro call that gets a lead onto the board, which is Yobani's job. V/W are the
 **closer** stage — the ~45-minute discovery/closing call that follows. Duration is the
 reliable discriminator in Close; the event name confirms it.
 
@@ -274,10 +306,10 @@ setter's time and taught Yobani to distrust the digest.
 The two that moved:
 
 - **Michael j Wilson** (`michaeljwilson11@gmail.com`) — *"SMB Deal Hunter Intro with
-  Yobani"*, 8/31 16:30 UTC, 15 min, held. Yobani did his job. → S/T.
+  Yobani"*, 8/31 16:30 UTC, 15 min, held. Yobani did his job. → T/U.
 - **Eric Rubinstein** (`ericrubinstein3@gmail.com`) — intro call 9/1 with **David Martin**
   (not Yobani, still counts), then a 9/8 discovery call with **Adam Larkins** that was
-  **cancelled**. → S/T for the setter call, U/V for the cancelled closer call.
+  **cancelled**. → T/U for the setter call, V/W for the cancelled closer call.
 
 **No drafts were produced.** Every Yobani-owned row already had a setter call, and the
 seven cold leads have not reached him. So the STEP 4 drafting path is specified and
@@ -295,7 +327,7 @@ removed, row 10 untouched.
 | # | Item | Owner |
 |---|---|---|
 | **1** | ✅ **Closed 2026-09-10.** `claude/sleepy-hamilton-bch8b6` merged, and `trig_012Ap72Z58NHa2m8ahWYUQmt` now reads both specs from **`main`**. The consequence to keep in mind: a spec edit is live on the next 08:03 run as soon as it lands on `main`, and not before — an open PR changes nothing about what runs tomorrow. | Closed |
-| **1a** | **The Routine prompt carries an orientation block that duplicates facts from the specs**, including the column map and the draft rules. It says "the files govern" and a spec always wins, but stale orientation still misleads a run before the file is read. It was updated on 2026-09-11 for the column M change; anything that moves a column or a draft between tasks needs the same edit (`update_trigger`, prompt field — the Routine keeps its run history). **It is stale again as of the 2026-09-11 A–V column shift** — the orientation block still carries the old A–Q map and must be updated with the routine change. | Ongoing |
+| **1a** | **The Routine prompt carries an orientation block that duplicates facts from the specs**, including the column map and the draft rules. It says "the files govern" and a spec always wins, but stale orientation still misleads a run before the file is read. It was updated on 2026-09-11 for the column M change; anything that moves a column or a draft between tasks needs the same edit (`update_trigger`, prompt field — the Routine keeps its run history). **It is stale again as of the 2026-09-11 A–W column shift** — the orientation block still carries the old A–Q map, the old `Action Taken?` header, and the now-removed clear-the-draft rule. All three must be updated with the routine change. | Ongoing |
 | 2 | **Both tasks now run in one Routine**, digest first, then follow-up, daily 08:03 ET. They are independent: if one spec cannot be read, the other still runs. Renamed to *"Helen email digest + tracker follow-up (daily 08:03 ET)"*. Connectors (GitHub, Composio, Slack, Close) unchanged. | Done 2026-09-10 |
 | 3 | **Drafting path untested on live data** (see §6). Still true of *this* task's write path, and now narrower: since 2026-09-11 the digest writes the draft first, so this task's common case is keep-or-clear. The first real exercise of the templates is now the digest's first run with a "Send to Yobani" lead. | Accepted |
 | 3a | **The clear-on-resolve path is new and untested** (2026-09-11). No row has yet arrived at this task with a pre-written draft *and* a setter call, because the digest only began writing M on 2026-09-11. The first run where one does is worth watching: confirm M actually comes out, and that no kept draft on a neighbouring row was blanked by the block write. | Watch |

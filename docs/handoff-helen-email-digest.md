@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–V** — the Yobani draft is now column **N**; see the sheet-layout section. |
+| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
 
 ---
 
@@ -364,24 +364,32 @@ Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner 
 
 - `Tracker` row 1 is the header; data starts at row 2; last data row is 32 as of
   2026-09-11 (31 rows).
-- Columns A–V: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
-- **Five columns were added on 2026-09-11 and every letter after L shifted.** A–L unchanged;
-  M is the new `Helen Forward Date`; the Yobani draft moved M → **N** and was renamed
-  `Suggested Yobani 1st Response`; O–R are the new follow-up cadence; the setter/closer
-  block moved N–Q → **S–V**. Any column letter from an earlier run is wrong past L.
+- Columns A–W: `Date | Tier | Category | Recommended Action | Forwarded to Yobani? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 1st Response Done? | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
+- **Six columns were added on 2026-09-11, over two edits, and every letter after L
+  shifted.** A–D unchanged; **E** was renamed `Action Taken?` → `Forwarded to Yobani?`
+  (same values, same rule); F–L unchanged; **M** is the new `Helen Forward Date`; the Yobani
+  draft moved M → **N** and was renamed `Suggested Yobani 1st Response`; **O** is the new
+  `Yobani 1st Response Done?`; **P–S** are the follow-up cadence; the setter/closer block
+  moved N–Q → **T–W**. Any column letter from an earlier run is wrong past L.
+- **E and O are different questions.** E is whether *Helen* forwarded the lead; O is whether
+  *Yobani* actually sent his reply. O takes `Yes`/`No` only — no `Not Needed - Connected`.
+  O matches E on every existing row today only because Sheila backfilled it on 2026-09-11
+  after Yobani said he had cleared his queue; it is not derived from E and will diverge.
+- **Drafts in L and N are never deleted.** Confirmed with Sheila on 2026-09-11. No task
+  clears them, including on a row whose call is already booked.
 - **Column L was added 2026-09-10** and is blank for every earlier row. It is not
   backfilled, and it stays blank for "Ignore" rows and handover rows.
 - **Column N is written by this task as of 2026-09-11.** Same gate as L — both drafts or
-  neither. `tracker-followup` still owns N on every later pass and is the only thing that
-  clears it. Rows logged before 2026-09-11 have N blank; not backfilled.
-- **This task does not write M, P, R or S–V.** M (the date Helen actually forwarded,
-  verified — not the date the handover was recommended) and the `done?` flags P and R belong
-  to `tracker-followup`; S–V are its setter/closer block. They are meant to be blank on a
-  freshly appended row.
-- **F, H, O and Q are formula-driven and must never receive literal values.**
+  neither. `tracker-followup` still owns N on every later pass, but only to add or revise a
+  draft, never to remove one. Rows logged before 2026-09-11 have N blank; not backfilled.
+- **This task does not write M, O, Q, S or T–W.** M (the date Helen actually forwarded,
+  verified — not the date the handover was recommended) and the `done?` flags O, Q and S
+  belong to `tracker-followup`; T–W are its setter/closer block. They are meant to be blank
+  on a freshly appended row.
+- **F, H, P and R are formula-driven and must never receive literal values.**
   F is `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`,
-  H is `=G2+1` (it was `=G2+5` until 2026-09-11), O is `=M2+3` and Q is `=M2+5`. All four
-  are filled down onto every new row. O and Q display `3` and `5` until a forward date lands
+  H is `=G2+1` (it was `=G2+5` until 2026-09-11), P is `=M2+3` and R is `=M2+5`. All four
+  are filled down onto every new row. P and R display `3` and `5` until a forward date lands
   in M — arithmetic on a blank cell, not a defect.
 - **The write blocks changed with the columns.** The old `I:M` block now lands the Yobani
   draft on top of `Helen Forward Date`. Writes are `A:E`, `G`, `I:L` and `N` — M is skipped

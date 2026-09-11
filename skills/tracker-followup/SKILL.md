@@ -1,6 +1,6 @@
 ---
 name: tracker-followup
-description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Yobani's booking progress in Close, and keep column N's Yobani draft current: clear it once the setter call is booked, write it where the digest did not
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Yobani's booking progress in Close, and keep column N's Yobani draft current: write it where the digest did not, and never delete one
 ---
 
 You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
@@ -35,9 +35,8 @@ keep the one artefact that unblocks the next step correct.
 **The draft itself now arrives earlier than this pass.** `helen-email-digest` writes both
 Helen's draft (column L) and Yobani's (column N) the morning a lead is logged, so a lead no
 longer waits for this pass to have a reply ready. What is left here is the part only a later
-check can know: whether the call actually got booked. So this task's relationship to column N
-is now mostly **subtractive** — it clears the draft on a row the setter call has resolved,
-and writes one only where the digest left a gap.
+check can know: whether the call actually got booked. So what is left for column N here is
+narrow — **write a draft only where the digest left a gap, and never remove one.**
 
 ---
 
@@ -71,11 +70,10 @@ looking in the wrong place for eight days.
 
 If the **Close** connector is missing, that is not a reason to abort — but it is a reason
 to leave column N alone. Every Yobani check fails to confirm, and an unconfirmed check is
-**not** evidence either way. Write no new drafts for those rows, and **do not clear the
-draft the digest already wrote** — leave N exactly as you found it. Note in column T
-(`Setter Progress`) that the check could not run, and say so in Slack. Treating a Close outage as "no call booked"
-would send "let's grab 15 minutes" to leads who have already had their call; treating it as
-"call booked" would silently delete a draft nobody has used yet.
+**not** evidence either way. Write no new drafts for those rows and leave N exactly as you
+found it. Note in column U (`Setter Progress`) that the check could not run, and say so in
+Slack. Treating a Close outage as "no call booked" would put a fresh "let's grab 15 minutes"
+draft against a lead who has already had their call.
 
 ---
 
@@ -84,45 +82,62 @@ would send "let's grab 15 minutes" to leads who have already had their call; tre
 Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit
 Spreadsheet ID: `1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ`
 
-Read `Tracker!A1:V<n>` with **`valueRenderOption: "FORMULA"`**. This matters: column J
+Read `Tracker!A1:W<n>` with **`valueRenderOption: "FORMULA"`**. This matters: column J
 holds `=HYPERLINK(...)` and the formatted read gives you only the visible subject text,
 throwing away the thread ID you need in Step 3.
 
-Columns A–V:
+Columns A–W:
 
-`Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
+`Date | Tier | Category | Recommended Action | Forwarded to Yobani? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 1st Response Done? | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
 
 Row 1 is the header; data starts at row 2.
 
-**Five columns were added on 2026-09-11 and everything after L shifted right.** Any column
-letter you remember from an earlier run is wrong past L. The map:
+**Six columns were added on 2026-09-11 and everything after L shifted right.** Any column
+letter you remember from an earlier run is wrong past L. The sheet went A–Q → A–V → A–W in
+two edits the same day; this is the final map:
 
-| Was | Is now | What changed |
+| Was (A–Q) | Is now (A–W) | What changed |
 |---|---|---|
-| A–L | A–L | unchanged |
+| A–D | A–D | unchanged |
+| E Action Taken? | **E** Forwarded to Yobani? | renamed |
+| F–L | F–L | unchanged |
 | — | **M** Helen Forward Date | new |
 | M Suggested Yobani Response | **N** Suggested Yobani 1st Response | moved one right, renamed |
-| — | **O–R** the 3-day and 5-day follow-up columns | new |
-| N/O Setter Call Date, Setter Progress | **S/T** | moved four right |
-| P/Q Closer Call Date, Closer Progress | **U/V** | moved four right |
+| — | **O** Yobani 1st Response Done? | new |
+| — | **P–S** the 3-day and 5-day follow-up columns | new |
+| N/O Setter Call Date, Setter Progress | **T/U** | moved six right |
+| P/Q Closer Call Date, Closer Progress | **V/W** | moved six right |
 
-**M–R track the handover and the chase; S–V track the two stages of a lead's journey.**
+**E was renamed, not repurposed.** `Action Taken?` → `Forwarded to Yobani?` names the
+question it always answered: did Helen hand this lead over. Same `Yes`/`No`, same meaning,
+and F still keys off `E="No"`. The rename matters because **O** is now a second "is it
+done?" column asking a different question — E is Helen's action, O is Yobani's.
+
+**M–S track the handover and the chase; T–W track the two stages of a lead's journey.**
 
 - **M (Helen Forward Date)** is the date Helen *actually* forwarded the lead to Yobani,
   verified from the thread — not the date the handover was recommended. It is **this task's
   to write**, on the pass where STEP 2 confirms the forward — but that write is **not yet
   implemented** (see *Columns defined but not yet written* in STEP 6). Empty means the
   forward has not been confirmed yet, and the whole chase cadence below stays dormant.
-- **O (`=M+3`) and Q (`=M+5`)** are formulas giving the dates Yobani's 3-day and 5-day
+- **O (Yobani 1st Response Done?)** is `Yes` once Yobani has **actually sent a reply to the
+  prospect**, `No` until then. Those two values only — it does **not** take
+  `Not Needed - Connected`. This task's to write, **not yet implemented**.
+  **O is not a copy of E.** Helen can forward a lead (E = `Yes`) and Yobani not get to it
+  for days (O = `No`); that gap is the whole reason the column exists. The values sitting in
+  O today are a one-off backfill Sheila made on 2026-09-11, when Yobani reported he had
+  cleared everything forwarded to him so far — which is why O matches E on all 31 existing
+  rows. Do not read that as a rule, and never derive O from E.
+- **P (`=M+3`) and R (`=M+5`)** are formulas giving the dates Yobani's 3-day and 5-day
   follow-ups come due. They read `3` and `5` while M is empty — arithmetic on a blank cell,
-  not a literal to clean up. **Never write a literal date to O or Q.**
-- **P and R** are the matching `done?` flags, also this task's to write and also **not yet
+  not a literal to clean up. **Never write a literal date to P or R.**
+- **Q and S** are the matching `done?` flags, also this task's to write and also **not yet
   implemented**. Allowed values, exactly: `Yes`, `No`, and `Not Needed - Connected` (the
   lead is already connected, so the touch is moot). No other text, no free-form notes.
 - **N is the *first* of three touches.** There is no column for a 2nd or 3rd draft, and
-  this task does not write one — O–R carry dates and status only.
-- **S/T are the setter stage** — the short intro call that gets a lead onto the board,
-  which is Yobani's job. **U/V are the closer stage** — the longer discovery/closing call
+  this task does not write one — O–S carry dates and status only.
+- **T/U are the setter stage** — the short intro call that gets a lead onto the board,
+  which is Yobani's job. **V/W are the closer stage** — the longer discovery/closing call
   that follows. Read the pair separately: a lead can have a completed setter call and a
   failed closer call, and conflating them loses the only fact worth acting on.
 
@@ -220,7 +235,7 @@ wait a week for the next cycle.
 **Not forwarded** → nothing has happened. Write:
 
 - **G** → today (the check ran, so the clock resets)
-- B, E, M, N, S, T → unchanged
+- B, E, M, N, T, U → unchanged
 
 and flag it to Helen in Slack (STEP 5). This is the output that matters: a Tier 1 lead
 still owned by Helen days after it arrived is a lead going cold because the handoff never
@@ -248,7 +263,7 @@ forward (`preview.body` of the Step 2 results carries it, e.g.
 `From: Michael Wilson <michaeljwilson11@gmail.com>`).
 
 If you cannot resolve an address, do not guess. Treat it as "no call booked", say so in
-column T (`Setter Progress`), and flag it in Slack.
+column U (`Setter Progress`), and flag it in Slack.
 
 > **The name-matching trap.** `christopher green <cjgreen7904@yahoo.com>` is the Close lead
 > **"CJ Green"**, while a name search for "christopher green" also returns *"Chris Green"*
@@ -268,7 +283,7 @@ column T (`Setter Progress`), and flag it in Slack.
 Close returns every meeting on the lead. Split them by **duration first, event name
 second** — the two stages are different calls:
 
-| | Setter call → S/T | Closer call → U/V |
+| | Setter call → T/U | Closer call → V/W |
 |---|---|---|
 | Duration | ~900s (15 min) | ~2700s (45 min) |
 | Event name | `SMB Deal Hunter Intro with <name>`, `Intro Call With SMB Deal Hunter Pro` | `Discovery Call with SMB Deal Hunter Pro - S2C` |
@@ -283,41 +298,41 @@ one as progress.
 
 ### Then
 
-| What Close shows | S/T (setter) | U/V (closer) | N (draft) |
+| What Close shows | T/U (setter) | V/W (closer) | N (draft) |
 |---|---|---|---|
-| A setter call, upcoming or already held | its date + who with, event name, any lead note | closer call if one exists | **clear it — resolved** |
-| A setter call held **and** a cancelled closer call | the setter call | the cancelled call's date + that it was cancelled and by whom | **clear it — resolved.** Surface in Slack |
+| A setter call, upcoming or already held | its date + who with, event name, any lead note | closer call if one exists | **leave it** — resolved |
+| A setter call held **and** a cancelled closer call | the setter call | the cancelled call's date + that it was cancelled and by whom | **leave it** — resolved. Surface in Slack |
 | No setter call, or the only one was cancelled | empty, or `No call booked` | — | **keep or write the draft** (STEP 4) |
 | No Close record for the address | `No Close record for <address>` | — | **keep or write the draft** |
 | Close lookup failed | that the check could not run | — | **leave exactly as found** — say so in Slack |
 
-**"Clear it" means write an empty string to N**, not leave whatever is there. The
-`helen-email-digest` task now writes the Yobani draft when it first logs the lead, so a
-resolved row will usually *have* a draft sitting in N that has to be taken back out. Leaving
-it is how a "let's grab 15 minutes" ends up next to a completed call, which is exactly the
-thing this rule exists to prevent.
+> **Drafts are never deleted — confirmed with Sheila, 2026-09-11.** Neither L nor N is ever
+> cleared, by this task or any other. An earlier version of this spec told you to write an
+> empty string to N once a setter call appeared in Close ("clear it — resolved"); **that
+> rule is gone.** A draft sitting beside a completed call is not a defect to tidy up: the
+> `done?` columns (O, Q, S) record whether anything was actually sent, and the draft stays
+> as the record of what was offered. If you find yourself about to blank a draft cell, stop
+> — that is the old rule.
 
-**On a failed Close lookup, change nothing in N** — do not clear it and do not write a new
-one. An unconfirmed check is not evidence either way, and a draft the digest already wrote
-is not made wrong by this task failing to reach Close.
+**On a failed Close lookup, change nothing in N** — do not write a new draft over the one
+that is there. An unconfirmed check is not evidence either way, and a draft the digest
+already wrote is not made wrong by this task failing to reach Close.
 
 Always write **G → today** for a row you checked.
 
 **A setter call on the board resolves the row.** Once a lead has had their intro call,
-Yobani's job is done and there is nothing for him to draft. Do **not** leave a "let's grab
-15 minutes" reply sitting against someone who has already had a call — it would reach a real
-customer and read as nobody paying attention. Since the digest wrote that draft days ago,
-resolving a row now means **taking the draft out**, not merely declining to add one: clear N.
-That holds even when the *closer* call then fell through — a cancelled discovery call needs
-re-booking by whoever owns that stage, which is not a setter intro. Record it in U/V, mention
-it in Slack, and clear the draft.
+Yobani's job is done and there is nothing further for him to draft. Resolving a row means
+**writing no new draft** — it does not mean removing the one already there. That holds even
+when the *closer* call then fell through: a cancelled discovery call needs re-booking by
+whoever owns that stage, which is not a setter intro. Record it in V/W and mention it in
+Slack.
 
 ---
 
-## STEP 4 — Yobani's reply: keep, write, or clear
+## STEP 4 — Yobani's reply: keep or write
 
 Only for a Yobani-owned row with **no call booked**. A row with a setter call on the board
-skips this step entirely and has N cleared in STEP 6.
+skips this step entirely; whatever is already in N stays put.
 
 **Check what is already in N before writing anything.** Since `helen-email-digest` began
 writing the Yobani draft at log time, most rows reaching this step already have one:
@@ -469,9 +484,8 @@ Sections, each skipped entirely when empty:
   resolve to a Close lead, a failed Close lookup.
 - **🟢 Moving** — rows with a setter call on the board. One line each: who with, and when.
   Where the closer call was cancelled, say so on the same line — it is the one actionable
-  fact on an otherwise resolved row. These are the rows whose draft you cleared; no need to
-  say so per row, but give the count once ("2 resolved, drafts cleared") so a cleared draft
-  never looks like a lost one.
+  fact on an otherwise resolved row. Their drafts stay in the sheet untouched; there is
+  nothing to report about them.
 - **✍️ Drafts** — *not in the message body.* See below.
 
 Write the message in standard markdown (`**bold**`, `_italic_`, `[text](url)`); the Slack
@@ -488,7 +502,7 @@ Capture the parent message's `ts` and post the drafts as **one threaded reply** 
 
 Include a lead here only when **this pass** wrote or replaced its draft. A draft carried
 over unchanged from the digest run has already been posted in that run's thread; reposting
-it every five days turns the channel into an echo and makes it unclear which copy is live.
+it on every pass turns the channel into an echo and makes it unclear which copy is live.
 If the section would be empty because every due row's draft was already correct, say so in
 one line in the parent message instead ("3 drafts already current, unchanged").
 
@@ -520,11 +534,11 @@ existing leads, it never creates them.
 
 - **F (Owner)** `=if(E<n>="No","Helen",xlookup(C<n>,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
 - **H (Next Check-in Date)** `=G<n>+1`
-- **O (Yobani 3-day follow-up date)** `=M<n>+3`
-- **Q (Yobani 5-day follow-up date)** `=M<n>+5`
+- **P (Yobani 3-day follow-up date)** `=M<n>+3`
+- **R (Yobani 5-day follow-up date)** `=M<n>+5`
 
 They already hold these formulas on every existing row. Setting E and G is what moves F and
-H — F recomputes the owner and H recomputes the due date on its own. O and Q work the same
+H — F recomputes the owner and H recomputes the due date on its own. P and R work the same
 way off M: writing the forward date into M is what turns `3` and `5` into real dates.
 Writing any of the four by hand converts a live formula to a dead literal and the row stops
 tracking.
@@ -538,50 +552,55 @@ Investor and Operators → Kyle, Pitches and Engaged Reader → Helen) **must st
 | Column | Value |
 |---|---|
 | **B** Tier | `In Progress` — only on a row whose forward you just confirmed |
-| **E** Action Taken? | `Yes` — same rows only. Match the existing casing exactly |
+| **E** Forwarded to Yobani? | `Yes` — same rows only. Match the existing casing exactly |
 | **G** Last Check-in Date | today, on **every** row you checked (including not-forwarded rows) |
-| **N** Suggested Yobani 1st Response | per STEP 4: **omit the cell from the write** when the existing draft stands; the new draft (plain text with real line breaks, not a formula, not quote-wrapped) when you wrote or replaced one; an **empty string** when the row resolved — a setter call on the board means the draft comes out. On a failed Close lookup, omit it: leave what is there |
-| **S** Setter Call Date | the intro call's date. Empty when there is none |
-| **T** Setter Progress | short factual context: who with, event name, any note the lead left |
-| **U** Closer Call Date | the discovery/closing call's date. Empty when there is none |
-| **V** Closer Progress | short factual context, including a cancellation and who it was with |
+| **N** Suggested Yobani 1st Response | per STEP 4: **omit the cell from the write** when the existing draft stands; the new draft (plain text with real line breaks, not a formula, not quote-wrapped) when you wrote or replaced one. **Never an empty string** — drafts are not deleted, including on a resolved row. On a failed Close lookup, omit it: leave what is there |
+| **T** Setter Call Date | the intro call's date. Empty when there is none |
+| **U** Setter Progress | short factual context: who with, event name, any note the lead left |
+| **V** Closer Call Date | the discovery/closing call's date. Empty when there is none |
+| **W** Closer Progress | short factual context, including a cancellation and who it was with |
 
-Do not touch A, C, D, I, J, K or L. **Do not touch O or Q** — they are formulas. Do not
+Do not touch A, C, D, I, J, K or L. **Do not touch P or R** — they are formulas. Do not
 touch a row whose D is `Ignore`.
 
-**Columns defined but not yet written.** M, P and R are this task's by ownership, but the
-steps above do not populate them yet — the routine change comes separately. Until it lands:
+**Columns defined but not yet written.** M, O, Q and S are this task's by ownership, but
+the steps above do not populate them yet — the routine change comes separately. Until it
+lands:
 
 | Column | Owner | Written today? | Allowed values |
 |---|---|---|---|
 | **M** Helen Forward Date | this task | **no** — STEP 2 confirms the forward but does not record its date | a real date, only once the forward is verified in the thread |
-| **P** Yobani 3-day follow-up done? | this task | **no** | `Yes`, `No`, `Not Needed - Connected` — nothing else |
-| **R** Yobani 5-day follow-up done? | this task | **no** | same three values |
+| **O** Yobani 1st Response Done? | this task | **no** | `Yes`, `No` — **two values only**, no `Not Needed - Connected` |
+| **Q** Yobani 3-day follow-up done? | this task | **no** | `Yes`, `No`, `Not Needed - Connected` — nothing else |
+| **S** Yobani 5-day follow-up done? | this task | **no** | same three values |
 
-Leave all three exactly as found. Do not improvise a value into them, and do not treat a
-blank as a bug.
+Leave all four exactly as found. Do not improvise a value into them, and do not treat a
+blank as a bug. In particular **never copy E into O** — they answer different questions
+(Helen forwarded vs. Yobani replied), and the fact that they happen to match on every
+existing row is a one-off backfill, not a rule.
 
 ### How to write
 
 Use `GOOGLESHEETS_VALUES_UPDATE` with `value_input_option: "USER_ENTERED"` so dates coerce
 to real dates. Because the due rows are usually contiguous but the columns are not, write
 in per-column blocks — `Tracker!B<a>:B<b>`, `Tracker!E<a>:E<b>`, `Tracker!G<a>:G<b>`,
-`Tracker!N<a>:N<b>`, `Tracker!S<a>:V<b>` — which keeps F, H, O and Q untouched by
+`Tracker!N<a>:N<b>`, `Tracker!T<a>:W<b>` — which keeps F, H, P and R untouched by
 construction.
 
 **The old `M:Q` block is now wrong and destructive.** That rectangle covers Helen Forward
-Date, the draft, and both follow-up formulas; writing it would blank M and overwrite O and
-Q with literals. The draft moved to N and the setter/closer pair to S–V, and the two are no
-longer adjacent, so they take **two separate blocks** with M, O, P, Q and R left out
-entirely.
+Date, the draft, the 1st-response flag and both follow-up formulas; writing it would blank M
+and O and overwrite P and R with literals. The draft moved to N and the setter/closer pair
+to T–W, and the two are no longer adjacent, so they take **two separate blocks** with M and
+O–S left out entirely.
 
 **The N block overwrites every cell in its range, including N on rows whose draft you
 decided to keep.** A block write has no "leave this one alone". So for each row in the
 block, put in the N slot the value that should end up there: the **exact string you read in
-STEP 1** for a kept draft, your new text for one you wrote or replaced, and `""` for a
-resolved row. Round-tripping the value you read is what "keep unchanged" means mechanically.
-If echoing a long draft back is awkward, write the resolved and rewritten rows individually
-instead — but never send a block that blanks N on a row you meant to leave alone. For scattered rows use
+STEP 1** for a kept draft, or your new text for one you wrote or replaced. Round-tripping
+the value you read is what "keep unchanged" means mechanically. **No row ever gets `""`** —
+a resolved row keeps its draft like any other. If echoing a long draft back is awkward,
+write the rewritten rows individually instead — but never send a block that blanks N on a
+row you meant to leave alone. For scattered rows use
 `GOOGLESHEETS_UPDATE_VALUES_BATCH` (note: it takes `valueInputOption` in camelCase, unlike
 the singular tool's `value_input_option`) and check every entry in `data.responses[*]`.
 
@@ -589,18 +608,19 @@ Google Sheets rate-limits at 60 writes/minute. Batch; do not write cell by cell.
 
 ### Verify, and report honestly
 
-Re-read `Tracker!A1:V<n>` with `valueRenderOption: "FORMULA"` and confirm:
+Re-read `Tracker!A1:W<n>` with `valueRenderOption: "FORMULA"` and confirm:
 
 - every G you wrote is today's serial, and H is still the formula `=G<n>+1`
 - every F is still the `if(...xlookup(...))` formula, and none of them spilled `#N/A`
-- **O and Q are still the formulas `=M<n>+3` and `=M<n>+5`** — a literal date in either
+- **P and R are still the formulas `=M<n>+3` and `=M<n>+5`** — a literal date in either
   means a block write ran over them
-- **M, P and R are untouched** on every row
+- **M, O, Q and S are untouched** on every row
 - B and E changed on exactly the rows you meant, and nowhere else
-- N/S/T landed on the right rows
-- **N is empty on every row you resolved**, and **unchanged — byte for byte — on every row
-  whose draft you kept**. A kept draft that came back altered or blank means the block write
-  clobbered it; restore it from what you read in STEP 1 and say so in Slack
+- N/T/U landed on the right rows
+- **no draft cell is empty that was not empty before.** Every L and N you read in STEP 1 is
+  still there, byte for byte, unless this pass deliberately rewrote it. A draft that came
+  back blank means the block write clobbered it; restore it from what you read in STEP 1 and
+  say so in Slack
 - no row was added or removed
 
 If verification fails, **say so explicitly in Slack**. Never post a success digest for a
