@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
+| **Last updated** | 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
 
 ---
 
@@ -137,9 +137,11 @@ of their email, still appears in the digest, still gets a tracker row.
 ### Suggested reply drafts (added 2026-09-10)
 
 Every lead that *is* going to Yobani now comes with a ready-to-send reply in Helen's
-voice, so the handoff is one paste rather than one more thing to write. Drafts appear in
+voice, so the handoff is one paste rather than one more thing to write. Drafts appeared in
 tracker column L and in a **threaded reply** under the Slack digest — in the message body
-they would bury the lead list the digest exists to deliver.
+they would have buried the lead list the digest exists to deliver. *(Superseded 2026-09-11:
+Helen's draft is now created in her Gmail and the Slack thread is gone — see* Helen's reply
+is now drafted in her Gmail *below. Column L is unchanged.)*
 
 There is one template per category (Buy Box, Ready Now, Price Wall), reproduced verbatim
 in the task file. Three constraints on them are deliberate and should survive future
@@ -169,7 +171,8 @@ anything to send.
 
 So both drafts now come out of the digest run: Helen's to column L, Yobani's to column N
 (`Suggested Yobani 1st Response`, column M until the 2026-09-11 shift),
-both posted in the same Slack thread under the day's digest, labelled by sender.
+both posted in the same Slack thread under the day's digest, labelled by sender. *(That
+thread was removed on 2026-09-11; both drafts still come out of this run, into L and N.)*
 
 Three things this deliberately does **not** change:
 
@@ -302,7 +305,7 @@ Two deliberate limits:
 - **No tracker row, no Yobani, no Recommended Action.** These people have already joined;
   there is nothing for a setter to book and no pipeline to move them through. A row would
   sit permanently due in a buyer-lead tracker and either nag Helen forever or be skipped
-  forever. The Slack thread is the whole record.
+  forever. The digest bullet and the Gmail draft are the whole record.
 - **Surfaced once.** STEP 1 reads `newer_than:1d`, so if the thread reply goes unactioned
   that member does not get their bonuses and nothing raises it again. That is the accepted
   cost of keeping a customer chore out of the lead pipeline. If it turns out to be missed in
@@ -353,6 +356,62 @@ Two consequences that are easy to miss:
 Ready Now remains the one category that does not ask for a number when it is missing — it
 sends the Calendly link. That is deliberate and the file says so, because the obvious "fix"
 is to paste the Buy Box line into it.
+
+### Helen's reply is now drafted in her Gmail, and the Slack draft thread is gone (2026-09-11)
+
+Sheila's call, and the largest change to what this routine *does* since the rebuild: on the
+first pass over Helen's inbox, the reply the task writes for her is created as a **real Gmail
+draft on the lead's own thread, with Yobani cc'd**. Helen opens the thread, reads the draft
+already sitting in the reply box, edits it if she wants, and hits send.
+
+The Slack digest **no longer carries the threaded reply of draft text.** That thread existed
+for one reason — to give her something to copy — and there is nothing to copy any more. Two
+copies of the same reply, one of them stale the moment she edits the real draft, is worse
+than one.
+
+What this changed, in order of how much it matters:
+
+- **The routine is no longer read-only on email.** It was, from the rebuild until now. It
+  now makes exactly one kind of write: `GMAIL_CREATE_EMAIL_DRAFT`. It does not send, reply,
+  forward, label, archive or delete, and it does not update or delete a draft — including
+  one it wrote itself on an earlier run. `GMAIL_SEND_DRAFT` and `GMAIL_REPLY_TO_THREAD` are
+  named in the task file as things never to call. **If this ever grows the ability to send,
+  that is a different and much more dangerous task and should be decided deliberately, not
+  arrived at.**
+- **The cc became real.** "Cc Yobani" used to be an instruction to whoever pasted. It is now
+  a header on the draft, which means the two drafts that must *not* cc him — the Price Wall
+  call-pushback variant and the bonus reply — are now a live correctness question rather
+  than a note. Both say so in three places in the task file, and STEP 3 verifies the Cc
+  header by reading the draft back.
+- **The default Composio Gmail account is now Yobani's**, not Helen's. It was Sheila's
+  problem in theory before; with a write in the loop it is a real one, because an unpinned
+  call would put a reply to a lead, in Helen's words, in the setter's drafts. Every Gmail
+  call pins `gmail_kath-tiou`.
+- **Duplicate drafts are the failure mode to watch.** A thread can surface twice — a lead
+  who writes on two consecutive days, a rerun after a partial failure — and a second draft
+  in the same thread is one Helen cannot choose between. STEP 3 fetches the thread and skips
+  any thread that already carries a `DRAFT`-labelled message, leaving whatever is there
+  alone. That is also what makes the step safe to re-run by hand.
+- **A failed draft falls back to Slack.** If Gmail refuses, the text would otherwise vanish —
+  the thread that used to hold it is gone. So a failure posts that lead's draft in a thread
+  reply, in the old format, and marks the lead `⚠️ draft not created`. That is the only
+  thread reply this task now posts.
+
+Three things this deliberately does **not** change:
+
+- **Bonus claims are drafted too, without a cc.** They are the one non-lead the digest
+  surfaces and they have no tracker row, so before this change the Slack thread was the only
+  place their reply existed. Dropping the thread without drafting them in Gmail would have
+  silently removed the whole output for a new member missing their bonuses.
+- **`Ignore` leads and handover rows still get nothing.** Same gate as column L. A
+  ready-to-send draft in front of Helen for a lead the routine decided not to pursue is
+  worse than no draft.
+- **Yobani's day-1 reply is not drafted in Gmail.** He sends it from his own mailbox after
+  Helen forwards, and column N is where he reads it. The known cost, accepted: his draft used
+  to get a preview in the digest thread and now appears in Slack nowhere — it lives in the
+  sheet, and `tracker-followup` is what flags a row when it is actually his. If that turns
+  out to be missed in practice, the fix is to surface it in the follow-up digest when the row
+  becomes his, not to bring back the digest thread.
 
 ---
 
@@ -417,7 +476,9 @@ Both had shaped the old task file's write procedure:
 | "A Category → Owner lookup table sits below the data block in the same sheet… appending at the next empty row may collide with it" | The lookup is on a **separate `Responsibility` tab**. Appending to `Tracker` cannot collide with it. The collision-avoidance guidance was solving a problem that did not exist. |
 
 The rest of that document's decisions were sound and are carried forward: never substitute
-Sheila's inbox, read-only on email, Recommended Action stays out of the Slack text.
+Sheila's inbox, Recommended Action stays out of the Slack text. The third — read-only on
+email — held until 2026-09-11, when drafting Helen's reply moved into the task; it is now
+"never *sends* email", and the distinction is spelled out in §4.
 
 ---
 
@@ -487,7 +548,8 @@ branch, and reports which ref it used. Once the PR is merged, drop that fallback
   sections, rows in the tracker, columns F and H filled down by formula rather than typed,
   and the post-write verification passing.
 - The Gmail link format is confirmed working (open item 1) or corrected in the task file.
-- Nobody is asked to paste anything.
+- Nobody is asked to paste anything. As of 2026-09-11 that extends to Helen: her reply is a
+  draft in her own thread, not a block of text in Slack.
 
 ---
 
