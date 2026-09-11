@@ -5,7 +5,7 @@
 | **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
-| **Last updated** | 2026-09-10 |
+| **Last updated** | 2026-09-11 — column M is now pre-written by the digest; this task keeps it current (§3). |
 
 ---
 
@@ -23,7 +23,8 @@ actually moved:
   (`Tier` → `In Progress`, `Action Taken?` → `Yes`) and continue to the Yobani check in the
   same pass. If no, flag it to Helen in Slack.
 - **In Progress / owner Yobani** — does Close show a setter call? If yes, the row is
-  resolved. If no, write a ready-to-paste reply for Yobani into column M.
+  resolved and column M is **cleared**. If no, the draft already in M stands, and one is
+  written if it is missing.
 
 Every row that gets checked has `Last Check-in Date` (G) set to today, which rolls
 `Next Check-in Date` (H) forward by formula.
@@ -58,11 +59,37 @@ Columns M–Q were added across 2026-09-10 as the task was specified:
 
 | Col | Header | Written by |
 |---|---|---|
-| M | Suggested Yobani Response | this task |
+| M | Suggested Yobani Response | **`helen-email-digest` writes it first** (2026-09-11); this task keeps it current |
 | N | Setter Call Date | this task |
 | O | Setter Progress | this task |
 | P | Closer Call Date | this task |
 | Q | Closer Progress | this task |
+
+### Column M changed hands on 2026-09-11
+
+Sheila asked for Yobani's draft to be generated in the **first** digest run, next to Helen's,
+instead of waiting for this pass. So the digest now writes M at log time, and what is left
+here is the part only a later check can know — whether the call actually got booked.
+
+This task's relationship to M is therefore mostly **subtractive** now:
+
+| Close says | M |
+|---|---|
+| Setter call on the board | **clear it** — write `""` |
+| No setter call, draft already present and correct | keep, byte for byte; write nothing |
+| No setter call, M empty (pre-2026-09-11 row, or a gap) | write the draft, as before |
+| Lookup failed | leave exactly as found — neither clear nor rewrite |
+
+Two consequences worth carrying forward:
+
+1. **"Resolved" now means deleting something.** The old rule was "a setter call on the board
+   → write no draft", which was satisfied by doing nothing. Against a row that arrives with a
+   draft already in it, doing nothing leaves a "let's grab 15 minutes" pointed at someone who
+   has already had their call. Clearing M is now an action this task must actually take.
+2. **The M–Q block write has no "skip this cell".** It overwrites its whole rectangle, so a
+   row whose draft is being kept must have that exact string echoed back into the block —
+   otherwise the keep silently blanks it. The task file spells this out; it is the most
+   likely way to lose a draft here.
 
 **N/O vs P/Q is a real distinction, not a rename.** N/O are the **setter** stage — the
 ~15-minute intro call that gets a lead onto the board, which is Yobani's job. P/Q are the
@@ -104,9 +131,10 @@ task and still live: `christopher green <cjgreen7904@yahoo.com>` is the Close le
 *"Chris Greene"* — different people. The tracker only stores a display name, so the address
 has to come from Gmail.
 
-**A Close outage must not produce drafts.** An unconfirmed check is not evidence that no
-call was booked. Treating it as such would send "let's grab 15 minutes" to leads who have
-already had their call.
+**A Close outage must not produce drafts — and must not delete them either.** An unconfirmed
+check is not evidence in either direction. Treating it as "no call booked" would send "let's
+grab 15 minutes" to leads who have already had their call; treating it as "call booked" would
+now quietly clear a draft the digest wrote and nobody has used yet. Leave M as found.
 
 **Slack appends "Sent using Claude" itself.** Adding the footer by hand renders it twice —
 visible in the channel on both 9/10 digests.
@@ -224,7 +252,8 @@ removed, row 10 untouched.
 |---|---|---|
 | **1** | ⚠️ **The Routine reads from an unmerged branch.** `trig_012Ap72Z58NHa2m8ahWYUQmt` is pinned to `claude/sleepy-hamilton-bch8b6`, because `main` holds an **older** `helen-email-digest/SKILL.md` (no hydration rule) and no `tracker-followup/SKILL.md` at all. A fallback-on-absence would not have caught the stale digest spec — the file exists on `main`, it is just wrong. **Merge that branch, then change the Routine's "Which ref to read" section to `main`.** Until then the branch must not be deleted, and anyone editing a spec on `main` will be silently ignored. | Sheila / Zain |
 | 2 | **Both tasks now run in one Routine**, digest first, then follow-up, daily 08:03 ET. They are independent: if one spec cannot be read, the other still runs. Renamed to *"Helen email digest + tracker follow-up (daily 08:03 ET)"*. Connectors (GitHub, Composio, Slack, Close) unchanged. | Done 2026-09-10 |
-| 3 | **Drafting path untested on live data** (see §6). Accepted — it will exercise on the first run where a forwarded lead has no setter call. | Accepted |
+| 3 | **Drafting path untested on live data** (see §6). Still true of *this* task's write path, and now narrower: since 2026-09-11 the digest writes the draft first, so this task's common case is keep-or-clear. The first real exercise of the templates is now the digest's first run with a "Send to Yobani" lead. | Accepted |
+| 3a | **The clear-on-resolve path is new and untested** (2026-09-11). No row has yet arrived at this task with a pre-written draft *and* a setter call, because the digest only began writing M on 2026-09-11. The first run where one does is worth watching: confirm M actually comes out, and that no kept draft on a neighbouring row was blanked by the block write. | Watch |
 | 4 | **Flagged leads go quiet for 5 days.** Setting G = today on a *not-forwarded* row pushes H forward, so Helen is nagged once every 5 days rather than daily. Reviewed and accepted as-is on 2026-09-10. | Accepted |
 | 5 | **`H = G+5` is 5 days, not a week.** Sheila's phrasing was "so the next check-in date becomes next week"; the formula is +5 calendar days, so from a Monday check-in it lands on a Saturday. Reviewed and accepted as-is on 2026-09-10. | Accepted |
 | 6 | **Re-review of the deleted 8/29 rows: explicitly declined.** Two of the ten surviving rows were misclassified from truncated snippets, so the ~16 rows deleted on 9/10 could hold the opposite error — a real buyer dropped as Tier 3. Sheila's call on 2026-09-10 was that recovering them from version history is not worth it. Recorded so it is not mistaken for an oversight. The hydration rule prevents the same error going forward. | Closed |
