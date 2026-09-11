@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). |
+| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–V** — the Yobani draft is now column **N**; see the sheet-layout section. |
 
 ---
 
@@ -167,14 +167,15 @@ reply she was handing *to* did not exist yet. Worse, a lead she forwarded the sa
 could sit for up to five days before the follow-up pass caught up and produced Yobani
 anything to send.
 
-So both drafts now come out of the digest run: Helen's to column L, Yobani's to column M,
+So both drafts now come out of the digest run: Helen's to column L, Yobani's to column N
+(`Suggested Yobani 1st Response`, column M until the 2026-09-11 shift),
 both posted in the same Slack thread under the day's digest, labelled by sender.
 
 Three things this deliberately does **not** change:
 
 - **Yobani's draft is provisional.** At digest time the lead has not been forwarded and no
   setter-call check has run for them. `tracker-followup` still owns the verification and
-  still owns column M on every later pass.
+  still owns that draft column on every later pass.
 - **The resolve rule got stricter, not looser.** A setter call on the board used to mean
   "write no draft"; on a row that now arrives with one already in M, it means **clear M**.
   A stale "let's grab 15 minutes" sitting next to a completed call is the exact failure the
@@ -254,7 +255,7 @@ edits it next:
   the figure back in contradicts the message it is wrapped in.
 - **It does not cc Yobani.** Its last line asks whether the lead wants someone looped in;
   looping him in pre-emptively contradicts that. Classification, Recommended Action, the
-  tracker row and the Yobani draft in column M are all unchanged — only Helen's opening move
+  tracker row and the Yobani draft in column N are all unchanged — only Helen's opening move
   differs, and the forward follows the lead's reply.
 - **It is flagged for Helen's review in Slack**, and it is the only draft that is. Sheila's
   note was that an email like Stephen's *"might need Helen's discretion"*. These arrive long
@@ -361,17 +362,30 @@ https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5u
 
 Two tabs: **`Tracker`** (data) and **`Responsibility`** (the category → owner lookup).
 
-- `Tracker` row 1 is the header; data starts at row 2; last data row is 27 as of
-  2026-09-10 (26 rows, all dated 8/29/2026).
-- Columns A–M: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Suggested Yobani Response`
+- `Tracker` row 1 is the header; data starts at row 2; last data row is 32 as of
+  2026-09-11 (31 rows).
+- Columns A–V: `Date | Tier | Category | Recommended Action | Action Taken? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
+- **Five columns were added on 2026-09-11 and every letter after L shifted.** A–L unchanged;
+  M is the new `Helen Forward Date`; the Yobani draft moved M → **N** and was renamed
+  `Suggested Yobani 1st Response`; O–R are the new follow-up cadence; the setter/closer
+  block moved N–Q → **S–V**. Any column letter from an earlier run is wrong past L.
 - **Column L was added 2026-09-10** and is blank for every earlier row. It is not
   backfilled, and it stays blank for "Ignore" rows and handover rows.
-- **Column M is written by this task as of 2026-09-11.** Same gate as L — both drafts or
-  neither. `tracker-followup` still owns M on every later pass and is the only thing that
-  clears it. Rows logged before 2026-09-11 have M blank; not backfilled.
-- **F and H are formula-driven and must never receive literal values.**
+- **Column N is written by this task as of 2026-09-11.** Same gate as L — both drafts or
+  neither. `tracker-followup` still owns N on every later pass and is the only thing that
+  clears it. Rows logged before 2026-09-11 have N blank; not backfilled.
+- **This task does not write M, P, R or S–V.** M (the date Helen actually forwarded,
+  verified — not the date the handover was recommended) and the `done?` flags P and R belong
+  to `tracker-followup`; S–V are its setter/closer block. They are meant to be blank on a
+  freshly appended row.
+- **F, H, O and Q are formula-driven and must never receive literal values.**
   F is `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`,
-  H is `=G2+5`.
+  H is `=G2+1` (it was `=G2+5` until 2026-09-11), O is `=M2+3` and Q is `=M2+5`. All four
+  are filled down onto every new row. O and Q display `3` and `5` until a forward date lands
+  in M — arithmetic on a blank cell, not a defect.
+- **The write blocks changed with the columns.** The old `I:M` block now lands the Yobani
+  draft on top of `Helen Forward Date`. Writes are `A:E`, `G`, `I:L` and `N` — M is skipped
+  deliberately.
 - `Responsibility!A2:B9` holds the lookup. All three tracked categories map to **Yobani**,
   so column F now resolves to Helen for Tier 1 rows and Yobani for handover rows. **The
   unused lookup rows (Bill, Kyle, Helen) must stay** — the `xlookup` range is absolute and
