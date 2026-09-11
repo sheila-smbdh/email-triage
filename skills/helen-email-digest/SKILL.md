@@ -155,9 +155,15 @@ back within seconds, from `helen+canned.response@smbdealhunter.xyz`. That path n
 from this routine.
 
 What needs this routine is the miss: **people reply "Yes" to the wrong email** — a deal
-newsletter, a lesson email, whatever was most recently in their inbox — and the automation,
-which only watches the onboarding thread, never fires. The member gets no bonuses and
-nobody finds out.
+newsletter, whatever was most recently in their inbox — and sometimes the automation does
+not fire. The member gets no bonuses and nobody finds out.
+
+**Do not try to predict when it fires.** Its exact trigger is not documented anywhere and
+was not reverse-engineered: over three days it answered 29 replies on the onboarding thread
+and one on a *"Lesson 1: The 10 Core Steps to Biz Buying"* thread, while Jason Smith's
+newsletter reply got nothing. Subject line is not a reliable predictor either way. **Check
+the thread, every time** — that is the whole method below, and it stays correct however the
+automation is configured.
 
 So, for every reply whose own text is a bare affirmative — `Yes`, `YES`, `yes`, `Yes please`
 — with nothing else to it once the quoted email below and any signature block are set aside:
@@ -173,6 +179,9 @@ So, for every reply whose own text is a bare affirmative — `Yes`, `YES`, `yes`
 
 The automation answers within about fifteen seconds, so on a 24-hour window its absence is
 settled, not pending.
+
+If the volume of bonus claims ever jumps, that is a signal the automation's trigger changed
+or broke — say so in the run report rather than quietly drafting thirty replies.
 
 Worked examples, both verified 2026-09-11:
 

@@ -266,9 +266,16 @@ canned-response automation watches that thread and sends the welcome bonuses bac
 about fifteen seconds, from `helen+canned.response@smbdealhunter.xyz`. Nothing about that
 path needs this routine.
 
-The miss is when someone replies **"Yes" to the wrong email** — a deal newsletter, a lesson
-email — and the automation, which only watches the onboarding thread, never fires. A paying
-member gets no bonuses and nobody finds out.
+The miss is when someone replies **"Yes" to the wrong email** — a deal newsletter, whatever
+was most recently in their inbox — and the automation does not fire. A paying member gets no
+bonuses and nobody finds out.
+
+**Its trigger was not reverse-engineered, deliberately.** Over three days it answered 29
+replies on the onboarding thread and one on a *"Lesson 1: The 10 Core Steps to Biz Buying"*
+thread, while Jason Smith's newsletter reply got nothing — so subject line does not predict
+it in either direction. The routine checks the thread instead, which stays correct however
+the automation is configured. A sudden jump in bonus claims means its trigger changed or
+broke, and the run report should say so.
 
 So a bare-affirmative reply is no longer dropped on sight. The routine fetches the thread,
 looks for a message from `helen+canned.response@smbdealhunter.xyz`, and:
