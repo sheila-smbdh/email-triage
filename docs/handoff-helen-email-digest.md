@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task, and Helen's Ready Now draft gained a specific-deal opening (§4). |
+| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). |
 
 ---
 
@@ -224,6 +224,85 @@ Asking whether a featured deal is available is also, explicitly, a buyer signal 
 in *Deal talk is not buyer intent* alongside the two leads who discussed deal terms and were
 not buying. The line is between analysing a deal and asking for one, not between mentioning
 a deal and not mentioning one.
+
+### A second Price Wall opening, for leads refusing the call (2026-09-11)
+
+Helen's Price Wall draft now has two openings too, and they say close to opposite things:
+
+- **Price came up in passing** — *"what does it cost?"* — keeps the existing template, which
+  gives the 1% answer and moves to a call.
+- **The lead is pushing back on the call itself** and asking a list of specific questions
+  about terms — gets a new template that answers none of them, and states the position
+  instead: the call is mutual vetting, the guarantee is not offered to everyone, and the
+  details come after mutual fit.
+
+The case behind it: W. Stephen Aldridge, 2026-09-10, eight numbered questions (price,
+payment terms, additional fees, what the one-on-one assistance includes, Southeast deal
+flow, exclusivity, refund policy, the written terms of the closing guarantee, enrolling
+without the intro call) prefaced by *"Requiring a preliminary phone call feels inefficient
+if its principal purpose is to explain standard terms or provide the price."* He is a real
+buyer — an experienced operator who has evaluated acquisitions before. The old template
+would have answered one question of eight with the 1% line and then asked him onto the call
+he had just objected to.
+
+Three things about this template are load-bearing and will look like omissions to whoever
+edits it next:
+
+- **It does not quote the 1%, on purpose.** It is the one Price Wall draft that withholds
+  the price, because the position it states is that details come after mutual fit. Putting
+  the figure back in contradicts the message it is wrapped in.
+- **It does not cc Yobani.** Its last line asks whether the lead wants someone looped in;
+  looping him in pre-emptively contradicts that. Classification, Recommended Action, the
+  tracker row and the Yobani draft in column M are all unchanged — only Helen's opening move
+  differs, and the forward follows the lead's reply.
+- **It is flagged for Helen's review in Slack**, and it is the only draft that is. Sheila's
+  note was that an email like Stephen's *"might need Helen's discretion"*. These arrive long
+  and specific, and the reply is a considered position rather than a one-liner.
+
+### Bonus claims — the one non-lead the digest surfaces (2026-09-11)
+
+Helen's onboarding email, *"You're in! Just one more thing…"*, asks a new member to reply. A
+canned-response automation watches that thread and sends the welcome bonuses back within
+about fifteen seconds, from `helen+canned.response@smbdealhunter.xyz`. Nothing about that
+path needs this routine.
+
+The miss is when someone replies **"Yes" to the wrong email** — a deal newsletter, a lesson
+email — and the automation, which only watches the onboarding thread, never fires. A paying
+member gets no bonuses and nobody finds out.
+
+So a bare-affirmative reply is no longer dropped on sight. The routine fetches the thread,
+looks for a message from `helen+canned.response@smbdealhunter.xyz`, and:
+
+- **Found** → drop it. Handled. This is the overwhelming majority.
+- **Not found** → surface it in a new **🎁 Bonus link not sent** section of the digest, with
+  Helen's reply — the automation's own wording, verbatim, so a member who gets it late
+  cannot tell the difference.
+
+Verified 2026-09-11: Bret Biedscheid replied "YES" to the onboarding email at 14:26:41 and
+the canned response landed at 14:26:56 → drop. Jason Smith replied "Yes" twice to the *"New
+Deals: A pool service company…"* newsletter and his thread has no canned response at all →
+bonus claim.
+
+**The canned-response sender is the only reliable detector.** The bonus link lives inside an
+HTML anchor, so a Gmail text search for the URL finds nothing — an `in:sent` search for
+`Welcome-Bonuses` returned zero results against a mailbox sending these hundreds of times a
+week. Match on `from:helen+canned.response@smbdealhunter.xyz` within the thread.
+
+Two deliberate limits:
+
+- **No tracker row, no Yobani, no Recommended Action.** These people have already joined;
+  there is nothing for a setter to book and no pipeline to move them through. A row would
+  sit permanently due in a buyer-lead tracker and either nag Helen forever or be skipped
+  forever. The Slack thread is the whole record.
+- **Surfaced once.** STEP 1 reads `newer_than:1d`, so if the thread reply goes unactioned
+  that member does not get their bonuses and nothing raises it again. That is the accepted
+  cost of keeping a customer chore out of the lead pipeline. If it turns out to be missed in
+  practice, the fix is a row or a separate list — not a wider digest window.
+
+One risk recorded rather than solved: a bare "Yes" on a newsletter could be answering a
+question the newsletter itself asked rather than claiming bonuses, and the word "Yes" cannot
+tell you which. Sending a welcome-bonus link to someone who meant something else costs
+nothing; leaving a member without their bonuses costs a lot. The routine sends.
 
 ---
 

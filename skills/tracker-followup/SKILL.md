@@ -196,6 +196,13 @@ and flag it to Helen in Slack (STEP 5). This is the output that matters: a Tier 
 still owned by Helen days after it arrived is a lead going cold because the handoff never
 happened.
 
+**One Price Wall row is expected to sit here for a while.** When a lead pushed back on the
+call itself, `helen-email-digest` gives Helen a draft that asks whether they want someone
+looped in rather than cc'ing Yobani, so the forward waits on their reply. Flag it the same
+way — an unanswered lead is still worth surfacing — but say in Slack that the handoff is
+waiting on the lead, not on Helen. Column M is unaffected: that row carries the ordinary
+Price Wall draft and this step does not touch it.
+
 ---
 
 ## STEP 3 — Yobani rows: has the call been set up?
