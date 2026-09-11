@@ -150,8 +150,9 @@ Recorded verbatim in effect so they are not re-litigated:
 - Only `Tier` values `1` and `In Progress` exist now. The 8/29 batch's Tier 2/3 and
   Uncategorized rows were deleted from the sheet on 9/10.
 - Every row whose E/F was checked gets **G = today**, whether or not anything changed.
-- `[time slot]` and `[Calendly Link]` stay as **literal placeholders** for Yobani to fill
-  in. Do not substitute a real time or link.
+- `[Calendly Link]` and `[today/tomorrow]` stay as **literal placeholders** for Yobani to
+  fill in. Do not substitute a real link or a real day. `[time slot]` is retired — see the
+  day-1 rules in the digest handoff §4.
 - Yobani replies **on the existing thread with Helen kept on it**, so the handoff stays
   tracked.
 - A setter call already on the board **resolves** the row — no draft, even if the closer
@@ -166,6 +167,10 @@ unreadable from this session — any proposed slot would be invented. His schedu
 his org membership) if this is ever revisited. Note `calendly.com` is blocked by the
 session egress proxy, so it cannot be verified by fetching — the API record is the
 authority.
+
+The day-1 rules retired `[time slot]` in favour of a call `[today/tomorrow]`, which does not
+escape this: committing him to a day is the same invention as committing him to an hour, so
+that bracket stays a placeholder for exactly this reason.
 
 ---
 

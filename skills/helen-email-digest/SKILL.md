@@ -1,6 +1,6 @@
 ---
 name: helen-email-digest
-description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall), plus one row per lead in the Google Sheets tracker carrying both the Helen and Yobani reply drafts
+description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, and one row per lead in the Google Sheets tracker carrying both the Helen and Yobani reply drafts
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
@@ -13,6 +13,12 @@ work parked for a person to finish by hand.
 **Ready Now**, and **Price Wall** — plus threads in those three categories that Helen has
 already handed off. Everything else in the inbox is dropped: not digested, not logged, not
 counted. There is no Tier 2, no Tier 3, and no "Uncategorized / needs review" bucket.
+
+**One non-lead exception: bonus claims.** A bare "Yes" reply from someone who has just
+joined is normally answered by Helen's canned-response automation within seconds. When the
+"Yes" lands on the wrong email the automation never fires and a new member silently gets no
+bonuses. Those are surfaced in the digest with a ready-to-send reply. They are not buyer
+leads: no tracker row, no Yobani, no Recommended Action. See *Bonus claims* in STEP 2.
 
 ---
 
@@ -96,6 +102,11 @@ and — new in this version — everything that would previously have been Tier 
 (Bleeding, Sellside, Investor, Operators, Pitches, Engaged Reader). Those categories are no
 longer tracked anywhere.
 
+**One thing not to discard on sight: a one-word "Yes" reply.** It looks like noise and is
+usually already handled, but the cases where it is not are new members missing their
+bonuses. Hold every bare-affirmative reply for the bonus check in STEP 2 before dropping
+it.
+
 **Gmail links.** Build thread links as:
 
 ```
@@ -120,8 +131,8 @@ those links may now be dead. Do not reproduce that format for new rows.
 
 ## STEP 2 — Classify
 
-Every email that survives Step 1 is either one of the three tracked categories, a handover
-of one of them, or dropped. There is no other outcome.
+Every email that survives Step 1 is one of the three tracked categories, a handover of one
+of them, a bonus claim, or dropped. There is no other outcome.
 
 ### TIER 1 — the only tracked tier
 
@@ -131,9 +142,67 @@ of one of them, or dropped. There is no other outcome.
 - **Ready Now** — gave a phone number, explicitly asked for a call, used enrollment
   language ("enroll me", "call me"), OR replies with clear interest/readiness to a
   newsletter or prior outreach about a specific deal (even without a direct call ask or
-  phone number). For this last case, set recommended action to "send to setter".
+  phone number). For this last case, set recommended action to "send to setter", and use the
+  specific-deal variant of Helen's Ready Now draft — see *Which Ready Now template* below.
 - **Price Wall** — asks for pricing/cost directly without booking a call ("what does it
   cost", "price before scheduling")
+
+### BONUS CLAIMS (🎁) — bare "Yes" replies
+
+Helen's onboarding email, subject **"You're in! Just one more thing…"**, asks a new member
+to reply. A canned-response automation watches for that reply and sends the welcome bonuses
+back within seconds, from `helen+canned.response@smbdealhunter.xyz`. That path needs nothing
+from this routine.
+
+What needs this routine is the miss: **people reply "Yes" to the wrong email** — a deal
+newsletter, whatever was most recently in their inbox — and sometimes the automation does
+not fire. The member gets no bonuses and nobody finds out.
+
+**Do not try to predict when it fires.** Its exact trigger is not documented anywhere and
+was not reverse-engineered: over three days it answered 29 replies on the onboarding thread
+and one on a *"Lesson 1: The 10 Core Steps to Biz Buying"* thread, while Jason Smith's
+newsletter reply got nothing. Subject line is not a reliable predictor either way. **Check
+the thread, every time** — that is the whole method below, and it stays correct however the
+automation is configured.
+
+So, for every reply whose own text is a bare affirmative — `Yes`, `YES`, `yes`, `Yes please`
+— with nothing else to it once the quoted email below and any signature block are set aside:
+
+1. **Fetch the thread** with `GMAIL_FETCH_MESSAGE_BY_THREAD_ID`.
+2. **Look for a message from `helen+canned.response@smbdealhunter.xyz`.** That address is
+   the automation, and it is the only reliable tell — the bonus link sits inside an HTML
+   anchor, so a Gmail text search for the URL does not find it.
+3. **Automation already replied → drop the email.** Handled, nothing to surface. This is the
+   common case and it is why bare "Yes" replies are not simply digested.
+4. **No canned response in the thread → this is a bonus claim.** Surface it in the 🎁
+   section of the digest with the bonus reply draft (see *The bonus reply* below).
+
+The automation answers within about fifteen seconds, so on a 24-hour window its absence is
+settled, not pending.
+
+If the volume of bonus claims ever jumps, that is a signal the automation's trigger changed
+or broke — say so in the run report rather than quietly drafting thirty replies.
+
+Worked examples, both verified 2026-09-11:
+
+| Sender | Replied "Yes" to | Canned response in thread | Outcome |
+|---|---|---|---|
+| Bret Biedscheid | "You're in! Just one more thing…" — the right email | Yes, 15 seconds later | Drop |
+| Jason Smith | "New Deals: A pool service company with manager, pawn shop…" — a newsletter | None | 🎁 Bonus claim, draft the reply |
+
+Jason replied "Yes" twice, eleven minutes apart, to a newsletter. Two "Yes" replies in one
+thread is still one bonus claim — surface the thread once.
+
+**Bonus claims are not buyer leads.** They are not Tier 1, they get no tracker row, no
+Recommended Action, no Yobani draft, and Yobani is not cc'd. Someone replying to "You're
+in!" has already joined; there is nothing for a setter to book. The only output is Helen's
+one-line reply.
+
+**The recorded trade-off.** A bare "Yes" on a newsletter could in principle be answering a
+question the newsletter itself asked, rather than claiming bonuses. There is no way to tell
+the two apart from the word "Yes". Sending the welcome-bonus link to someone who was
+answering something else costs nothing; leaving a paying member without their bonuses costs
+a lot. So the routine surfaces it. Do not build a cleverer test for this.
 
 ### TRACKING HANDOVER PROGRESS (🟢)
 
@@ -211,6 +280,12 @@ code, ready to invest"* (Zing Beam LLC), *"Do you have a company like this in Co
 preferred in Denver area"* (Christopher Terry), *"Helen I want to buy a business show me."*
 (Daniel Spencer). **Length and financial sophistication correlate negatively with buyer
 intent here.** The real buyers ask for deals; the commentators explain deals.
+
+**Asking whether a featured deal is still available is buyer intent.** The line this section
+draws is between analysing a deal and asking to buy one, not between mentioning a deal and
+not mentioning one. *"Is that wellness center in Virginia that you mentioned on X still
+available for sale?"* (Damian Olive, 2026-09-10) names a specific listing and asks for it →
+**Ready Now**, and it takes its own opening line: see *Which Ready Now template* below.
 
 The related judgement call, recorded because it recurs and has no clean answer: *"You do
 great things i am interested to talk to you we own few businesses in albany ny area"*
@@ -290,15 +365,24 @@ reply draft, so Helen can paste it, cc Yobani, and send. Rows marked "Ignore" an
 Handover Progress rows get **no draft** — leave the cell empty and omit them from the
 Slack thread.
 
+🎁 **Bonus claims also get a draft**, and they are the one kind that is not a lead: no
+tracker row, no Recommended Action, no cc. Their template is *The bonus reply*, below.
+
 The draft is a **reply in Helen's voice**, cc'ing Yobani Mendoza
 (`yobani@smbdealhunter.xyz`, the setter). No subject line, no signature, no greeting
 block — Helen is replying inside an existing thread.
 
-#### The three templates
+**Two drafts do not cc Yobani**: the Price Wall call-pushback variant, which asks the lead's
+permission to loop someone in rather than doing it, and the bonus reply, which has nothing
+to do with him. Both say so where they are defined. Every other draft cc's him.
 
-Use the template for the lead's category. Each one is a short, fully written-out message
-to the lead, with Yobani mentioned inside it — not a set of separate notes to different
-people.
+#### The templates
+
+Use the template for the lead's category — and, for Ready Now and Price Wall, the variant
+that matches what the lead asked for. Each one is a fully written-out message to the lead,
+with Yobani mentioned inside it where he is being looped in — not a set of separate notes to
+different people. The last template, the bonus reply, is the exception to all of this: it is
+not a lead draft at all.
 
 **Write it out in full.** No shorthand: "definitely", not "def"; "15 minutes", not
 "15min"; "with you", not "w you". The register is warm and direct, the way Helen writes
@@ -316,14 +400,47 @@ Hey [First Name], [their ask] is something we can help with. @Yobani on our team
 Hey [First Name], we can definitely help. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
 ```
 
+**Ready Now — asking about a specific deal** (use this one instead when the lead is asking
+about a deal Helen featured, rather than signalling readiness in general)
+
+```
+Hey [First Name], deals like these go pretty quickly, but we can help you move fast. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
+```
+
 **Price Wall**
 
 ```
 Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call — @Yobani on our team can find a time that works for you.
 ```
 
+**Price Wall — pushing back on the call itself** (use this one instead when the lead is
+refusing or questioning the call and asking a list of specific questions about terms; see
+*Which Price Wall template* below)
+
+```
+Hey [First Name], fair questions, and I appreciate you being direct about it.
+
+Here is why we start with a call. It is not a sales presentation to walk you through standard terms. The call is as much about us making sure you would be a good fit for our community as it is about you vetting us. We offer a guarantee to our members, and we cannot offer that to everyone, so we are selective about who we bring in. That is not something we can figure out over email.
+
+So it is a two way thing, and that is why we do not get into the details until there is mutual fit on both sides.
+
+Let me know if you're still interested and want me to loop someone from our team in.
+```
+
 The `@Yobani` is literal text in the body of an email, not a Slack or Gmail mention. It
 reads as a nudge to him because he is cc'd.
+
+**The bonus reply** — for 🎁 bonus claims only, not for any lead category. Word for word
+what Helen's automation sends, so a member who got it late cannot tell the difference:
+
+```
+Hey - thanks so much for joining! Here's the link to the bonuses: https://smbdealhunter.notion.site/SMB-Deal-Hunter-Welcome-Bonuses-18b3787936d0805eb0b4c1a88c7d2c40
+```
+
+The automation hyperlinks the word "link" rather than showing the URL; in a Slack code block
+the URL has to be visible, and either form is fine to send as long as the link is there. No
+first name, no personalisation, nothing added — it opens "Hey -" exactly as the automation
+does. Yobani is not cc'd on this one.
 
 #### Filling them in
 
@@ -346,20 +463,92 @@ a vague ask into a specific one.
 Ready Now and Price Wall take no personalisation beyond the first name. Do not restructure
 a template to suit the email.
 
-**Never invent commercial terms.** The 1% figure and the success guarantee appear in the
-Price Wall template and nowhere else. Do not quote a price, a fee, a range, a guarantee, a
-timeline, or a deal specific in any other draft, and do not elaborate on the 1% beyond the
-sentence given — even if the lead asked a direct question about it. If a lead asks
-something the template does not answer, send the template as-is and let the call handle it.
+**Which Ready Now template.** Ready Now covers two different asks, and they open
+differently:
 
-**Nothing else goes in.** A finished draft should be the template plus a first name and,
-for Buy Box, their ask — and nothing more. If it says something the template does not,
-take that back out.
+- **A readiness signal in general** — a phone number, "call me", "enroll me", "I want to buy
+  a business", a reply that says they are ready without naming anything. → the plain
+  **Ready Now** template.
+- **A question about a specific deal Helen featured** — in the newsletter, on X, or in prior
+  outreach: *"is that wellness center in Virginia still available?"*, *"is the laundromat
+  still for sale?"*, *"tell me more about the $280K/yr biz"*. → the **specific deal**
+  template.
+
+Real case, 2026-09-10. Damian Olive wrote *"I'm a business owner based in Arlington,
+Virginia. Question: is that wellness center in Virginia that you mentioned on X still
+available for sale?"* Helen's reply went out on the plain Ready Now template the next
+morning. Sheila's call is that a lead asking about one specific listing should hear the
+scarcity first — it is true, and it is what moves someone who has already picked a deal out
+of the newsletter.
+
+**Do not answer the availability question.** The template says nothing about whether the
+deal is still on the market, and neither should you: this task does not know, and a wrong
+answer in either direction costs the lead. *"Deals like these go pretty quickly"* is the
+whole of what gets said about it, and the call handles the rest — the same bar as every
+other draft, no price, no deal specific, no timeline the template does not carry.
+
+Damian also opened with *"I'm a business owner"*. That does not move him out of Ready Now —
+classify on the ask, the same judgement as narinder Singh in STEP 2.
+
+**Which Price Wall template.** Price Wall also covers two different asks, and the answers
+are close to opposite:
+
+- **Price came up, in passing** — *"what does it cost?"*, *"I have yet to see what the fees
+  are"*. They have not objected to a call; they just want the number. → the plain **Price
+  Wall** template, which gives them the 1% answer and moves to a call.
+- **They are pushing back on the call itself** — questioning why a call is needed before
+  they can see terms, and asking a list of specific questions about price, fees, contract
+  terms, refunds, or what exactly is included. → the **call-pushback** template, which does
+  not answer any of them.
+
+Real case, 2026-09-10. W. Stephen Aldridge wrote eight numbered questions — total membership
+price and payment terms, additional fees, what the one-on-one assistance includes, deal flow
+in the Southeast, exclusivity, the cancellation and refund policy, the written terms of the
+closing guarantee, and whether an experienced buyer can enrol without the introductory call
+— and framed the whole thing as *"Requiring a preliminary phone call feels inefficient if
+its principal purpose is to explain standard terms or provide the price."* He is a real
+buyer: an experienced operator who has evaluated acquisitions before and says he is
+seriously interested. The plain Price Wall template would have answered one of his eight
+questions with the 1% line and then asked him onto the call he had just objected to.
+
+**The call-pushback template deliberately answers none of the questions**, including the
+price. That is the whole point of it: the position it states is that the call comes before
+the details, so quoting the 1% figure in the same message contradicts the message. **Do not
+import the 1% line into this template**, and do not append answers to any of the numbered
+questions, however well you think you know them.
+
+**It does not cc Yobani either.** Its last line asks whether the lead wants someone looped
+in, so looping him in pre-emptively contradicts that too. The forward follows their reply.
+
+⚠️ **Flag this one for Helen's eye.** The emails that earn this template are long, specific
+and often from sophisticated buyers, and the reply is a considered position rather than a
+one-liner — she may want to adjust it for the particular person. Mark it in the Slack thread
+as needing her review before sending. Every other draft is paste-and-send; this one is a
+starting point.
+
+The lead is still **Price Wall**, still **Send to Yobani**, and still gets a tracker row and
+a Yobani draft in column M. Only Helen's opening move changes.
+
+**Never invent commercial terms.** The 1% figure appears in the plain Price Wall template
+and nowhere else — not even in the call-pushback variant, which is a Price Wall draft that
+deliberately withholds it. The guarantee is named, without terms, in both Price Wall
+templates. Do not quote a price, a fee, a range, a guarantee, a timeline, or a deal specific
+in any other draft, do not elaborate on the 1% beyond the sentence given, and do not state
+what the guarantee actually promises — even if the lead asked a direct question about either.
+If a lead asks something the template does not answer, send the template as-is and let the
+call handle it.
+
+**Nothing else goes in.** A finished lead draft should be the template plus a first name
+and, for Buy Box, their ask — and nothing more. The bonus reply takes no substitutions at
+all. If a draft says something the template does not, take that back out.
 
 ### Suggested Yobani response
 
 Produced in the **same run as Helen's draft, for the same leads**, and written to tracker
 column M.
+
+Everything here is Yobani's **day-1 response**: the first contact he makes after Helen
+forwards her reply. Later touches are not covered here — `tracker-followup` owns those.
 
 This draft used to be written days later, by the `tracker-followup` pass, once Helen's
 forward had been confirmed and Close showed no call. That left every new row half-ready:
@@ -369,7 +558,8 @@ is written the morning it arrives.
 
 **Same gate as Helen's draft.** Every lead whose Recommended Action is `Send to Yobani`
 gets one. `Ignore` rows and Tracking Handover Progress rows get none — leave M empty, and
-omit them from the Slack thread.
+omit them from the Slack thread. 🎁 Bonus claims are not leads and have no row, so there is
+nothing to write: they get no Yobani draft at all.
 
 **The draft is provisional, and writing it resolves nothing.** At digest time the lead has
 not been forwarded yet and no setter-call check has run for them. `tracker-followup` still
@@ -378,14 +568,52 @@ it **clears** M rather than leave a stale "let's grab 15 minutes" pointed at som
 already had their call. Writing M here does not mark the row handled and does not exempt it
 from the follow-up pass.
 
-The draft is **a reply on the existing thread, keeping Helen on it** so the handoff stays
-tracked. Not a fresh email. The lead has been talking to Helen, so the reply picks up from
-her rather than introducing a stranger.
+#### When it goes out
+
+As soon as Helen forwards. Yobani replies on the **same thread**, with Helen kept on it — so
+the handoff stays tracked. Not a fresh email: the lead has been talking to Helen, so the
+reply picks up from her rather than introducing a stranger.
+
+#### What day 1 is
+
+An **email, and a phone call** if he has a number to call.
+
+| Phone number in their initial email? | Day 1 |
+|---|---|
+| Yes | Email, then call them — today or tomorrow |
+| No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
+
+**No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
+text. Either way the text is redundant.
+
+"Number provided" means a number in the **initial email they sent** — a signature block
+counts, a number dug out of the CRM or the web does not. This task is reading that email
+already, so settle the branch while writing the draft rather than leaving the choice to
+whoever pastes it.
+
+#### Reading the templates
+
+The `[If they …]` blocks are instructions, not copy. Pick the branch that matches the row,
+write out that sentence, and delete the marker and the brackets around it. The other branch
+disappears. **A draft that still contains the words "If they" has not been finished.**
+
+`[today/tomorrow]` is pick-one, not literal text.
 
 #### The three templates
 
-One per category, reproduced verbatim. Use the template for the lead's category — the same
-category that chose Helen's draft.
+One per category. Use the template for the row's category — the same category that chose
+Helen's draft.
+
+**There are no variants here.** Helen's Ready Now and Price Wall drafts each have two
+openings; Yobani's have one apiece.
+
+- A lead who asked about a deal Helen featured takes the plain Ready Now template below,
+  with `[their own words]` set to the deal they named — *the wellness center in Virginia*.
+  The scarcity line is Helen's opening only.
+- A lead who pushed back on the call takes the plain Price Wall template below, unchanged.
+  Helen's reply to them asks whether they want someone looped in, so Yobani's draft may sit
+  unused for longer than most — that is expected, and `tracker-followup` still owns column M
+  from there.
 
 **Buy Box**
 
@@ -394,7 +622,7 @@ Hi [First Name],
 
 Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
 
-Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+[If they didn't provide a number: What's the best number to reach you at?] I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
 ```
 
 **Ready Now**
@@ -402,33 +630,42 @@ Are you free [time slot] so I can give you a call? Alternatively, find a time sl
 ```
 Hi [First Name],
 
-Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. Grab 15 minutes here: [Calendly Link].
+Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. [If they provided a number: I will give you a call [today/tomorrow].] [If they didn't provide a number: Grab 15 minutes here: [Calendly Link].]
 
 I want to get sharper on where things stand and figure out the fastest next step.
 ```
+
+Ready Now is the one category that **doesn't ask for a number** when it's missing — it sends
+the link. That's deliberate; don't borrow the Buy Box line to "fix" it.
 
 **Price Wall**
 
 ```
 Hi [First Name],
 
-Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do.
-
-Can I give you a call at [time slot]? If that time doesn't work, book a time with me here [Calendly link].
+Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do. [If they didn't provide a number: What's the best number to reach you at?] I can give you a call [today/tomorrow]. Alternatively, book a time with me here [Calendly link].
 ```
 
-#### Filling them in
+#### Placeholders
 
-**`[time slot]` and `[Calendly Link]` stay as literal bracketed placeholders.** Yobani fills
-them in himself. Do **not** substitute a real time or a real link: Sheila's Calendly token is
-role `user` and cannot read Yobani's event types or availability
-(`event_types-list_event_types` returns Permission Denied for another user), so any time
-proposed here would be invented. A slot he is not free for is worse than a blank he fills in
-five seconds. His scheduling page is `https://calendly.com/yobani-smbdealhunter` if this is
-ever revisited — but leave the placeholder unless Sheila says otherwise.
+- `[First Name]`, `[buy box criteria]`, `[their own words]` — filled in when the draft is
+  written, per the rules below.
+- `[Calendly Link]` — stays a literal bracketed placeholder; Yobani fills it in before
+  sending.
+- `[today/tomorrow]` — stays bracketed too, and Yobani picks one before sending. This task
+  has no way to know which day he is free.
 
-Say in the Slack thread that both brackets need filling before sending, so nobody pastes a
-draft with `[time slot]` still in it.
+**There is no `[time slot]` placeholder any more.** The templates commit to a call today or
+tomorrow rather than proposing a window, so nothing needs slotting. This also retires the
+old reason for leaving it blank: Sheila's Calendly token is role `user` and cannot read
+Yobani's event types or availability (`event_types-list_event_types` returns Permission
+Denied for another user), so any time proposed here would have been invented. That constraint
+still applies to `[Calendly Link]` — do not substitute a real link. His scheduling page is
+`https://calendly.com/yobani-smbdealhunter` if this is ever revisited, but leave the
+placeholder unless Sheila says otherwise.
+
+Say in the Slack thread that `[Calendly Link]` and `[today/tomorrow]` both need filling
+before sending, so nobody pastes a draft with a bracket still in it.
 
 **First name.** Resolved exactly as for Helen's draft: the name the sender signs off with,
 else the first word of their Gmail display name, else — for a bare address like
@@ -449,20 +686,25 @@ readiness, from the email or the message summary: `buying a business`, `the Beth
 deal`, `the 50% seller financing terms`. Never invent a deal, a location or a number they
 did not mention.
 
-**Never invent commercial terms.** No draft here quotes a price, a fee, a range, a guarantee
-or a timeline. In particular, **Yobani's Price Wall template deliberately does not answer the
-pricing question** — it moves to a call. Helen's Price Wall template, a few paragraphs above,
-*does* carry the 1% line. Now that both live in this file, keep them apart: never import the
-1% sentence into Yobani's template. If a lead asked a direct pricing question, Helen's reply
+#### What day 1 never does
+
+No price, fee, range, guarantee or timeline — including in Price Wall, which moves to a call
+and nothing else. **The 1% line is Helen's and hers only**; it sits a few hundred lines above
+in this same file, and importing it here would put a commercial commitment in a message that
+is supposed to be an invitation. If a lead asked a direct pricing question, Helen's reply
 answers it and the call handles the rest.
 
-**Nothing else goes in.** A finished draft is the template plus the substitutions above. If
-it says something the template does not, take that back out.
+**Nothing else goes in.** A finished draft is the template plus the substitutions above, with
+every `[If they …]` branch resolved. If it says something the template does not, take that
+back out.
+
 
 ### On borderline mail
 
 If you cannot confidently place an email in one of the three categories, **drop it**. There
-is no Uncategorized bucket to park it in. This is a deliberate trade: the digest stays
+is no Uncategorized bucket to park it in. The bonus check above is the one thing this does
+not override: run it on a bare "Yes" before dropping, since a bare "Yes" is by definition not
+placeable in a category and would otherwise never survive this rule. This is a deliberate trade: the digest stays
 short and unambiguous, and the cost is that an occasional vaguely-worded buyer reply gets
 missed. Lean toward including a genuine buyer signal you're 70% sure of; drop anything
 below that rather than inventing a category for it.
@@ -488,9 +730,13 @@ Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
 - **🟢 Tracking Handover Progress** — same bullet format, with owner inserted right after
   the category:
   `*Category* — Owner: Name — Sender: "subject line" — snippet`
-- These are the only two sections. Skip either one entirely if it has zero entries.
-- If there were zero tracked leads in the last 24h, post a short "No new buyer leads in
-  Helen's inbox today" message instead.
+- **🎁 Bonus link not sent** — bare "Yes" replies whose thread has no canned response, one
+  bullet each: `Sender — replied "Yes" to "subject line"`, the subject as the Gmail thread
+  link. Keep it last and keep it short: it is a chore list, not a lead list. Say in the
+  header line that the automation missed these because the reply landed on the wrong email.
+- These are the only three sections. Skip any of them entirely if it has zero entries.
+- If there were zero tracked leads and zero bonus claims in the last 24h, post a short "No
+  new buyer leads in Helen's inbox today" message instead.
 - Use Slack mrkdwn formatting (bold, bullets). Do NOT use `@channel` or `@here`.
 
 ### The drafts go in a thread under that message
@@ -502,14 +748,24 @@ deliver; in the thread they are one click away and still copy-pasteable.
 Capture the parent message's `ts` when you post it and reply with that as `thread_ts`.
 
 Thread reply format — one block per lead whose action is "Send to Yobani", in the same
-order as the Tier 1 list. **Each lead now carries both drafts**: Helen's reply, and the
-reply Yobani sends once she has forwarded it. Put each draft in its own Slack code block so
-it copies cleanly, and label whose it is — the two are sent by different people at different
-times, and an unlabelled pair invites Helen to paste the wrong one.
+order as the Tier 1 list, then one block per 🎁 bonus claim. **Each lead now carries both
+drafts**: Helen's reply, and the reply Yobani sends once she has forwarded it. Put each draft
+in its own Slack code block so it copies cleanly, and label whose it is — the two are sent by
+different people at different times, and an unlabelled pair invites Helen to paste the wrong
+one. A bonus claim carries one draft and no Yobani block.
+
+Two drafts need a word of warning next to them, because pasting them blind is the failure
+mode:
+
+- A **Price Wall call-pushback** draft → prefix it with `⚠️ Needs Helen's review — long,
+  specific email; this reply deliberately answers none of it.` It is also the one lead draft
+  with no cc, so say `Do not cc Yobani on this one.`
+- A **bonus claim** draft → say the automation missed this one and Yobani is not involved.
 
 > ✍️ *Suggested replies* — Helen's to send now, cc yobani@smbdealhunter.xyz. Yobani's is
 > for after the forward, as a reply on the same thread with Helen kept on it.
-> **Fill in `[time slot]` and `[Calendly Link]` before sending Yobani's.**
+> **Fill in `[Calendly Link]` and `[today/tomorrow]` before sending Yobani's** — and call
+> them the same day if they gave a number.
 >
 > *Buy Box — Dean Julia*
 > Helen:
@@ -522,10 +778,19 @@ times, and an unlabelled pair invites Helen to paste the wrong one.
 >
 > Sounds like you're interested in deals in Central FL, and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
 >
-> Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+> What's the best number to reach you at? I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
+> ```
+> *(Dean gave no number, so the Buy Box "best number" branch is written out. Had he given
+> one, that sentence would be gone and the line would open at "I will give you a call".)*
+>
+> 🎁 *Bonus link — Jason Smith* — replied "Yes" to a newsletter, so the automation never
+> fired. Helen's to send; Yobani is not involved.
+> ```
+> Hey - thanks so much for joining! Here's the link to the bonuses: https://smbdealhunter.notion.site/SMB-Deal-Hunter-Welcome-Bonuses-18b3787936d0805eb0b4c1a88c7d2c40
 > ```
 
-If no lead has action "Send to Yobani", post no thread reply at all — not an empty one.
+If no lead has action "Send to Yobani" and there are no bonus claims, post no thread reply
+at all — not an empty one.
 
 Yobani's draft is posted here as a preview of what is waiting in column M, not as something
 to send today — the lead has not been forwarded yet. Do not tag or DM him from this task;
@@ -541,6 +806,18 @@ Spreadsheet ID: `1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ`
 Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and Tracking
 Handover Progress rows. Nothing else gets a row. What was dropped in Steps 1–2 is not
 logged.
+
+**🎁 Bonus claims get no row**, even though they appear in the digest. They are the one thing
+this task surfaces that is not a lead: nothing to chase, no stages to move through, no owner
+to flip. A row for one would sit permanently due and would either nag Helen forever or be
+skipped forever. The Slack thread is the whole record.
+
+**The cost of that, stated plainly:** STEP 1 reads `newer_than:1d`, so a bonus claim is
+surfaced on the day it arrives and never again. If nobody acts on that thread reply, that
+member does not get their bonuses and nothing will raise it a second time. This is the
+accepted trade for keeping a customer chore out of a buyer-lead pipeline. If it turns out to
+be missed in practice, the fix is a tracker row or a separate list — not a wider digest
+window.
 
 ### Sheet layout — verified 2026-09-10
 
@@ -647,8 +924,8 @@ majority and the documented format.
   and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
   Handover Progress rows.
 - **Suggested Yobani Response (M)** — the Yobani draft from STEP 2, byte-identical to the
-  one posted in the Slack thread, `[time slot]` and `[Calendly Link]` still as literal
-  placeholders. Same format rule as L: plain text with real line breaks, no formula, no
+  one posted in the Slack thread, with `[Calendly Link]` and `[today/tomorrow]` still as
+  literal placeholders and every `[If they …]` branch already resolved. Same format rule as L: plain text with real line breaks, no formula, no
   surrounding quotes. Same gate as L too — **empty** for "Ignore" rows and for Tracking
   Handover Progress rows. A row gets both drafts or neither; L populated with M blank on a
   "Send to Yobani" row is a bug worth reporting in Slack.

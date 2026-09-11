@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task (§4). |
+| **Last updated** | 2026-09-11 — Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). |
 
 ---
 
@@ -180,12 +180,178 @@ Three things this deliberately does **not** change:
   A stale "let's grab 15 minutes" sitting next to a completed call is the exact failure the
   old rule existed to prevent, and pre-writing the draft is what makes it possible.
 - **The templates are untouched** — the same three, with `[time slot]` and `[Calendly Link]`
-  still literal placeholders for the reasons in the follow-up handoff §5.
+  still literal placeholders for the reasons in the follow-up handoff §5. *(Superseded the
+  same day — see* Yobani's day-1 rules *below.)*
 
 One new hazard worth naming: **both Price Wall templates now live in this file**, and only
 Helen's carries the 1% line. Yobani's deliberately moves to a call instead of answering the
 pricing question. They sit a few hundred lines apart under similar headings, and merging them
 would put a commercial commitment in a draft that is supposed to be an invitation.
+
+### A second Ready Now opening, for specific-deal asks (2026-09-11)
+
+Helen's Ready Now draft now has two openings, and the task picks between them on what the
+lead actually asked for:
+
+- **A readiness signal in general** — phone number, "call me", "enroll me" — keeps the
+  existing line: *"Hey [First Name], we can definitely help. Looping in Yobani from our
+  team…"*
+- **A question about a specific deal Helen featured** — in the newsletter, on X, or in prior
+  outreach — opens with scarcity instead: *"Hey [First Name], deals like these go pretty
+  quickly, but we can help you move fast. Looping in Yobani from our team…"*
+
+The rest of the message, the `@Yobani` nudge and the 15-minute ask, is identical in both.
+Category, Recommended Action and the tracker row are unaffected: this is still Ready Now,
+still "Send to Yobani", still one row.
+
+The case that prompted it: Damian Olive, 2026-09-10, *"is that wellness center in Virginia
+that you mentioned on X still available for sale?"* — a lead who had already picked one deal
+out of the newsletter and got the generic "we can definitely help" back. Sheila's call is
+that someone that far along should hear the scarcity first.
+
+Two constraints on the new opening, both deliberate:
+
+- **It does not answer the availability question.** The task has no way to know whether a
+  featured deal is still on the market, and a confident answer either way costs the lead.
+  "Deals like these go pretty quickly" is all that is said about it. This is the same rule
+  that keeps the 1% line out of every draft but Price Wall — a plausible-sounding invention
+  reaching a customer as a commitment.
+- **Yobani's draft did not change.** He has one Ready Now template, and a specific-deal lead
+  takes it with `[their own words]` set to the deal they named. The scarcity line is Helen's
+  opening only. Both files now carry a Ready Now template that must not drift into the
+  other's, the same hazard as the two Price Wall templates above.
+
+Asking whether a featured deal is available is also, explicitly, a buyer signal — recorded
+in *Deal talk is not buyer intent* alongside the two leads who discussed deal terms and were
+not buying. The line is between analysing a deal and asking for one, not between mentioning
+a deal and not mentioning one.
+
+### A second Price Wall opening, for leads refusing the call (2026-09-11)
+
+Helen's Price Wall draft now has two openings too, and they say close to opposite things:
+
+- **Price came up in passing** — *"what does it cost?"* — keeps the existing template, which
+  gives the 1% answer and moves to a call.
+- **The lead is pushing back on the call itself** and asking a list of specific questions
+  about terms — gets a new template that answers none of them, and states the position
+  instead: the call is mutual vetting, the guarantee is not offered to everyone, and the
+  details come after mutual fit.
+
+The case behind it: W. Stephen Aldridge, 2026-09-10, eight numbered questions (price,
+payment terms, additional fees, what the one-on-one assistance includes, Southeast deal
+flow, exclusivity, refund policy, the written terms of the closing guarantee, enrolling
+without the intro call) prefaced by *"Requiring a preliminary phone call feels inefficient
+if its principal purpose is to explain standard terms or provide the price."* He is a real
+buyer — an experienced operator who has evaluated acquisitions before. The old template
+would have answered one question of eight with the 1% line and then asked him onto the call
+he had just objected to.
+
+Three things about this template are load-bearing and will look like omissions to whoever
+edits it next:
+
+- **It does not quote the 1%, on purpose.** It is the one Price Wall draft that withholds
+  the price, because the position it states is that details come after mutual fit. Putting
+  the figure back in contradicts the message it is wrapped in.
+- **It does not cc Yobani.** Its last line asks whether the lead wants someone looped in;
+  looping him in pre-emptively contradicts that. Classification, Recommended Action, the
+  tracker row and the Yobani draft in column M are all unchanged — only Helen's opening move
+  differs, and the forward follows the lead's reply.
+- **It is flagged for Helen's review in Slack**, and it is the only draft that is. Sheila's
+  note was that an email like Stephen's *"might need Helen's discretion"*. These arrive long
+  and specific, and the reply is a considered position rather than a one-liner.
+
+### Bonus claims — the one non-lead the digest surfaces (2026-09-11)
+
+Helen's onboarding email, *"You're in! Just one more thing…"*, asks a new member to reply. A
+canned-response automation watches that thread and sends the welcome bonuses back within
+about fifteen seconds, from `helen+canned.response@smbdealhunter.xyz`. Nothing about that
+path needs this routine.
+
+The miss is when someone replies **"Yes" to the wrong email** — a deal newsletter, whatever
+was most recently in their inbox — and the automation does not fire. A paying member gets no
+bonuses and nobody finds out.
+
+**Its trigger was not reverse-engineered, deliberately.** Over three days it answered 29
+replies on the onboarding thread and one on a *"Lesson 1: The 10 Core Steps to Biz Buying"*
+thread, while Jason Smith's newsletter reply got nothing — so subject line does not predict
+it in either direction. The routine checks the thread instead, which stays correct however
+the automation is configured. A sudden jump in bonus claims means its trigger changed or
+broke, and the run report should say so.
+
+So a bare-affirmative reply is no longer dropped on sight. The routine fetches the thread,
+looks for a message from `helen+canned.response@smbdealhunter.xyz`, and:
+
+- **Found** → drop it. Handled. This is the overwhelming majority.
+- **Not found** → surface it in a new **🎁 Bonus link not sent** section of the digest, with
+  Helen's reply — the automation's own wording, verbatim, so a member who gets it late
+  cannot tell the difference.
+
+Verified 2026-09-11: Bret Biedscheid replied "YES" to the onboarding email at 14:26:41 and
+the canned response landed at 14:26:56 → drop. Jason Smith replied "Yes" twice to the *"New
+Deals: A pool service company…"* newsletter and his thread has no canned response at all →
+bonus claim.
+
+**The canned-response sender is the only reliable detector.** The bonus link lives inside an
+HTML anchor, so a Gmail text search for the URL finds nothing — an `in:sent` search for
+`Welcome-Bonuses` returned zero results against a mailbox sending these hundreds of times a
+week. Match on `from:helen+canned.response@smbdealhunter.xyz` within the thread.
+
+Two deliberate limits:
+
+- **No tracker row, no Yobani, no Recommended Action.** These people have already joined;
+  there is nothing for a setter to book and no pipeline to move them through. A row would
+  sit permanently due in a buyer-lead tracker and either nag Helen forever or be skipped
+  forever. The Slack thread is the whole record.
+- **Surfaced once.** STEP 1 reads `newer_than:1d`, so if the thread reply goes unactioned
+  that member does not get their bonuses and nothing raises it again. That is the accepted
+  cost of keeping a customer chore out of the lead pipeline. If it turns out to be missed in
+  practice, the fix is a row or a separate list — not a wider digest window.
+
+One risk recorded rather than solved: a bare "Yes" on a newsletter could be answering a
+question the newsletter itself asked rather than claiming bonuses, and the word "Yes" cannot
+tell you which. Sending a welcome-bonus link to someone who meant something else costs
+nothing; leaving a member without their bonuses costs a lot. The routine sends.
+
+### Yobani's day-1 rules replace his three templates (2026-09-11)
+
+Sheila supplied a written spec for Yobani's response drafts, and it replaces the *Suggested
+Yobani response* section outright in both task files. What it changes:
+
+**Day 1 is an email *and* a phone call**, where before it was an email proposing a time. The
+branch is whether the lead put a number in the email they sent:
+
+| Number in their initial email? | Day 1 |
+|---|---|
+| Yes | Email, then call them — today or tomorrow |
+| No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
+
+A signature block counts as a number; one dug out of Close or the web does not. **No texting
+on day 1** — if he has the number he calls, and if he doesn't there is nothing to text.
+
+**`[time slot]` is retired.** The templates now commit to a call `[today/tomorrow]` instead
+of proposing a window, so there is no slot to fill. `[Calendly Link]` is still a literal
+placeholder, and `[today/tomorrow]` becomes one — this task cannot know which day Yobani is
+free, which is the same Calendly-permission constraint that retired `[time slot]`'s original
+rationale rather than the placeholder itself.
+
+**The templates now carry `[If they …]` branches**, and those are instructions rather than
+copy. The task picks the branch and writes the sentence out; a draft that still contains the
+words "If they" is unfinished. That is a new failure mode worth watching in the first few
+runs — it reaches a customer as visible scaffolding if it slips through.
+
+Two consequences that are easy to miss:
+
+- **Every column-M draft written before today is on the superseded templates.** The tell is
+  `[time slot]`, `Are you free`, or `Can I give you a call at`. `tracker-followup`'s
+  keep-or-replace table now has a row for exactly this, so those get replaced on the next
+  pass rather than kept as "matching the category".
+- **`tracker-followup` needs the lead's own first message** to pick the number branch, and
+  column K's summary usually will not settle it. It already has the thread ID from its
+  forward check, so it reads the message rather than guessing.
+
+Ready Now remains the one category that does not ask for a number when it is missing — it
+sends the Calendly link. That is deliberate and the file says so, because the obvious "fix"
+is to paste the Buy Box line into it.
 
 ---
 

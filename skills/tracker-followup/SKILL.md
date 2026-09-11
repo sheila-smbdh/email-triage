@@ -196,6 +196,13 @@ and flag it to Helen in Slack (STEP 5). This is the output that matters: a Tier 
 still owned by Helen days after it arrived is a lead going cold because the handoff never
 happened.
 
+**One Price Wall row is expected to sit here for a while.** When a lead pushed back on the
+call itself, `helen-email-digest` gives Helen a draft that asks whether they want someone
+looped in rather than cc'ing Yobani, so the forward waits on their reply. Flag it the same
+way — an unanswered lead is still worth surfacing — but say in Slack that the handoff is
+waiting on the lead, not on Helen. Column M is unaffected: that row carries the ordinary
+Price Wall draft and this step does not touch it.
+
 ---
 
 ## STEP 3 — Yobani rows: has the call been set up?
@@ -287,7 +294,8 @@ writing the Yobani draft at log time, most rows reaching this step already have 
 
 | M as read in STEP 1 | Do |
 |---|---|
-| Holds a draft matching the row's category, in one of the three templates below | **Keep it, unchanged.** Write nothing to M. It is already in the Slack thread from the digest run and may already be pasted |
+| Holds a draft matching the row's category, in one of the current templates below, with every `[If they …]` branch already resolved | **Keep it, unchanged.** Write nothing to M. It is already in the Slack thread from the digest run and may already be pasted |
+| Holds a draft on the **superseded** templates — the tell is `[time slot]`, `Are you free`, or `Can I give you a call at` | **Replace it** with the current template for that category, and say in Slack that you did. Every row logged before the day-1 rules landed is in this state |
 | Empty — a row logged before this change, or a digest run that skipped it | **Write the draft**, exactly as below |
 | Holds something that is not one of these templates, or the wrong category's template | **Replace it** with the right one, and say in Slack that you did and why |
 
@@ -300,6 +308,34 @@ The draft is **a reply on the existing thread, keeping Helen on it** so the hand
 tracked. Not a fresh email. The lead has been talking to Helen, so the reply picks up from
 her rather than introducing a stranger.
 
+### What day 1 is
+
+Every draft here is Yobani's **day-1 response** — the first contact he makes once Helen has
+forwarded. It is an **email, and a phone call** if he has a number to call.
+
+| Phone number in their initial email? | Day 1 |
+|---|---|
+| Yes | Email, then call them — today or tomorrow |
+| No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
+
+**No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
+text. Either way the text is redundant.
+
+"Number provided" means a number in the **initial email they sent** — a signature block
+counts, a number dug out of the CRM or the web does not. Column K's summary usually will not
+settle it, so read the lead's own first message in the thread before picking the branch. You
+already have the thread ID from STEP 2.
+
+### Reading the templates
+
+The `[If they …]` blocks are instructions, not copy. Pick the branch that matches the row,
+write out that sentence, and delete the marker and the brackets around it. The other branch
+disappears. **A draft that still contains the words "If they" has not been finished** — and
+that applies to a draft you are keeping, too: one carried over from the digest run with a
+marker still in it is a draft to replace, not to keep.
+
+`[today/tomorrow]` is pick-one, not literal text.
+
 ### The three templates
 
 One per category, reproduced verbatim. Use the template for the row's category (column C).
@@ -311,7 +347,7 @@ Hi [First Name],
 
 Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
 
-Are you free [time slot] so I can give you a call? Alternatively, find a time slot that works for you here [Calendly Link].
+[If they didn't provide a number: What's the best number to reach you at?] I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
 ```
 
 **Ready Now**
@@ -319,36 +355,41 @@ Are you free [time slot] so I can give you a call? Alternatively, find a time sl
 ```
 Hi [First Name],
 
-Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. Grab 15 minutes here: [Calendly Link].
+Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. [If they provided a number: I will give you a call [today/tomorrow].] [If they didn't provide a number: Grab 15 minutes here: [Calendly Link].]
 
 I want to get sharper on where things stand and figure out the fastest next step.
 ```
+
+Ready Now is the one category that **doesn't ask for a number** when it's missing — it sends
+the link. That's deliberate; don't borrow the Buy Box line to "fix" it.
 
 **Price Wall**
 
 ```
 Hi [First Name],
 
-Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do.
-
-Can I give you a call at [time slot]? If that time doesn't work, book a time with me here [Calendly link].
+Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do. [If they didn't provide a number: What's the best number to reach you at?] I can give you a call [today/tomorrow]. Alternatively, book a time with me here [Calendly link].
 ```
 
 ### Filling them in
 
-**`[time slot]` and `[Calendly Link]` stay as literal bracketed placeholders.** Yobani
-fills them in himself. Do **not** substitute a real time or a real link:
+**`[Calendly Link]` and `[today/tomorrow]` stay as literal bracketed placeholders.** Yobani
+fills them in himself. Do **not** substitute a real link or a real day:
 
 - Sheila's Calendly token is role `user` and cannot read Yobani's event types or
   availability (`event_types-list_event_types` returns Permission Denied for another
-  user), so any time you propose would be invented. A proposed slot he is not free for is
-  worse than a blank he fills in five seconds.
+  user), so any day you commit him to would be invented. A day he is not free on is worse
+  than a blank he fills in five seconds.
 - His scheduling page is `https://calendly.com/yobani-smbdealhunter` (from the Calendly
   API's `scheduling_url` on his org membership) if this is ever revisited — but leave the
   placeholder unless Sheila says otherwise.
 
+**There is no `[time slot]` placeholder any more.** The templates commit to a call today or
+tomorrow rather than proposing a window, so nothing needs slotting. A draft still carrying
+`[time slot]` is an old one — replace it.
+
 Say in the Slack thread that both brackets need filling before sending, so nobody pastes a
-draft with `[time slot]` still in it.
+draft with a bracket still in it.
 
 **First name.** The name the sender signs off with in the email body, else the first word
 of their Gmail display name. If there is **no display name** — a bare address like
@@ -424,7 +465,8 @@ one line in the parent message instead ("3 drafts already current, unchanged").
 Format — one block per draft, each in a code block so it copies cleanly:
 
 > ✍️ *Suggested replies for Yobani* — reply on the existing thread and keep Helen on it.
-> **Fill in `[time slot]` and `[Calendly Link]` before sending.**
+> **Fill in `[Calendly Link]` and `[today/tomorrow]` before sending** — and call them the
+> same day if they gave a number.
 >
 > *Ready Now — Jerome M Limage*
 > ```
