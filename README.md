@@ -15,7 +15,7 @@ looks **backward** at leads already logged.
 | **Schedule** | Daily 08:03 America/New_York (cron `3 12 * * *` UTC — see the DST note in the handoff). |
 | **Status** | ✅ Live — both tasks enabled and verified end-to-end on 2026-09-10. The Routine reads both specs from **`main`** (repointed 2026-09-10 once `claude/sleepy-hamilton-bch8b6` merged), so a spec change is live on the next run once it lands on `main`. |
 | **Scope** | Buy Box, Ready Now, Price Wall, and handovers of those three. Everything else is dropped. |
-| **Output** | One Slack message (Tier 1 + handovers), a threaded reply holding ready-to-send drafts — **both Helen's and Yobani's, generated in the same first run** — and one tracker row per lead carrying both (columns L and M). |
+| **Output** | One Slack message (Tier 1 + handovers), a threaded reply holding ready-to-send drafts — **both Helen's and Yobani's, generated in the same first run** — and one tracker row per lead carrying both (columns L and N). |
 
 Email access runs through the **Composio** connector (account `gmail_kath-tiou` =
 `helen@smbdealhunter.xyz`), not the first-party Gmail connector, which can only reach
