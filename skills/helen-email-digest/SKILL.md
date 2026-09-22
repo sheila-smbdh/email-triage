@@ -333,7 +333,7 @@ have no money is the wrong reply.
 
 #### The existing-relationship rule
 
-Jordan is the setter: their job is to get a **new** buyer onto a first call. Someone who is
+Jordan is the setter: his job is to get a **new** buyer onto a first call. Someone who is
 already paying SMB Deal Hunter, or who has already been on a call with the team, is not that
 — they are already in someone else's hands, and a "let's grab 15 minutes" from a stranger
 tells them the team does not know who they are. **Their emails are not forwarded to a
@@ -395,8 +395,8 @@ In the run report, list every lead this rule turned to "Ignore" and which signal
 
 #### The call-booked rule
 
-Jordan is the setter; their job is to get the call booked. A lead who has already booked one
-is not work for them, so passing them along is wasted effort. When an email says the sender
+Jordan is the setter; his job is to get the call booked. A lead who has already booked one
+is not work for him, so passing them along is wasted effort. When an email says the sender
 has scheduled a call — "I have a call scheduled", "I have booked a call", "we're speaking
 Thursday" — check Close, and if it is confirmed there, write **"Ignore"** instead of "Send
 to Jordan".
@@ -465,7 +465,7 @@ block — Helen is replying inside an existing thread.
 
 **Two drafts do not cc Jordan**: the Price Wall call-pushback variant, which asks the lead's
 permission to loop someone in rather than doing it, and the bonus reply, which has nothing
-to do with Jordan. Both say so where they are defined. Every other draft cc's Jordan.
+to do with him. Both say so where they are defined. Every other draft cc's him.
 
 The cc is now real, not an instruction to Helen: STEP 3 puts `jkempster@smbdealhunter.xyz` on
 the Cc line of the Gmail draft itself, and leaves it off for those two. Getting that wrong
@@ -476,7 +476,7 @@ contradicts what the message says.
 
 Use the template for the lead's category — and, for Ready Now and Price Wall, the variant
 that matches what the lead asked for. Each one is a fully written-out message to the lead,
-with Jordan mentioned inside it where they are being looped in — not a set of separate notes to
+with Jordan mentioned inside it where he is being looped in — not a set of separate notes to
 different people. The last template, the bonus reply, is the exception to all of this: it is
 not a lead draft at all.
 
@@ -524,7 +524,7 @@ Let me know if you're still interested and want me to loop someone from our team
 ```
 
 The `@Jordan` is literal text in the body of an email, not a Slack or Gmail mention. It
-reads as a nudge to Jordan because they are cc'd.
+reads as a nudge to him because he is cc'd.
 
 **The bonus reply** — for 🎁 bonus claims only, not for any lead category. Word for word
 what Helen's automation sends, so a member who got it late cannot tell the difference:
@@ -614,7 +614,7 @@ import the 1% line into this template**, and do not append answers to any of the
 questions, however well you think you know them.
 
 **It does not cc Jordan either.** Its last line asks whether the lead wants someone looped
-in, so looping Jordan in pre-emptively contradicts that too. The forward follows their reply.
+in, so looping him in pre-emptively contradicts that too. The forward follows their reply.
 
 ⚠️ **Flag this one for Helen's eye.** The emails that earn this template are long, specific
 and often from sophisticated buyers, and the reply is a considered position rather than a
@@ -643,7 +643,7 @@ all. If a draft says something the template does not, take that back out.
 Produced in the **same run as Helen's draft, for the same leads**, and written to tracker
 column N (`Suggested Setter 1st Response`).
 
-Everything here is Jordan's **day-1 response**: the first contact they make after Helen
+Everything here is Jordan's **day-1 response**: the first contact he makes after Helen
 forwards her reply. Later touches are not covered here — `tracker-followup` owns those.
 
 This draft used to be written days later, by the `tracker-followup` pass, once Helen's
@@ -658,7 +658,7 @@ Bonus claims are not leads and have no row, so there is nothing to write: they g
 draft at all.
 
 **Jordan's draft is not created in Gmail.** STEP 3 drafts Helen's reply only. Jordan sends
-theirs from their own mailbox after she forwards, and column N is where they read it from.
+his from his own mailbox after she forwards, and column N is where he reads it from.
 
 **The draft is provisional, and writing it resolves nothing.** At digest time the lead has
 not been forwarded yet and no setter-call check has run for them. `tracker-followup` still
@@ -674,14 +674,14 @@ reply picks up from her rather than introducing a stranger.
 
 #### What day 1 is
 
-An **email, and a phone call** if Jordan has a number to call.
+An **email, and a phone call** if he has a number to call.
 
 | Phone number in their initial email? | Day 1 |
 |---|---|
 | Yes | Email, then call them — today or tomorrow |
 | No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
 
-**No texting on day 1.** If Jordan has the number, they call; if not, there's nothing to
+**No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
 text. Either way the text is redundant.
 
 "Number provided" means a number in the **initial email they sent** — a signature block
@@ -751,7 +751,7 @@ Let's grab 15 minutes so I can get a better sense of your situation and make sur
 - `[Calendly Link]` — stays a literal bracketed placeholder; Jordan fills it in before
   sending.
 - `[today/tomorrow]` — stays bracketed too, and Jordan picks one before sending. This task
-  has no way to know which day Jordan is free.
+  has no way to know which day he is free.
 
 **There is no `[time slot]` placeholder any more.** The templates commit to a call today or
 tomorrow rather than proposing a window, so nothing needs slotting. This also retires the
@@ -763,9 +763,9 @@ has not been looked up; leave the placeholder unless Sheila says otherwise, and 
 the old setter's link (`https://calendly.com/yobani-smbdealhunter`).
 
 Both `[Calendly Link]` and `[today/tomorrow]` stay bracketed in column N and are filled in
-by Jordan before sending. This draft is not posted to Slack and is not created in Gmail, so
+by Jordan before he sends. This draft is not posted to Slack and is not created in Gmail, so
 there is nothing here for Helen to send by accident — but leave the brackets literal so it is
-obvious to Jordan that they need filling.
+obvious to him that they need filling.
 
 **First name.** Resolved exactly as for Helen's draft: the name the sender signs off with,
 else the first word of their Gmail display name, else — for a bare address like
@@ -837,7 +837,7 @@ stated there — every lead draft cc's Jordan except the two that say they do no
 |---|---|---|
 | Tier 1, Recommended Action `Send to Jordan` | Yes | **Yes** |
 | Tier 1, Price Wall **call-pushback** variant | Yes | **No** — it asks the lead's permission to loop someone in |
-| 🎁 Bonus claim | Yes | **No** — nothing to do with Jordan |
+| 🎁 Bonus claim | Yes | **No** — nothing to do with him |
 | Tier 1, Recommended Action `Ignore` | No | — |
 | 🟢 Tracking Handover Progress | No | — |
 
@@ -983,8 +983,8 @@ thread reply at all.
 
 Jordan's day-1 reply is not posted to Slack either. It lives in tracker column N, which is
 where it went before and where `tracker-followup` picks it up; posting it here was only ever
-a preview. Do not tag or DM Jordan from this task — the `tracker-followup` pass is what
-surfaces a row once it is actually theirs.
+a preview. Do not tag or DM him from this task — the `tracker-followup` pass is what
+surfaces a row once it is actually his.
 
 ### Say, once, where the drafts are
 

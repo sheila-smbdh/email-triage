@@ -329,7 +329,7 @@ already wrote is not made wrong by this task failing to reach Close.
 Always write **G → today** for a row you checked.
 
 **A setter call on the board resolves the row.** Once a lead has had their intro call,
-Jordan's job is done and there is nothing further for them to draft. Resolving a row means
+Jordan's job is done and there is nothing further for him to draft. Resolving a row means
 **writing no new draft** — it does not mean removing the one already there. That holds even
 when the *closer* call then fell through: a cancelled discovery call needs re-booking by
 whoever owns that stage, which is not a setter intro. Record it in V/W and mention it in
@@ -363,15 +363,15 @@ her rather than introducing a stranger.
 
 ### What day 1 is
 
-Every draft here is Jordan's **day-1 response** — the first contact they make once Helen has
-forwarded. It is an **email, and a phone call** if they have a number to call.
+Every draft here is Jordan's **day-1 response** — the first contact he makes once Helen has
+forwarded. It is an **email, and a phone call** if he has a number to call.
 
 | Phone number in their initial email? | Day 1 |
 |---|---|
 | Yes | Email, then call them — today or tomorrow |
 | No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
 
-**No texting on day 1.** If Jordan has the number, they call; if not, there's nothing to
+**No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
 text. Either way the text is redundant.
 
 "Number provided" means a number in the **initial email they sent** — a signature block
@@ -427,13 +427,13 @@ Let's grab 15 minutes so I can get a better sense of your situation and make sur
 ### Filling them in
 
 **`[Calendly Link]` and `[today/tomorrow]` stay as literal bracketed placeholders.** Jordan
-fills them in before sending. Do **not** substitute a real link or a real day:
+fills them in himself. Do **not** substitute a real link or a real day:
 
 - Sheila's Calendly token is role `user` and cannot read another user's event types or
   availability (`event_types-list_event_types` returns Permission Denied), so any day you
-  commit Jordan to would be invented. A day they are not free on is worse than a blank they
-  fill in five seconds.
-- Jordan's scheduling page has not been looked up. Leave the placeholder unless Sheila says
+  commit him to would be invented. A day he is not free on is worse than a blank he
+  fills in five seconds.
+- His scheduling page has not been looked up. Leave the placeholder unless Sheila says
   otherwise — and never reuse the old setter's link
   (`https://calendly.com/yobani-smbdealhunter`).
 
