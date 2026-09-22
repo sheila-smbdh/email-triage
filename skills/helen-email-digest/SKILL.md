@@ -347,9 +347,9 @@ existed, all wrong:
 | Tracker row | Sender | What the email looked like | What Close shows | Action |
 |---|---|---|---|---|
 | 34 | William Polanco | Form submission asking for CIMs on two NY deals — read as Ready Now | Status **Client**; opportunity **WON** 2026-08-19, SMB Deal Hunter Pro $15,000 | Ignore |
-| 49 | Mose Richardson | Form submission about the Ohio compressed-air deal — read as Ready Now. His reply after Helen looped Yobani in: *"I'm a member of your program"* | Status **Client**; opportunity **WON** 2026-01-28, SMB Deal Hunter Pro $15,000 | Ignore |
-| 64 | Kushal Shah | Asked for NDAs/CIMs on four Market Watch listings, gave a phone number — read as Ready Now | Welcome Call 2026-08-20 and Discovery Call 2026-08-24, both before his 9/19 email | Ignore |
-| 88 | Kishin Manglani | Asked about NJ deal flow — read as Buy Box | Intro Call 2026-06-02 and Discovery Call 2026-06-04, months before his 9/22 email | Ignore |
+| 49 | Mose Richardson | Form submission about the Ohio compressed-air deal — read as Ready Now. The reply after Helen looped Yobani in: *"I'm a member of your program"* | Status **Client**; opportunity **WON** 2026-01-28, SMB Deal Hunter Pro $15,000 | Ignore |
+| 64 | Kushal Shah | Asked for NDAs/CIMs on four Market Watch listings, gave a phone number — read as Ready Now | Welcome Call 2026-08-20 and Discovery Call 2026-08-24, both before the 9/19 email | Ignore |
+| 88 | Kishin Manglani | Asked about NJ deal flow — read as Buy Box | Intro Call 2026-06-02 and Discovery Call 2026-06-04, months before the 9/22 email | Ignore |
 
 **Run it on every Tier 1 lead and every 🟢 handover row** — not only the ones that mention a
 call. Two of the four above were handovers (rows 34 and 49), and none of the four said
