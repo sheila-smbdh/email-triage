@@ -477,9 +477,34 @@ Use the channel's established format: a bold header, emoji section headers, and
 Sections, each skipped entirely when empty:
 
 - **Header** — `**Tracker Follow-up — <Month D, YYYY>**` and the count of due rows checked.
-- **🔴 Needs Helen** — Tier 1 rows never forwarded. Say how many days each has been
-  waiting; that number is the point. Mention Helen as `<@U04ATRJKXPD>` once, in this
-  section.
+- **🔴 Needs Helen** — Tier 1 rows never forwarded. One bullet each, subject linked
+  straight into the thread in Helen's mailbox:
+
+  `_Category_ — Sender: "[subject](<gmail thread link>)" — waiting N days`
+
+  Two things carry this section. **The link**: Helen clicks the subject, lands on the
+  thread, and forwards it to Yobani — no hunting through the inbox or the tracker for a
+  lead that has already gone cold. **The number of days**: say how long each has been
+  waiting, because that is what makes the bullet urgent rather than informational. Mention
+  Helen as `<@U04ATRJKXPD>` once, in this section.
+
+  **Build the link yourself from the thread ID — do not paste column J's URL into Slack.**
+  Two of the three formats in the sheet (see STEP 2) do not open in a browser: the legacy
+  `%23thread-f%3A<decimal>` fragment, and the delegation-token URL whose delegation lapsed.
+  You already extracted the hex thread ID in STEP 2; rebuild the link from it in the current
+  form, the same one `helen-email-digest` writes:
+
+  ```
+  https://mail.google.com/mail/u/?authuser=helen@smbdealhunter.xyz#all/<hex threadId>
+  ```
+
+  `authuser=` pins the link to Helen's mailbox. The `/mail/u/0/` form opens whichever
+  account happens to be first in the reader's browser, which for anyone but Helen is the
+  wrong mailbox or a 404.
+
+  If a row's thread ID cannot be recovered at all, still list the row with the subject
+  unlinked and say the link is missing. A lead going cold is worth flagging without a link;
+  dropping it because the link failed is not a trade worth making.
 - **🟡 Needs a decision** — rows Step 3 could not resolve: an address that would not
   resolve to a Close lead, a failed Close lookup.
 - **🟢 Moving** — rows with a setter call on the board. One line each: who with, and when.

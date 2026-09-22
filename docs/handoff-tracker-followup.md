@@ -5,7 +5,7 @@
 | **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
-| **Last updated** | 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
+| **Last updated** | 2026-09-22 — the **🔴 Needs Helen** section of the Slack digest now links each bullet's subject into the thread in Helen's mailbox, so she can forward to Yobani in one click (§4). Before that: 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
 
 ---
 
@@ -21,7 +21,8 @@ actually moved:
 
 - **Tier 1 / owner Helen** — has she forwarded it to Yobani yet? If yes, promote the row
   (`Tier` → `In Progress`, `Forwarded to Yobani?` → `Yes`) and continue to the Yobani check in the
-  same pass. If no, flag it to Helen in Slack.
+  same pass. If no, flag it to Helen in Slack, with the subject linked into the thread so
+  the forward is one click from the bullet.
 - **In Progress / owner Yobani** — does Close show a setter call? If yes, the row is
   resolved and column M is **cleared**. If no, the draft already in M stands, and one is
   written if it is missing.
@@ -206,6 +207,15 @@ has to come from Gmail.
 check is not evidence in either direction. Treating it as "no call booked" would send "let's
 grab 15 minutes" to leads who have already had their call; treating it as "call booked" would
 now quietly clear a draft the digest wrote and nobody has used yet. Leave M as found.
+
+**The thread link in the Slack nag is rebuilt, never copied from column J.** Helen's
+bullets in **🔴 Needs Helen** carry the subject as a link so she can open the thread and
+forward it without going via the tracker — but two of the three URL formats in column J are
+dead in a browser (the 8/29 legacy fragment and the lapsed delegation-token URLs). STEP 2
+already yields a hex thread ID per row; the link is built from it as
+`https://mail.google.com/mail/u/?authuser=helen@smbdealhunter.xyz#all/<hex threadId>`, the
+same form the digest writes. `authuser=` pins it to Helen's mailbox — `/mail/u/0/` opens
+whichever account is first in the reader's browser.
 
 **Slack appends "Sent using Claude" itself.** Adding the footer by hand renders it twice —
 visible in the channel on both 9/10 digests.
