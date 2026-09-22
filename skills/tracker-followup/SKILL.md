@@ -390,7 +390,7 @@ One per category, reproduced verbatim. Use the template for the row's category (
 ```
 Hi [First Name],
 
-Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to get precise on your box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
+Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to better understand your buy box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
 
 [If they didn't provide a number: What's the best number to reach you at?] I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
 ```
