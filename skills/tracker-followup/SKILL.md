@@ -1,6 +1,6 @@
 ---
 name: tracker-followup
-description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Yobani's booking progress in Close, and keep column N's Yobani draft current: write it where the digest did not, and never delete one
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Jordan's booking progress in Close, and keep column N's Jordan draft current: write it where the digest did not, and never delete one
 ---
 
 You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
@@ -24,16 +24,16 @@ tracker and to Slack. Drafts are written for a human to paste — nothing is sen
 Each tracked lead moves along one path:
 
 ```
-Tier 1, owner Helen  ──Helen forwards to Yobani──▶  In Progress, owner Yobani  ──setter call on the board──▶  resolved
+Tier 1, owner Helen  ──Helen forwards to Jordan──▶  In Progress, owner Jordan  ──setter call on the board──▶  resolved
         │                                                    │
-        └── not forwarded → nag Helen in Slack               └── no setter call → Yobani's draft stands
+        └── not forwarded → nag Helen in Slack               └── no setter call → Jordan's draft stands
 ```
 
 This task's whole job is to work out where each due lead sits on that path, record it, and
 keep the one artefact that unblocks the next step correct.
 
 **The draft itself now arrives earlier than this pass.** `helen-email-digest` writes both
-Helen's draft (column L) and Yobani's (column N) the morning a lead is logged, so a lead no
+Helen's draft (column L) and Jordan's (column N) the morning a lead is logged, so a lead no
 longer waits for this pass to have a reply ready. What is left here is the part only a later
 check can know: whether the call actually got booked. So what is left for column N here is
 narrow — **write a draft only where the digest left a gap, and never remove one.**
@@ -69,7 +69,7 @@ an earlier version of the digest task hardcoded a wrong diagnosis and sent the t
 looking in the wrong place for eight days.
 
 If the **Close** connector is missing, that is not a reason to abort — but it is a reason
-to leave column N alone. Every Yobani check fails to confirm, and an unconfirmed check is
+to leave column N alone. Every Jordan check fails to confirm, and an unconfirmed check is
 **not** evidence either way. Write no new drafts for those rows and leave N exactly as you
 found it. Note in column U (`Setter Progress`) that the check could not run, and say so in
 Slack. Treating a Close outage as "no call booked" would put a fresh "let's grab 15 minutes"
@@ -79,56 +79,59 @@ draft against a lead who has already had their call.
 
 ## STEP 1 — Read the tracker and find the due rows
 
-Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit
+Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit?gid=1722038405#gid=1722038405
 Spreadsheet ID: `1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ`
+Tab: **`Tracker (JordanK)`** (sheet id `1722038405`)
 
-Read `Tracker!A1:W<n>` with **`valueRenderOption: "FORMULA"`**. This matters: column J
+**The tracker moved to a new tab on 2026-09-23**, when Jordan Kempster
+(`jkempster@smbdealhunter.xyz`) took over from Yobani as the setter Helen cc's and forwards
+to. Every read and write in this task goes to **`Tracker (JordanK)`** and only that tab.
+
+- The old tab is now called **`Tracker (Yobani)`** (sheet id `0`). It is history. **Do not
+  read it for due rows, do not write to it, and do not chase anything in it** — its open
+  leads are frozen as they were on 2026-09-22, by Sheila's decision. A range written as
+  bare `Tracker!…` no longer resolves to either tab; always use the quoted name.
+- The tab name contains a space and parentheses, so it must be quoted in A1 notation:
+  `'Tracker (JordanK)'!A1:W<n>`. Unquoted, the range fails to parse.
+- The new tab started empty (header only). On the first passes there may be no due rows at
+  all — that is expected, not a failed read. Say so in the run report and post nothing to
+  Slack (STEP 5).
+
+Read `'Tracker (JordanK)'!A1:W<n>` with **`valueRenderOption: "FORMULA"`**. This matters: column J
 holds `=HYPERLINK(...)` and the formatted read gives you only the visible subject text,
 throwing away the thread ID you need in Step 3.
 
 Columns A–W:
 
-`Date | Tier | Category | Recommended Action | Forwarded to Yobani? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 1st Response Done? | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
+`Date | Tier | Category | Recommended Action | Forwarded to Setter? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Setter 1st Response | Setter 1st Response Done? | Setter 3-day follow-up date | Setter 3-day follow-up done? | Setter 5-day follow-up date | Setter 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
 
-Row 1 is the header; data starts at row 2.
+Row 1 is the header; data starts at row 2. Column X (`Note`) is a free-text column for
+people; this task neither reads nor writes it.
 
-**Six columns were added on 2026-09-11 and everything after L shifted right.** Any column
-letter you remember from an earlier run is wrong past L. The sheet went A–Q → A–V → A–W in
-two edits the same day; this is the final map:
+**Same column letters as the old tab; only the headers changed.** The layout is identical
+to `Tracker (Yobani)` column for column. The headers that named Yobani now say **Setter**
+instead (`Forwarded to Yobani?` → `Forwarded to Setter?`, `Suggested Yobani 1st Response` →
+`Suggested Setter 1st Response`, and so on through S). In this file "the setter" is Jordan.
 
-| Was (A–Q) | Is now (A–W) | What changed |
-|---|---|---|
-| A–D | A–D | unchanged |
-| E Action Taken? | **E** Forwarded to Yobani? | renamed |
-| F–L | F–L | unchanged |
-| — | **M** Helen Forward Date | new |
-| M Suggested Yobani Response | **N** Suggested Yobani 1st Response | moved one right, renamed |
-| — | **O** Yobani 1st Response Done? | new |
-| — | **P–S** the 3-day and 5-day follow-up columns | new |
-| N/O Setter Call Date, Setter Progress | **T/U** | moved six right |
-| P/Q Closer Call Date, Closer Progress | **V/W** | moved six right |
-
-**E was renamed, not repurposed.** `Action Taken?` → `Forwarded to Yobani?` names the
-question it always answered: did Helen hand this lead over. Same `Yes`/`No`, same meaning,
-and F still keys off `E="No"`. The rename matters because **O** is now a second "is it
-done?" column asking a different question — E is Helen's action, O is Yobani's.
+**E asks whether Helen handed this lead over** (`Yes`/`No`), and F keys off `E="No"`. **O**
+is a second "is it done?" column asking a different question — E is Helen's action, O is
+Jordan's.
 
 **M–S track the handover and the chase; T–W track the two stages of a lead's journey.**
 
-- **M (Helen Forward Date)** is the date Helen *actually* forwarded the lead to Yobani,
+- **M (Helen Forward Date)** is the date Helen *actually* forwarded the lead to Jordan,
   verified from the thread — not the date the handover was recommended. It is **this task's
   to write**, on the pass where STEP 2 confirms the forward — but that write is **not yet
   implemented** (see *Columns defined but not yet written* in STEP 6). Empty means the
   forward has not been confirmed yet, and the whole chase cadence below stays dormant.
-- **O (Yobani 1st Response Done?)** is `Yes` once Yobani has **actually sent a reply to the
+- **O (Setter 1st Response Done?)** is `Yes` once Jordan has **actually sent a reply to the
   prospect**, `No` until then. Those two values only — it does **not** take
   `Not Needed - Connected`. This task's to write, **not yet implemented**.
-  **O is not a copy of E.** Helen can forward a lead (E = `Yes`) and Yobani not get to it
-  for days (O = `No`); that gap is the whole reason the column exists. The values sitting in
-  O today are a one-off backfill Sheila made on 2026-09-11, when Yobani reported he had
-  cleared everything forwarded to him so far — which is why O matches E on all 31 existing
-  rows. Do not read that as a rule, and never derive O from E.
-- **P (`=M+3`) and R (`=M+5`)** are formulas giving the dates Yobani's 3-day and 5-day
+  **O is not a copy of E.** Helen can forward a lead (E = `Yes`) and Jordan not get to it
+  for days (O = `No`); that gap is the whole reason the column exists. Never derive O from
+  E. (On the old `Tracker (Yobani)` tab, O matched E on every row only because of a one-off
+  backfill on 2026-09-11 — that was never a rule, and it does not carry over.)
+- **P (`=M+3`) and R (`=M+5`)** are formulas giving the dates Jordan's 3-day and 5-day
   follow-ups come due. They read `3` and `5` while M is empty — arithmetic on a blank cell,
   not a literal to clean up. **Never write a literal date to P or R.**
 - **Q and S** are the matching `done?` flags, also this task's to write and also **not yet
@@ -137,7 +140,7 @@ done?" column asking a different question — E is Helen's action, O is Yobani's
 - **N is the *first* of three touches.** There is no column for a 2nd or 3rd draft, and
   this task does not write one — O–S carry dates and status only.
 - **T/U are the setter stage** — the short intro call that gets a lead onto the board,
-  which is Yobani's job. **V/W are the closer stage** — the longer discovery/closing call
+  which is Jordan's job. **V/W are the closer stage** — the longer discovery/closing call
   that follows. Read the pair separately: a lead can have a completed setter call and a
   failed closer call, and conflating them loses the only fact worth acting on.
 
@@ -156,14 +159,14 @@ open lead comes due on effectively every pass.
    (they disqualified themselves, or their call was already verified in Close). They will
    read as perpetually due and that is fine — they are skipped every run at no cost.
 2. **`Tier` (B) is `1` → run STEP 2** (the forward check).
-3. **`Tier` (B) is `In Progress` → run STEP 3** (the Yobani check).
+3. **`Tier` (B) is `In Progress` → run STEP 3** (the Jordan check).
 4. Any other tier value is historical. Leave it alone.
 
 ---
 
 ## STEP 2 — Tier 1: did Helen actually forward it?
 
-For every due Tier 1 row, the question is whether Yobani has been looped in yet.
+For every due Tier 1 row, the question is whether Jordan has been looped in yet.
 
 ### Get the thread ID out of column J
 
@@ -183,14 +186,14 @@ raw decimal and the fetch 404s.
 The delegation-token URLs no longer open in a browser — that delegation lapsed — but the
 thread ID inside them is still valid. Extract it and ignore the dead prefix.
 
-### Find Yobani's involvement in ONE query
+### Find Jordan's involvement in ONE query
 
 Do **not** fetch each thread and scan its participants — that is one call per row for a
-question a single search answers. Yobani is `yobani@smbdealhunter.xyz`. Run one
+question a single search answers. Jordan is `jkempster@smbdealhunter.xyz`. Run one
 `GMAIL_FETCH_EMAILS` on `gmail_kath-tiou`:
 
 ```
-query: {to:yobani@smbdealhunter.xyz cc:yobani@smbdealhunter.xyz bcc:yobani@smbdealhunter.xyz from:yobani@smbdealhunter.xyz} after:<YYYY/MM/DD>
+query: {to:jkempster@smbdealhunter.xyz cc:jkempster@smbdealhunter.xyz bcc:jkempster@smbdealhunter.xyz from:jkempster@smbdealhunter.xyz} after:<YYYY/MM/DD>
 max_results: 100
 verbose: false
 ```
@@ -199,8 +202,13 @@ Braces are Gmail's OR syntax. Set `after:` a day before the oldest due row's Dat
 window covers every lead in play, and page through `nextPageToken` until it is absent or
 empty-string.
 
-That returns every message in Helen's mailbox that involves Yobani, each with its
+That returns every message in Helen's mailbox that involves Jordan, each with its
 `threadId`, `subject` and `preview.body`.
+
+**Only Jordan counts.** A forward to or cc of the old setter, `yobani@smbdealhunter.xyz`,
+is not a handoff for a row on this tab — Yobani no longer takes new leads. If you happen to
+see one on a due row's thread, treat the row as **not forwarded** and say in its 🔴 bullet
+that it went to Yobani instead of Jordan.
 
 ### Match a due row to that set
 
@@ -228,8 +236,8 @@ display name alone** — several leads in this sheet share first names.
   stays empty here and the O/Q cadence stays dormant.
 
 Then **immediately run STEP 3 for this row in the same pass.** Column F is the formula
-`=if(E="No","Helen",xlookup(C,...))`, so setting E to `Yes` flips the owner to Yobani the
-moment it lands. The row is a Yobani row now and gets the Yobani check now — it does not
+`=if(E="No","Helen","Jordan")`, so setting E to `Yes` flips the owner to Jordan the
+moment it lands. The row is a Jordan row now and gets the Jordan check now — it does not
 wait a week for the next cycle.
 
 **Not forwarded** → nothing has happened. Write:
@@ -243,16 +251,16 @@ happened.
 
 **One Price Wall row is expected to sit here for a while.** When a lead pushed back on the
 call itself, `helen-email-digest` gives Helen a draft that asks whether they want someone
-looped in rather than cc'ing Yobani, so the forward waits on their reply. Flag it the same
+looped in rather than cc'ing Jordan, so the forward waits on their reply. Flag it the same
 way — an unanswered lead is still worth surfacing — but say in Slack that the handoff is
 waiting on the lead, not on Helen. Column N is unaffected: that row carries the ordinary
 Price Wall draft and this step does not touch it.
 
 ---
 
-## STEP 3 — Yobani rows: has the call been set up?
+## STEP 3 — Jordan rows: has the call been set up?
 
-For every row now at `In Progress` / owner Yobani, ask Close whether a call exists.
+For every row now at `In Progress` / owner Jordan, ask Close whether a call exists.
 
 ### You need the lead's email address, and the tracker does not have it
 
@@ -288,7 +296,7 @@ second** — the two stages are different calls:
 | Duration | ~900s (15 min) | ~2700s (45 min) |
 | Event name | `SMB Deal Hunter Intro with <name>`, `Intro Call With SMB Deal Hunter Pro` | `Discovery Call with SMB Deal Hunter Pro - S2C` |
 
-**A setter call counts even if someone other than Yobani booked it.** The question is
+**A setter call counts even if someone other than Jordan booked it.** The question is
 whether this lead got onto the board, not who gets credit. Real case: Eric Rubinstein's
 intro call was held by **David Martin**, and it still resolves the row. The meeting title
 names the host (`Eric Rubinstein and David Martin`), so record who it was with.
@@ -321,7 +329,7 @@ already wrote is not made wrong by this task failing to reach Close.
 Always write **G → today** for a row you checked.
 
 **A setter call on the board resolves the row.** Once a lead has had their intro call,
-Yobani's job is done and there is nothing further for him to draft. Resolving a row means
+Jordan's job is done and there is nothing further for them to draft. Resolving a row means
 **writing no new draft** — it does not mean removing the one already there. That holds even
 when the *closer* call then fell through: a cancelled discovery call needs re-booking by
 whoever owns that stage, which is not a setter intro. Record it in V/W and mention it in
@@ -329,13 +337,13 @@ Slack.
 
 ---
 
-## STEP 4 — Yobani's reply: keep or write
+## STEP 4 — Jordan's reply: keep or write
 
-Only for a Yobani-owned row with **no call booked**. A row with a setter call on the board
+Only for a Jordan-owned row with **no call booked**. A row with a setter call on the board
 skips this step entirely; whatever is already in N stays put.
 
 **Check what is already in N before writing anything.** Since `helen-email-digest` began
-writing the Yobani draft at log time, most rows reaching this step already have one:
+writing the Jordan draft at log time, most rows reaching this step already have one:
 
 | N as read in STEP 1 | Do |
 |---|---|
@@ -355,15 +363,15 @@ her rather than introducing a stranger.
 
 ### What day 1 is
 
-Every draft here is Yobani's **day-1 response** — the first contact he makes once Helen has
-forwarded. It is an **email, and a phone call** if he has a number to call.
+Every draft here is Jordan's **day-1 response** — the first contact they make once Helen has
+forwarded. It is an **email, and a phone call** if they have a number to call.
 
 | Phone number in their initial email? | Day 1 |
 |---|---|
 | Yes | Email, then call them — today or tomorrow |
 | No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
 
-**No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
+**No texting on day 1.** If Jordan has the number, they call; if not, there's nothing to
 text. Either way the text is redundant.
 
 "Number provided" means a number in the **initial email they sent** — a signature block
@@ -418,16 +426,16 @@ Let's grab 15 minutes so I can get a better sense of your situation and make sur
 
 ### Filling them in
 
-**`[Calendly Link]` and `[today/tomorrow]` stay as literal bracketed placeholders.** Yobani
-fills them in himself. Do **not** substitute a real link or a real day:
+**`[Calendly Link]` and `[today/tomorrow]` stay as literal bracketed placeholders.** Jordan
+fills them in before sending. Do **not** substitute a real link or a real day:
 
-- Sheila's Calendly token is role `user` and cannot read Yobani's event types or
-  availability (`event_types-list_event_types` returns Permission Denied for another
-  user), so any day you commit him to would be invented. A day he is not free on is worse
-  than a blank he fills in five seconds.
-- His scheduling page is `https://calendly.com/yobani-smbdealhunter` (from the Calendly
-  API's `scheduling_url` on his org membership) if this is ever revisited — but leave the
-  placeholder unless Sheila says otherwise.
+- Sheila's Calendly token is role `user` and cannot read another user's event types or
+  availability (`event_types-list_event_types` returns Permission Denied), so any day you
+  commit Jordan to would be invented. A day they are not free on is worse than a blank they
+  fill in five seconds.
+- Jordan's scheduling page has not been looked up. Leave the placeholder unless Sheila says
+  otherwise — and never reuse the old setter's link
+  (`https://calendly.com/yobani-smbdealhunter`).
 
 **There is no `[time slot]` placeholder any more.** The templates commit to a call today or
 tomorrow rather than proposing a window, so nothing needs slotting. A draft still carrying
@@ -456,7 +464,7 @@ readiness, from column K or the email: `buying a business`, `the Bethlehem PA de
 mention.
 
 **Never invent commercial terms.** No draft here quotes a price, a fee, a range, a
-guarantee or a timeline. Note that unlike Helen's Price Wall draft, **Yobani's Price Wall
+guarantee or a timeline. Note that unlike Helen's Price Wall draft, **Jordan's Price Wall
 template deliberately does not answer the pricing question** — it moves to a call. Do not
 import the 1% line from the digest task's templates into it. If a lead asked a direct
 pricing question, the call is where it gets answered.
@@ -483,7 +491,7 @@ Sections, each skipped entirely when empty:
   `_Category_ — Sender: "[subject](<gmail thread link>)" — waiting N days`
 
   Two things carry this section. **The link**: Helen clicks the subject, lands on the
-  thread, and forwards it to Yobani — no hunting through the inbox or the tracker for a
+  thread, and forwards it to Jordan — no hunting through the inbox or the tracker for a
   lead that has already gone cold. **The number of days**: say how long each has been
   waiting, because that is what makes the bullet urgent rather than informational. Mention
   Helen as `<@U04ATRJKXPD>` once, in this section.
@@ -526,17 +534,17 @@ Capture the parent message's `ts` and post the drafts as **one threaded reply** 
 `thread_ts`. Full drafts inline would bury the flags the message exists to deliver.
 
 Include a lead here only when **this pass** wrote or replaced its draft. A draft carried
-over unchanged from the digest run is already sitting in column N, where Yobani reads it;
+over unchanged from the digest run is already sitting in column N, where Jordan reads it;
 reposting it on every pass turns the channel into an echo and makes it unclear which copy is
 live. (The digest run stopped posting drafts to Slack on 2026-09-11, when Helen's reply moved
-into her Gmail as a draft — Yobani's has always lived in the sheet, and now that is the only
+into her Gmail as a draft — Jordan's has always lived in the sheet, and now that is the only
 place it appears until a pass here changes it.)
 If the section would be empty because every due row's draft was already correct, say so in
 one line in the parent message instead ("3 drafts already current, unchanged").
 
 Format — one block per draft, each in a code block so it copies cleanly:
 
-> ✍️ *Suggested replies for Yobani* — reply on the existing thread and keep Helen on it.
+> ✍️ *Suggested replies for Jordan* — reply on the existing thread and keep Helen on it.
 > **Fill in `[Calendly Link]` and `[today/tomorrow]` before sending** — and call them the
 > same day if they gave a number.
 >
@@ -560,10 +568,10 @@ existing leads, it never creates them.
 
 **Columns F and H are formula-driven. Never write a literal to either.**
 
-- **F (Owner)** `=if(E<n>="No","Helen",xlookup(C<n>,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
+- **F (Owner)** `=if(E<n>="No","Helen","Jordan")`
 - **H (Next Check-in Date)** `=G<n>+1`
-- **P (Yobani 3-day follow-up date)** `=M<n>+3`
-- **R (Yobani 5-day follow-up date)** `=M<n>+5`
+- **P (Setter 3-day follow-up date)** `=M<n>+3`
+- **R (Setter 5-day follow-up date)** `=M<n>+5`
 
 They already hold these formulas on every existing row. Setting E and G is what moves F and
 H — F recomputes the owner and H recomputes the due date on its own. P and R work the same
@@ -571,18 +579,20 @@ way off M: writing the forward date into M is what turns `3` and `5` into real d
 Writing any of the four by hand converts a live formula to a dead literal and the row stops
 tracking.
 
-`Responsibility!A2:B9` holds the category → owner lookup. Its unused rows (Sellside → Bill,
-Investor and Operators → Kyle, Pitches and Engaged Reader → Helen) **must stay** — the
-`xlookup` range is absolute and trimming it breaks column F on every row.
+**F on this tab does not use the `Responsibility` lookup.** `Responsibility!A2:B9` still maps
+Buy Box, Ready Now and Price Wall to *Yobani*, and it stays that way so the old tab's owner
+column keeps reading correctly as history. The new tab names Jordan directly instead. Do not
+edit `Responsibility`, and do not "restore" an `xlookup` formula into F on this tab — it
+would show Yobani as the owner of Jordan's leads.
 
 ### What to write per row
 
 | Column | Value |
 |---|---|
 | **B** Tier | `In Progress` — only on a row whose forward you just confirmed |
-| **E** Forwarded to Yobani? | `Yes` — same rows only. Match the existing casing exactly |
+| **E** Forwarded to Setter? | `Yes` — same rows only. Match the existing casing exactly |
 | **G** Last Check-in Date | today, on **every** row you checked (including not-forwarded rows) |
-| **N** Suggested Yobani 1st Response | per STEP 4: **omit the cell from the write** when the existing draft stands; the new draft (plain text with real line breaks, not a formula, not quote-wrapped) when you wrote or replaced one. **Never an empty string** — drafts are not deleted, including on a resolved row. On a failed Close lookup, omit it: leave what is there |
+| **N** Suggested Setter 1st Response | per STEP 4: **omit the cell from the write** when the existing draft stands; the new draft (plain text with real line breaks, not a formula, not quote-wrapped) when you wrote or replaced one. **Never an empty string** — drafts are not deleted, including on a resolved row. On a failed Close lookup, omit it: leave what is there |
 | **T** Setter Call Date | the intro call's date. Empty when there is none |
 | **U** Setter Progress | short factual context: who with, event name, any note the lead left |
 | **V** Closer Call Date | the discovery/closing call's date. Empty when there is none |
@@ -598,22 +608,22 @@ lands:
 | Column | Owner | Written today? | Allowed values |
 |---|---|---|---|
 | **M** Helen Forward Date | this task | **no** — STEP 2 confirms the forward but does not record its date | a real date, only once the forward is verified in the thread |
-| **O** Yobani 1st Response Done? | this task | **no** | `Yes`, `No` — **two values only**, no `Not Needed - Connected` |
-| **Q** Yobani 3-day follow-up done? | this task | **no** | `Yes`, `No`, `Not Needed - Connected` — nothing else |
-| **S** Yobani 5-day follow-up done? | this task | **no** | same three values |
+| **O** Setter 1st Response Done? | this task | **no** | `Yes`, `No` — **two values only**, no `Not Needed - Connected` |
+| **Q** Setter 3-day follow-up done? | this task | **no** | `Yes`, `No`, `Not Needed - Connected` — nothing else |
+| **S** Setter 5-day follow-up done? | this task | **no** | same three values |
 
 Leave all four exactly as found. Do not improvise a value into them, and do not treat a
 blank as a bug. In particular **never copy E into O** — they answer different questions
-(Helen forwarded vs. Yobani replied), and the fact that they happen to match on every
-existing row is a one-off backfill, not a rule.
+(Helen forwarded vs. Jordan replied). They matched on every row of the old tab only
+because of a one-off backfill, which was never a rule.
 
 ### How to write
 
 Use `GOOGLESHEETS_VALUES_UPDATE` with `value_input_option: "USER_ENTERED"` so dates coerce
 to real dates. Because the due rows are usually contiguous but the columns are not, write
-in per-column blocks — `Tracker!B<a>:B<b>`, `Tracker!E<a>:E<b>`, `Tracker!G<a>:G<b>`,
-`Tracker!N<a>:N<b>`, `Tracker!T<a>:W<b>` — which keeps F, H, P and R untouched by
-construction.
+in per-column blocks — `'Tracker (JordanK)'!B<a>:B<b>`, `'Tracker (JordanK)'!E<a>:E<b>`,
+`'Tracker (JordanK)'!G<a>:G<b>`, `'Tracker (JordanK)'!N<a>:N<b>`,
+`'Tracker (JordanK)'!T<a>:W<b>` — which keeps F, H, P and R untouched by construction.
 
 **The old `M:Q` block is now wrong and destructive.** That rectangle covers Helen Forward
 Date, the draft, the 1st-response flag and both follow-up formulas; writing it would blank M
@@ -636,10 +646,10 @@ Google Sheets rate-limits at 60 writes/minute. Batch; do not write cell by cell.
 
 ### Verify, and report honestly
 
-Re-read `Tracker!A1:W<n>` with `valueRenderOption: "FORMULA"` and confirm:
+Re-read `'Tracker (JordanK)'!A1:W<n>` with `valueRenderOption: "FORMULA"` and confirm:
 
 - every G you wrote is today's serial, and H is still the formula `=G<n>+1`
-- every F is still the `if(...xlookup(...))` formula, and none of them spilled `#N/A`
+- every F is still the formula `=if(E<n>="No","Helen","Jordan")`
 - **P and R are still the formulas `=M<n>+3` and `=M<n>+5`** — a literal date in either
   means a block write ran over them
 - **M, O, Q and S are untouched** on every row
@@ -660,7 +670,7 @@ pass that only partly completed.
 
 Read email, read Close, write the tracker, post to Slack. Nothing else. Specifically: do
 **not** reply to, forward, label, archive or delete any email — including the forward to
-Yobani that Step 2 is checking for. If Helen has not forwarded a lead, this task says so;
+Jordan that Step 2 is checking for. If Helen has not forwarded a lead, this task says so;
 it does not do it for her. Do not create, update or delete anything in Close.
 
 ## Failure reporting

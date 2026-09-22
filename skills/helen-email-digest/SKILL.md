@@ -1,6 +1,6 @@
 ---
 name: helen-email-digest
-description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, with Helen's reply created as a Gmail draft on each lead's thread with Yobani cc'd, and one row per lead in the Google Sheets tracker carrying both the Helen and Yobani reply drafts
+description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, with Helen's reply created as a Gmail draft on each lead's thread with Jordan cc'd, and one row per lead in the Google Sheets tracker carrying both the Helen and Jordan reply drafts
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
@@ -10,7 +10,7 @@ fires — every step must complete through connectors, or fail loudly to Slack. 
 work parked for a person to finish by hand.
 
 **It writes drafts, and only drafts.** Since 2026-09-11 the reply for each lead is created
-as a Gmail draft on that lead's thread in Helen's mailbox, with Yobani cc'd, so her whole
+as a Gmail draft on that lead's thread in Helen's mailbox, with Jordan cc'd, so her whole
 job is to open the thread, read it, and send. Nothing in this task sends email. See STEP 3,
 and *Scope limits* at the end.
 
@@ -23,7 +23,7 @@ counted. There is no Tier 2, no Tier 3, and no "Uncategorized / needs review" bu
 joined is normally answered by Helen's canned-response automation within seconds. When the
 "Yes" lands on the wrong email the automation never fires and a new member silently gets no
 bonuses. Those are surfaced in the digest, and their reply is drafted in Gmail like any
-other — but **without Yobani cc'd**. They are not buyer leads: no tracker row, no Yobani, no
+other — but **without Jordan cc'd**. They are not buyer leads: no tracker row, no Jordan, no
 Recommended Action. See *Bonus claims* in STEP 2.
 
 ---
@@ -45,17 +45,17 @@ every Gmail call**. Pin it explicitly:
 
 Omitting `account` on a Gmail call lets it default to whichever account is marked default,
 and **that is no longer Helen's.** Three Gmail accounts are connected: Helen's, Sheila's
-(`gmail_uncast-hoop`), and — added 2026-09-11 — Yobani's (`gmail_nickle-quaver`), which is
-currently the default. This used to be a "never rely on it" caution; since STEP 3 began
-writing drafts it is a live hazard, because an unpinned call would create a reply to a lead,
-in Helen's words, sitting in **Yobani's** drafts. Pin `gmail_kath-tiou` on every call,
-reads and drafts alike.
+(`gmail_uncast-hoop`), and — added 2026-09-11 — Yobani's (`gmail_nickle-quaver`), the former
+setter's, which is currently the default. This used to be a "never rely on it" caution; since
+STEP 3 began writing drafts it is a live hazard, because an unpinned call would create a
+reply to a lead, in Helen's words, sitting in **Yobani's** drafts. Pin `gmail_kath-tiou` on
+every call, reads and drafts alike.
 
 One lookup does **not** go through Composio: the Close check in STEP 2 (existing clients,
 past calls with the team, and booked calls) reads Close CRM through the **first-party Close
 connector** (`mcp__Close__*`). It is read-only. If the
 Close connector is missing, that is not a reason to abort the run — the check simply fails
-to confirm and every affected lead keeps the default "Send to Yobani" (see STEP 2). Say so
+to confirm and every affected lead keeps the default "Send to Jordan" (see STEP 2). Say so
 in the run report.
 
 Before doing anything else, confirm both toolkits report an ACTIVE connection. If either is
@@ -207,7 +207,7 @@ Jason replied "Yes" twice, eleven minutes apart, to a newsletter. Two "Yes" repl
 thread is still one bonus claim — surface the thread once.
 
 **Bonus claims are not buyer leads.** They are not Tier 1, they get no tracker row, no
-Recommended Action, no Yobani draft, and Yobani is not cc'd. Someone replying to "You're
+Recommended Action, no Jordan draft, and Jordan is not cc'd. Someone replying to "You're
 in!" has already joined; there is nothing for a setter to book. The only output is Helen's
 one-line reply.
 
@@ -221,7 +221,7 @@ a lot. So the routine surfaces it. Do not build a cleverer test for this.
 
 Threads **in one of the three categories above** where Helen has already made the intro and
 handed off to someone else at SMB Deal Hunter. Signals: a teammate (e.g. Kyle Hopkins,
-Yobani) is now an active participant replying in the thread, or Helen has explicitly
+Jordan) is now an active participant replying in the thread, or Helen has explicitly
 forwarded/looped a teammate in.
 
 When this is the case the email goes here **instead of** Tier 1 — do not double-list it.
@@ -230,8 +230,8 @@ For each entry also record:
 - **category** — which of Buy Box / Ready Now / Price Wall this lead was: classify as if
   Helen were still handling it directly, then note the handover
 - **owner** — who at SMB Deal Hunter now owns the thread: "helen" if she's still following
-  up herself post-intro, or the teammate's name if she's handed it off (e.g. "yobani" — a
-  setter, so threads owned by yobani usually arrived there via "send to setter")
+  up herself post-intro, or the teammate's name if she's handed it off (e.g. "jordan" — a
+  setter, so threads owned by jordan usually arrived there via "send to setter")
 
 A handed-off thread whose original category is **not** one of the three (an Investor thread
 Kyle is running, a Sellside thread with Bill) is **dropped**, same as any other untracked
@@ -240,9 +240,9 @@ category. Handover tracking follows the tracked categories; it does not widen th
 ### Recommended action — and the Close checks
 
 Every Tier 1 lead gets a Recommended Action, written to tracker column D — and so does
-every 🟢 handover row, where it is normally "Send to Yobani" unless the
+every 🟢 handover row, where it is normally "Send to Jordan" unless the
 existing-relationship rule below makes it "Ignore". There are two
-values: **"Send to Yobani"** (the default — a real buyer worth the setter's time) and
+values: **"Send to Jordan"** (the default — a real buyer worth the setter's time) and
 **"Ignore"**.
 
 Four things earn "Ignore":
@@ -270,7 +270,7 @@ from the seller's side of the table. The only question that matters is: **is thi
 asking to buy a business through SMB Deal Hunter, or are they talking about something else?**
 
 Both real cases below are from the *same newsletter thread on the same day*, and both were
-first logged as Tier 1 "Send to Yobani". Both were wrong.
+first logged as Tier 1 "Send to Yobani" (the setter at the time). Both were wrong.
 
 **Their own asset, not a business.** Jerome M Limage wrote *"I'd like knowing more of the
 seller financing with 50% and would want an opted financing on an investment property that I
@@ -321,7 +321,7 @@ Both look like Price Wall, and they get opposite actions. Sort on **whether the 
 told you they lack the funds**, not on whether price came up:
 
 - *"What does it cost?"*, *"I have yet to see what the fees are"* — a live buyer with an
-  unanswered question. **Send to Yobani**, with the Price Wall draft that answers it.
+  unanswered question. **Send to Jordan**, with the Price Wall draft that answers it.
 - *"I don't have the funds"*, *"that's out of my budget"*, *"I can't afford that right
   now"* — they have disqualified themselves. **Ignore**, no draft.
 
@@ -333,7 +333,7 @@ have no money is the wrong reply.
 
 #### The existing-relationship rule
 
-Yobani is the setter: his job is to get a **new** buyer onto a first call. Someone who is
+Jordan is the setter: their job is to get a **new** buyer onto a first call. Someone who is
 already paying SMB Deal Hunter, or who has already been on a call with the team, is not that
 — they are already in someone else's hands, and a "let's grab 15 minutes" from a stranger
 tells them the team does not know who they are. **Their emails are not forwarded to a
@@ -341,10 +341,10 @@ setter.** Write **"Ignore"**.
 
 This is not something the email tells you. A paying member asking about a featured deal
 reads exactly like a new Ready Now lead; a prospect who had a discovery call last month
-writes in as if for the first time. Real cases, all logged "Send to Yobani" before this rule
-existed, all wrong:
+writes in as if for the first time. Real cases, all logged "Send to Yobani" on the old
+`Tracker (Yobani)` tab before this rule existed, all wrong:
 
-| Tracker row | Sender | What the email looked like | What Close shows | Action |
+| Old tab row | Sender | What the email looked like | What Close shows | Action |
 |---|---|---|---|---|
 | 34 | William Polanco | Form submission asking for CIMs on two NY deals — read as Ready Now | Status **Client**; opportunity **WON** 2026-08-19, SMB Deal Hunter Pro $15,000 | Ignore |
 | 49 | Mose Richardson | Form submission about the Ohio compressed-air deal — read as Ready Now. The reply after Helen looped Yobani in: *"I'm a member of your program"* | Status **Client**; opportunity **WON** 2026-01-28, SMB Deal Hunter Pro $15,000 | Ignore |
@@ -377,14 +377,14 @@ Procedure (verified 2026-09-22 against all four rows above):
    own: a setter's unanswered dial or voicemail is logged the same way and is not a
    conversation.
 5. A meeting dated **today or later** is the call-booked rule below, and it is also
-   "Ignore". Past or future, a meeting with the team means the lead is not Yobani's.
+   "Ignore". Past or future, a meeting with the team means the lead is not Jordan's.
 6. **If the lookup fails to confirm** — no Close lead matches the address, the lead has no
    won opportunity, no client status and no meeting, or Close errors — leave the action as
-   **"Send to Yobani"**. Same as the call-booked rule: unverified is not a reason to drop a
+   **"Send to Jordan"**. Same as the call-booked rule: unverified is not a reason to drop a
    buyer, and most real new leads have no Close history at all.
 
 **What this changes, and what it does not.** Column D becomes "Ignore", and that gate does
-the rest: no Helen draft in column L, no Gmail draft, no Yobani draft in column N, and
+the rest: no Helen draft in column L, no Gmail draft, no Jordan draft in column N, and
 `tracker-followup` skips the row (it never chases Helen to forward an `Ignore` row). The
 lead is still classified on the content of the email, still gets its tracker row, and still
 appears in the Slack digest, with the marker from STEP 4 so Helen can see why there is no
@@ -395,11 +395,11 @@ In the run report, list every lead this rule turned to "Ignore" and which signal
 
 #### The call-booked rule
 
-Yobani is the setter; his job is to get the call booked. A lead who has already booked one
-is not work for him, so passing them along is wasted effort. When an email says the sender
+Jordan is the setter; their job is to get the call booked. A lead who has already booked one
+is not work for them, so passing them along is wasted effort. When an email says the sender
 has scheduled a call — "I have a call scheduled", "I have booked a call", "we're speaking
 Thursday" — check Close, and if it is confirmed there, write **"Ignore"** instead of "Send
-to Yobani".
+to Jordan".
 
 **Verify in Close before writing "Ignore". Never take the claim at face value** — a sender
 can misremember, book with someone else, or have cancelled since writing.
@@ -425,7 +425,7 @@ Procedure (verified 2026-09-10):
    since the lead has already had a call with the team.
 
 4. **If any of this fails to confirm** — the email address matches no lead, the lead has no
-   meeting, or the Close lookup errors — leave the action as **"Send to Yobani"**, unless
+   meeting, or the Close lookup errors — leave the action as **"Send to Jordan"**, unless
    the existing-relationship rule above already made it "Ignore". Unverified is not the same as false, and the safe default is to
    let the setter look.
 
@@ -446,9 +446,9 @@ Recommended Action is not shown in Slack.
 
 ### Suggested Helen email draft
 
-Every lead whose Recommended Action is **"Send to Yobani"** also gets a ready-to-send
+Every lead whose Recommended Action is **"Send to Jordan"** also gets a ready-to-send
 reply draft. It is written twice: into tracker column L, and — as of 2026-09-11 — into
-**Helen's Gmail as a real draft on the lead's own thread, with Yobani cc'd** (STEP 3), so
+**Helen's Gmail as a real draft on the lead's own thread, with Jordan cc'd** (STEP 3), so
 she opens the thread, reviews, and sends. Rows marked "Ignore" and Tracking Handover
 Progress rows get **no draft** — leave the cell empty, and create nothing in Gmail for
 them.
@@ -456,15 +456,18 @@ them.
 🎁 **Bonus claims also get a draft**, and they are the one kind that is not a lead: no
 tracker row, no Recommended Action, no cc. Their template is *The bonus reply*, below.
 
-The draft is a **reply in Helen's voice**, cc'ing Yobani Mendoza
-(`yobani@smbdealhunter.xyz`, the setter). No subject line, no signature, no greeting
+The draft is a **reply in Helen's voice**, cc'ing Jordan Kempster
+(`jkempster@smbdealhunter.xyz`, the setter). No subject line, no signature, no greeting
 block — Helen is replying inside an existing thread.
 
-**Two drafts do not cc Yobani**: the Price Wall call-pushback variant, which asks the lead's
-permission to loop someone in rather than doing it, and the bonus reply, which has nothing
-to do with him. Both say so where they are defined. Every other draft cc's him.
+**Jordan replaced Yobani as the setter on 2026-09-23.** From that run on, no draft cc's
+`yobani@smbdealhunter.xyz` or names Yobani in its body — a draft that does is a wrong send.
 
-The cc is now real, not an instruction to Helen: STEP 3 puts `yobani@smbdealhunter.xyz` on
+**Two drafts do not cc Jordan**: the Price Wall call-pushback variant, which asks the lead's
+permission to loop someone in rather than doing it, and the bonus reply, which has nothing
+to do with Jordan. Both say so where they are defined. Every other draft cc's Jordan.
+
+The cc is now real, not an instruction to Helen: STEP 3 puts `jkempster@smbdealhunter.xyz` on
 the Cc line of the Gmail draft itself, and leaves it off for those two. Getting that wrong
 is not cosmetic — a bonus claim or a call-pushback reply that goes out with the setter on it
 contradicts what the message says.
@@ -473,7 +476,7 @@ contradicts what the message says.
 
 Use the template for the lead's category — and, for Ready Now and Price Wall, the variant
 that matches what the lead asked for. Each one is a fully written-out message to the lead,
-with Yobani mentioned inside it where he is being looped in — not a set of separate notes to
+with Jordan mentioned inside it where they are being looped in — not a set of separate notes to
 different people. The last template, the bonus reply, is the exception to all of this: it is
 not a lead draft at all.
 
@@ -484,26 +487,26 @@ when she has thirty seconds — but in whole words.
 **Buy Box**
 
 ```
-Hey [First Name], [their ask] is something we can help with. @Yobani on our team can grab 15 minutes with you to better understand what you're looking for.
+Hey [First Name], [their ask] is something we can help with. @Jordan on our team can grab 15 minutes with you to better understand what you're looking for.
 ```
 
 **Ready Now**
 
 ```
-Hey [First Name], we can definitely help. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
+Hey [First Name], we can definitely help. Looping in Jordan from our team. @Jordan, do you mind finding 15 minutes to give [First Name] a call?
 ```
 
 **Ready Now — asking about a specific deal** (use this one instead when the lead is asking
 about a deal Helen featured, rather than signalling readiness in general)
 
 ```
-Hey [First Name], deals like these go pretty quickly, but we can help you move fast. Looping in Yobani from our team. @Yobani, do you mind finding 15 minutes to give [First Name] a call?
+Hey [First Name], deals like these go pretty quickly, but we can help you move fast. Looping in Jordan from our team. @Jordan, do you mind finding 15 minutes to give [First Name] a call?
 ```
 
 **Price Wall**
 
 ```
-Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call — @Yobani on our team can find a time that works for you.
+Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call — @Jordan on our team can find a time that works for you.
 ```
 
 **Price Wall — pushing back on the call itself** (use this one instead when the lead is
@@ -520,8 +523,8 @@ So it is a two way thing, and that is why we do not get into the details until t
 Let me know if you're still interested and want me to loop someone from our team in.
 ```
 
-The `@Yobani` is literal text in the body of an email, not a Slack or Gmail mention. It
-reads as a nudge to him because he is cc'd.
+The `@Jordan` is literal text in the body of an email, not a Slack or Gmail mention. It
+reads as a nudge to Jordan because they are cc'd.
 
 **The bonus reply** — for 🎁 bonus claims only, not for any lead category. Word for word
 what Helen's automation sends, so a member who got it late cannot tell the difference:
@@ -533,7 +536,7 @@ Hey - thanks so much for joining! Here's the link to the bonuses: https://smbdea
 The automation hyperlinks the word "link" rather than showing the URL; in a Slack code block
 the URL has to be visible, and either form is fine to send as long as the link is there. No
 first name, no personalisation, nothing added — it opens "Hey -" exactly as the automation
-does. Yobani is not cc'd on this one.
+does. Jordan is not cc'd on this one.
 
 #### Filling them in
 
@@ -610,8 +613,8 @@ the details, so quoting the 1% figure in the same message contradicts the messag
 import the 1% line into this template**, and do not append answers to any of the numbered
 questions, however well you think you know them.
 
-**It does not cc Yobani either.** Its last line asks whether the lead wants someone looped
-in, so looping him in pre-emptively contradicts that too. The forward follows their reply.
+**It does not cc Jordan either.** Its last line asks whether the lead wants someone looped
+in, so looping Jordan in pre-emptively contradicts that too. The forward follows their reply.
 
 ⚠️ **Flag this one for Helen's eye.** The emails that earn this template are long, specific
 and often from sophisticated buyers, and the reply is a considered position rather than a
@@ -619,8 +622,8 @@ one-liner — she may want to adjust it for the particular person. Its Gmail dra
 like any other, but the lead's bullet in the Slack digest is marked as needing her review
 before sending (STEP 4). Every other draft is open-and-send; this one is a starting point.
 
-The lead is still **Price Wall**, still **Send to Yobani**, and still gets a tracker row and
-a Yobani draft in column N. Only Helen's opening move changes.
+The lead is still **Price Wall**, still **Send to Jordan**, and still gets a tracker row and
+a Jordan draft in column N. Only Helen's opening move changes.
 
 **Never invent commercial terms.** The 1% figure appears in the plain Price Wall template
 and nowhere else — not even in the call-pushback variant, which is a Price Wall draft that
@@ -635,51 +638,50 @@ call handle it.
 and, for Buy Box, their ask — and nothing more. The bonus reply takes no substitutions at
 all. If a draft says something the template does not, take that back out.
 
-### Suggested Yobani response
+### Suggested Jordan response
 
 Produced in the **same run as Helen's draft, for the same leads**, and written to tracker
-column N (`Suggested Yobani 1st Response`).
+column N (`Suggested Setter 1st Response`).
 
-Everything here is Yobani's **day-1 response**: the first contact he makes after Helen
+Everything here is Jordan's **day-1 response**: the first contact they make after Helen
 forwards her reply. Later touches are not covered here — `tracker-followup` owns those.
 
 This draft used to be written days later, by the `tracker-followup` pass, once Helen's
 forward had been confirmed and Close showed no call. That left every new row half-ready:
-Helen's handoff was one paste away on day one, and Yobani's reply did not exist until a
+Helen's handoff was one paste away on day one, and Jordan's reply did not exist until a
 later pass picked the row up. Both drafts now come out of this run, so a lead's whole path
 is written the morning it arrives.
 
-**Same gate as Helen's draft.** Every lead whose Recommended Action is `Send to Yobani`
+**Same gate as Helen's draft.** Every lead whose Recommended Action is `Send to Jordan`
 gets one. `Ignore` rows and Tracking Handover Progress rows get none — leave N empty. 🎁
-Bonus claims are not leads and have no row, so there is nothing to write: they get no Yobani
+Bonus claims are not leads and have no row, so there is nothing to write: they get no Jordan
 draft at all.
 
-**Yobani's draft is not created in Gmail.** STEP 3 drafts Helen's reply only. Yobani sends
-his from his own mailbox after she forwards, and column N is where he reads it from.
+**Jordan's draft is not created in Gmail.** STEP 3 drafts Helen's reply only. Jordan sends
+theirs from their own mailbox after she forwards, and column N is where they read it from.
 
 **The draft is provisional, and writing it resolves nothing.** At digest time the lead has
 not been forwarded yet and no setter-call check has run for them. `tracker-followup` still
-runs that check on a later pass and remains the authority: when Close shows a setter call,
-it **clears** M rather than leave a stale "let's grab 15 minutes" pointed at someone who has
-already had their call. Writing M here does not mark the row handled and does not exempt it
-from the follow-up pass.
+runs that check on a later pass and remains the authority on where the lead stands. Writing
+N here does not mark the row handled and does not exempt it from the follow-up pass. (Drafts
+are never cleared — see STEP 5.)
 
 #### When it goes out
 
-As soon as Helen forwards. Yobani replies on the **same thread**, with Helen kept on it — so
+As soon as Helen forwards. Jordan replies on the **same thread**, with Helen kept on it — so
 the handoff stays tracked. Not a fresh email: the lead has been talking to Helen, so the
 reply picks up from her rather than introducing a stranger.
 
 #### What day 1 is
 
-An **email, and a phone call** if he has a number to call.
+An **email, and a phone call** if Jordan has a number to call.
 
 | Phone number in their initial email? | Day 1 |
 |---|---|
 | Yes | Email, then call them — today or tomorrow |
 | No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
 
-**No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
+**No texting on day 1.** If Jordan has the number, they call; if not, there's nothing to
 text. Either way the text is redundant.
 
 "Number provided" means a number in the **initial email they sent** — a signature block
@@ -701,13 +703,13 @@ One per category. Use the template for the row's category — the same category 
 Helen's draft.
 
 **There are no variants here.** Helen's Ready Now and Price Wall drafts each have two
-openings; Yobani's have one apiece.
+openings; Jordan's have one apiece.
 
 - A lead who asked about a deal Helen featured takes the plain Ready Now template below,
   with `[their own words]` set to the deal they named — *the wellness center in Virginia*.
   The scarcity line is Helen's opening only.
 - A lead who pushed back on the call takes the plain Price Wall template below, unchanged.
-  Helen's reply to them asks whether they want someone looped in, so Yobani's draft may sit
+  Helen's reply to them asks whether they want someone looped in, so Jordan's draft may sit
   unused for longer than most — that is expected, and `tracker-followup` still owns column N
   from there.
 
@@ -746,24 +748,24 @@ Let's grab 15 minutes so I can get a better sense of your situation and make sur
 
 - `[First Name]`, `[buy box criteria]`, `[their own words]` — filled in when the draft is
   written, per the rules below.
-- `[Calendly Link]` — stays a literal bracketed placeholder; Yobani fills it in before
+- `[Calendly Link]` — stays a literal bracketed placeholder; Jordan fills it in before
   sending.
-- `[today/tomorrow]` — stays bracketed too, and Yobani picks one before sending. This task
-  has no way to know which day he is free.
+- `[today/tomorrow]` — stays bracketed too, and Jordan picks one before sending. This task
+  has no way to know which day Jordan is free.
 
 **There is no `[time slot]` placeholder any more.** The templates commit to a call today or
 tomorrow rather than proposing a window, so nothing needs slotting. This also retires the
 old reason for leaving it blank: Sheila's Calendly token is role `user` and cannot read
-Yobani's event types or availability (`event_types-list_event_types` returns Permission
+Jordan's event types or availability (`event_types-list_event_types` returns Permission
 Denied for another user), so any time proposed here would have been invented. That constraint
-still applies to `[Calendly Link]` — do not substitute a real link. His scheduling page is
-`https://calendly.com/yobani-smbdealhunter` if this is ever revisited, but leave the
-placeholder unless Sheila says otherwise.
+still applies to `[Calendly Link]` — do not substitute a real link. Jordan's scheduling page
+has not been looked up; leave the placeholder unless Sheila says otherwise, and never reuse
+the old setter's link (`https://calendly.com/yobani-smbdealhunter`).
 
 Both `[Calendly Link]` and `[today/tomorrow]` stay bracketed in column N and are filled in
-by Yobani before he sends. This draft is not posted to Slack and is not created in Gmail, so
+by Jordan before sending. This draft is not posted to Slack and is not created in Gmail, so
 there is nothing here for Helen to send by accident — but leave the brackets literal so it is
-obvious to him that they need filling.
+obvious to Jordan that they need filling.
 
 **First name.** Resolved exactly as for Helen's draft: the name the sender signs off with,
 else the first word of their Gmail display name, else — for a bare address like
@@ -819,7 +821,7 @@ the strength of that phrasing.
 ## STEP 3 — Create Helen's reply as a Gmail draft
 
 Every draft written in STEP 2 is also created as a **real Gmail draft in Helen's mailbox**,
-sitting on the lead's own thread with Yobani cc'd. Helen opens the thread, finds the reply
+sitting on the lead's own thread with Jordan cc'd. Helen opens the thread, finds the reply
 already written in the box, edits it if she wants, and hits send. **She never pastes
 anything** — which is why the drafts no longer go in a Slack thread (STEP 4).
 
@@ -829,13 +831,13 @@ before the tracker write so column L records text that is known to exist in Gmai
 ### Which messages get a draft
 
 Exactly the ones that got a draft in STEP 2, and nothing else. The cc follows the same rule
-stated there — every lead draft cc's Yobani except the two that say they do not:
+stated there — every lead draft cc's Jordan except the two that say they do not:
 
-| | Gmail draft | Cc Yobani |
+| | Gmail draft | Cc Jordan |
 |---|---|---|
-| Tier 1, Recommended Action `Send to Yobani` | Yes | **Yes** |
+| Tier 1, Recommended Action `Send to Jordan` | Yes | **Yes** |
 | Tier 1, Price Wall **call-pushback** variant | Yes | **No** — it asks the lead's permission to loop someone in |
-| 🎁 Bonus claim | Yes | **No** — nothing to do with him |
+| 🎁 Bonus claim | Yes | **No** — nothing to do with Jordan |
 | Tier 1, Recommended Action `Ignore` | No | — |
 | 🟢 Tracking Handover Progress | No | — |
 
@@ -869,7 +871,7 @@ GMAIL_CREATE_EMAIL_DRAFT
   account:          gmail_kath-tiou
   thread_id:        <the lead's threadId>
   recipient_email:  <the lead's own email address>
-  cc:               ["yobani@smbdealhunter.xyz"]     # omit entirely for the two no-cc rows above
+  cc:               ["jkempster@smbdealhunter.xyz"]     # omit entirely for the two no-cc rows above
   body:             <the STEP 2 draft, verbatim>
   is_html:          false
   subject:          (omit — see below)
@@ -885,7 +887,7 @@ of the thread. Several of these threads are replies to a newsletter blast; **thi
 to the person, not a reply-all to everyone the blast touched.** No `extra_recipients`, ever,
 and no `bcc`.
 
-**`cc` is Yobani, and only Yobani** — `yobani@smbdealhunter.xyz`. For the two no-cc cases,
+**`cc` is Jordan, and only Jordan** — `jkempster@smbdealhunter.xyz`. For the two no-cc cases,
 omit the field rather than passing an empty list with a placeholder in it.
 
 **`body` is the STEP 2 draft, character for character**, with `is_html: false` so the plain
@@ -907,9 +909,9 @@ the draft id from the create call) and confirm four things:
 
 1. It is **on the lead's thread** — the draft's `threadId` matches the one you passed.
 2. The **To** is the lead's address, and nobody else is on the To line.
-3. The **Cc** is exactly `yobani@smbdealhunter.xyz` — or, for the call-pushback and bonus
+3. The **Cc** is exactly `jkempster@smbdealhunter.xyz` — or, for the call-pushback and bonus
    drafts, that there is **no Cc at all**. A bonus claim or a pushback reply that goes out
-   with Yobani on it is a wrong send, not a cosmetic slip.
+   with Jordan on it is a wrong send, not a cosmetic slip.
 4. The **body** matches the STEP 2 draft.
 
 A draft that fails verification is reported as a failure (below). Do not quietly fix it by
@@ -970,7 +972,7 @@ Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
 ### The drafts are not in this message, and not in a thread under it
 
 **Do not post the reply drafts to Slack.** As of 2026-09-11 they are waiting in Helen's
-Gmail, on each lead's own thread with Yobani already cc'd (STEP 3) — she opens the thread and
+Gmail, on each lead's own thread with Jordan already cc'd (STEP 3) — she opens the thread and
 sends, so there is nothing to paste and nothing to copy out of Slack. Posting them again here
 would give her two copies to reconcile, and the one in Slack would be the stale one the
 moment she edits the real draft.
@@ -979,30 +981,30 @@ The **only** thread reply this task ever posts is the failure fallback in STEP 3
 that could not be created in Gmail, so they are not lost. If every draft landed, post no
 thread reply at all.
 
-Yobani's day-1 reply is not posted to Slack either. It lives in tracker column N, which is
+Jordan's day-1 reply is not posted to Slack either. It lives in tracker column N, which is
 where it went before and where `tracker-followup` picks it up; posting it here was only ever
-a preview. Do not tag or DM him from this task — the `tracker-followup` pass is what surfaces
-a row once it is actually his.
+a preview. Do not tag or DM Jordan from this task — the `tracker-followup` pass is what
+surfaces a row once it is actually theirs.
 
 ### Say, once, where the drafts are
 
 Under the 🔴 Tier 1 header, one line:
 
-> ✍️ _Drafts are waiting in Helen's Gmail — open the thread, review, send. Yobani is cc'd._
+> ✍️ _Drafts are waiting in Helen's Gmail — open the thread, review, send. Jordan is cc'd._
 
 Then mark only the exceptions, inline on the lead's own bullet. The default case needs no
 marker; a bullet with nothing after it means a normal draft is sitting in Gmail ready to go.
 
 | Case | Marker on that lead's bullet |
 |---|---|
-| **Price Wall call-pushback** draft | `⚠️ Needs your review before sending — long, specific email, and this reply deliberately answers none of it. Yobani is not cc'd; the forward follows their reply.` |
+| **Price Wall call-pushback** draft | `⚠️ Needs your review before sending — long, specific email, and this reply deliberately answers none of it. Jordan is not cc'd; the forward follows their reply.` |
 | Draft **could not be created** (STEP 3 failure) | `⚠️ Draft not created — text is in the thread below.` |
-| Lead is an **existing client**, or has **already had a call** with the team (the existing-relationship rule in STEP 2) | `ℹ️ Already a client in Close — no draft, do not forward to Yobani.` or `ℹ️ Already had a call with the team (<date of the most recent past meeting>) — no draft, do not forward to Yobani.` Same marker on a 🟢 handover bullet. |
+| Lead is an **existing client**, or has **already had a call** with the team (the existing-relationship rule in STEP 2) | `ℹ️ Already a client in Close — no draft, do not forward to Jordan.` or `ℹ️ Already had a call with the team (<date of the most recent past meeting>) — no draft, do not forward to Jordan.` Same marker on a 🟢 handover bullet. |
 | Lead's action was **Ignore** for any other reason | no bullet marker, and no draft — the digest does not show the action, and an `Ignore` lead with no draft is the intended outcome, not a gap |
 
 The 🎁 section takes its own one-liner in the header rather than per-bullet markers: say the
 reply is drafted in Gmail, that it is the same text the automation would have sent, and that
-Yobani is not cc'd on these.
+Jordan is not cc'd on these.
 
 Every other draft is open-and-send. The call-pushback one is a starting point for Helen, and
 it is the one that must not go out unread — it is the only lead draft in the set that states
@@ -1012,8 +1014,9 @@ a position rather than making an offer.
 
 ## STEP 5 — Log to the Google Sheets tracker
 
-Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit
+Tracker: https://docs.google.com/spreadsheets/d/1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ/edit?gid=1722038405#gid=1722038405
 Spreadsheet ID: `1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ`
+Tab: **`Tracker (JordanK)`** (sheet id `1722038405`)
 
 Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and Tracking
 Handover Progress rows. Nothing else gets a row. What was dropped in STEP 1–2 is not
@@ -1031,174 +1034,151 @@ accepted trade for keeping a customer chore out of a buyer-lead pipeline. If it 
 be missed in practice, the fix is a tracker row or a separate list — not a wider digest
 window.
 
-### Sheet layout — verified 2026-09-10
+### Sheet layout — new tab from 2026-09-23
 
-The spreadsheet has **two tabs**: `Tracker` (the data) and `Responsibility` (the lookup).
+The spreadsheet has **three tabs**:
 
-**`Tracker` tab.** Row 1 is the header. Data starts at **row 2**. As of 2026-09-11 the last
-data row is **row 32** (31 rows). **The sheet runs to column W** — the layout was changed
-twice on 2026-09-11, so any column letter you remember from before that date is wrong.
-Columns A–W:
-
-`Date | Tier | Category | Recommended Action | Forwarded to Yobani? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Yobani 1st Response | Yobani 1st Response Done? | Yobani 3-day follow-up date | Yobani 3-day follow-up done? | Yobani 5-day follow-up date | Yobani 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
-
-What moved on 2026-09-11, stated as a map so nothing is written to the wrong cell. The
-sheet went A–Q → A–V → A–W in two edits the same day; only the final column is the one to
-write to.
-
-| Was (A–Q) | Is now (A–W) | What changed |
+| Tab | Sheet id | What it is |
 |---|---|---|
-| A–D | A–D | unchanged |
-| E Action Taken? | **E** Forwarded to Yobani? | renamed |
-| F–L | F–L | unchanged |
-| — | **M** Helen Forward Date | new |
-| M Suggested Yobani Response | **N** Suggested Yobani 1st Response | moved one right, renamed |
-| — | **O** Yobani 1st Response Done? | new |
-| — | **P–S** the 3-day and 5-day follow-up columns | new |
-| N–Q Setter/Closer | **T–W** Setter/Closer | moved six right |
+| **`Tracker (JordanK)`** | `1722038405` | **The live tracker. Every row this task writes goes here.** |
+| `Tracker (Yobani)` | `0` | The old tracker, renamed from `Tracker`. History — **never read or write it** |
+| `Responsibility` | `232853052` | The old category → owner lookup. Not used by the new tab; never edit it |
 
-**Column E was renamed, not repurposed.** `Action Taken?` → `Forwarded to Yobani?` names
-the question it was always answering: has Helen handed this lead to Yobani. Same `Yes`/`No`
-values, same rule for this task (`No` on Tier 1 rows, `Yes` on Tracking Handover Progress
-rows), and column F still keys off `E="No"`. The rename matters because there is now a
-second, easily confused "is it done?" column — **O**, which asks whether *Yobani* replied.
-E is Helen's action; O is Yobani's.
+**Why the tab changed.** From 2026-09-23 Helen cc's and forwards to **Jordan Kempster**
+(`jkempster@smbdealhunter.xyz`) instead of Yobani, and Jordan's leads are tracked on their
+own tab. The old tab keeps Yobani's leads as they stood on 2026-09-22. A range written as
+bare `Tracker!…` no longer resolves to any tab — always use the full quoted name. Because the
+name contains a space and parentheses it **must** be quoted in A1 notation:
+`'Tracker (JordanK)'!A1:W`.
 
-Column **L — "Suggested Helen Email Draft"** was added 2026-09-10 and is empty for every
-row before then. That is expected; do not backfill it.
+**`Tracker (JordanK)` tab.** Row 1 is the header. Data starts at **row 2**; the tab started
+**empty** on 2026-09-23, so on the first run the first data row is row 2. It uses the **same
+column letters as the old tab**, A–W, plus X (`Note`, free text for people — this task never
+writes it). The headers that named Yobani now say **Setter**. Columns A–W:
 
-**Column N — "Suggested Yobani 1st Response" — is written by this task too**, as of the
-change that moved Yobani's draft forward into the digest run. It used to be filled in days
-later by `tracker-followup`. That task still owns N on every later pass — it revises the
-draft when one is missing — but on a row this task creates, N arrives populated. Like L, it
-is empty on every row logged before the change and is not backfilled. It was called
-"Suggested Yobani Response" and sat in column M until 2026-09-11; the rename to **1st**
-marks it as the opening message in a three-touch sequence, not a new field.
+`Date | Tier | Category | Recommended Action | Forwarded to Setter? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Setter 1st Response | Setter 1st Response Done? | Setter 3-day follow-up date | Setter 3-day follow-up done? | Setter 5-day follow-up date | Setter 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
+
+In this file "the setter" is Jordan.
+
+**Column E — "Forwarded to Setter?"** answers whether **Helen** has handed this lead to
+Jordan: `No` on Tier 1 rows, `Yes` on Tracking Handover Progress rows. Column F keys off
+`E="No"`. Do not confuse it with **O**, which asks whether *Jordan* replied. E is Helen's
+action; O is Jordan's.
+
+**Column L — "Suggested Helen Email Draft"** is Helen's draft, byte-identical to the Gmail
+draft from STEP 3.
+
+**Column N — "Suggested Setter 1st Response" — is written by this task too.** On a row this
+task creates, N arrives populated. `tracker-followup` still owns N on every later pass — it
+writes a draft where one is missing.
 
 **Drafts in L and N are never deleted.** Confirmed with Sheila on 2026-09-11: once a draft
-is written it stays, whatever happens to the lead afterwards. `tracker-followup` used to
-clear N when a setter call showed up in Close; **that rule is gone.** A draft sitting next
-to a completed call is not a bug — the `done?` columns are what say whether it was acted
-on, and the draft is kept as a record of what was offered.
+is written it stays, whatever happens to the lead afterwards. A draft sitting next to a
+completed call is not a bug — the `done?` columns are what say whether it was acted on, and
+the draft is kept as a record of what was offered.
 
 **Column M — "Helen Forward Date" — is not this task's to write.** It records the date
-Helen *actually* forwarded the lead to Yobani, verified from the thread — not the date the
-handover was recommended. `tracker-followup` writes it on the pass where it confirms the
-forward and flips Forwarded to Yobani? to `Yes`. On a row this task appends, M is **empty**,
-which is correct: at logging time the forward has not happened yet.
+Helen *actually* forwarded the lead to Jordan, verified from the thread — not the date the
+handover was recommended. `tracker-followup` owns it. On a row this task appends, M is
+**empty**, which is correct: at logging time the forward has not happened yet.
 
-**Column O — "Yobani 1st Response Done?" — is not this task's either.** It is `Yes` once
-Yobani has **actually sent a reply to the prospect**, `No` until then — those two values
+**Column O — "Setter 1st Response Done?" — is not this task's either.** It is `Yes` once
+Jordan has **actually sent a reply to the prospect**, `No` until then — those two values
 only, no third state and no free text. It is not a copy of E: Helen can forward a lead
-(E = `Yes`) and Yobani not get to it for days (O = `No`). On a row this task appends, O is
+(E = `Yes`) and Jordan not get to it for days (O = `No`). On a row this task appends, O is
 **empty**.
 
-> **The O values in the sheet today are a one-off backfill, not observed data.** Sheila set
-> O = `Yes` on every forwarded row on 2026-09-11 because Yobani reported he had cleared
-> everything Helen had sent him at that point. That is why O currently matches E exactly on
-> all 31 rows. It will not stay true, and nothing should infer "forwarded ⇒ responded" from
-> it.
-
-**Columns P–S are the Yobani follow-up cadence**, and they hang off M. P (`=M+3`) and R
+**Columns P–S are the setter follow-up cadence**, and they hang off M. P (`=M+3`) and R
 (`=M+5`) are **formulas**, filled down like F and H — see below. Q and S are the matching
 `done?` flags, owned by `tracker-followup`. This task never writes Q or S.
 
 **T–W** (`Setter Call Date`, `Setter Progress`, `Closer Call Date`, `Closer Progress`)
 belong to `tracker-followup`, which fills them in on later passes. This task writes
-**A–L and N**, fills down the four formula columns (F, H, P, R), and leaves M, O, Q, S and
-T–W empty on the rows it appends. Do not widen this task's writes into them, and do not
-"fix" them when they are blank on a new row — they are meant to be.
+**A–L and N**, fills down the four formula columns (F, H, P, R), and leaves M, O, Q, S,
+T–W and X empty on the rows it appends. Do not widen this task's writes into them, and do
+not "fix" them when they are blank on a new row — they are meant to be.
 
-**`Responsibility` tab.** The `Category → Owner` lookup lives here, in `A2:B9`. Buy Box,
-Ready Now and Price Wall all map to **Yobani**; the other rows (Sellside → Bill, Investor
-and Operators → Kyle, Pitches and Engaged Reader → Helen) are now unused by this routine
-but must be left in place — the `xlookup` range is absolute and shrinking it would break
-column F. It is **not** below the data block on `Tracker`, so appending to `Tracker` cannot
-collide with it. (An earlier handoff doc claimed row 1 was blank with the header on row 2,
-and that the lookup sat below the data — both are wrong. Trust this section.)
+**Columns F, H, P and R are formula-driven. Never write literal values to them.** For a row
+`<n>`:
 
-**Columns F, H, P and R are formula-driven. Never write literal values to them.** The
-formulas, read verbatim from row 2:
-
-- **F (Owner):** `=if(E2="No","Helen",xlookup(C2,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
-  — rows where Forwarded to Yobani? is "No" resolve to Helen regardless of category; only
-  handed-over rows get the category's owner. Since all three tracked categories map to
-  Yobani, in practice column F now reads Helen for Tier 1 rows and Yobani for handover
-  rows.
-- **H (Next Check-in Date):** `=G2+1` — the day after the last check-in, so an open lead
-  comes due on every follow-up pass. (This was `=G2+5` until 2026-09-11.)
-- **P (Yobani 3-day follow-up date):** `=M2+3` — three days after Helen's forward.
-- **R (Yobani 5-day follow-up date):** `=M2+5` — five days after Helen's forward.
+- **F (Owner):** `=if(E<n>="No","Helen","Jordan")` — rows where Forwarded to Setter? is
+  "No" read Helen; handed-over rows read Jordan. **This tab does not use the
+  `Responsibility` lookup.** That tab still maps Buy Box, Ready Now and Price Wall to
+  *Yobani*, and it is left that way so the old tab keeps reading correctly as history. The
+  old tab's `xlookup(C<n>,Responsibility!…)` formula would show Yobani as the owner of
+  Jordan's leads — never copy it here, and never edit `Responsibility` to "fix" it.
+- **H (Next Check-in Date):** `=G<n>+1` — the day after the last check-in, so an open lead
+  comes due on every follow-up pass.
+- **P (Setter 3-day follow-up date):** `=M<n>+3` — three days after Helen's forward.
+- **R (Setter 5-day follow-up date):** `=M<n>+5` — five days after Helen's forward.
 
 P and R read `3` and `5` on every row where M is still empty. That is the formula doing
 arithmetic on a blank cell, not a stray literal — leave it. Both light up as real dates the
 moment `tracker-followup` writes the forward date into M.
 
 Dates in A and G are stored as Google serial numbers and displayed as dates; writing a
-plain `9/11/2026` string with `valueInputOption: "USER_ENTERED"` is coerced correctly.
+plain `9/23/2026` string with `valueInputOption: "USER_ENTERED"` is coerced correctly.
 
-Column J is inconsistent in the existing data: rows 2–5 hold plain quoted subject text,
-rows 6–27 hold `=HYPERLINK(...)`. Write new rows as `=HYPERLINK(...)`, matching the
-majority and the documented format.
+Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
 
 ### How to write
 
-1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm the tab is still called `Tracker`.
-2. `GOOGLESHEETS_VALUES_GET` on `Tracker!A:W` to read existing rows and find the true last
-   data row. Compute your target range explicitly rather than relying on the append API's
-   table detection.
+1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm a tab named exactly `Tracker (JordanK)`
+   exists. If it does not, **write nothing** — do not fall back to `Tracker (Yobani)` or any
+   other tab — and report it in Slack as a tracker failure, naming the tabs you did find.
+2. `GOOGLESHEETS_VALUES_GET` on `'Tracker (JordanK)'!A:W` to read existing rows and find the
+   true last data row (row 1 alone means the tab is empty and the first new row is 2).
+   Compute your target range explicitly rather than relying on the append API's table
+   detection.
 3. **Dedup.** Before writing a row, check it isn't already in the sheet (same sender + same
    subject + same date, e.g. a recurring broker broadcast logged earlier the same day).
    Skip duplicates rather than creating a second row.
-4. Write with `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges, in three blocks, so F and H
+4. Write with `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges, in four blocks, so F and H
    are never overwritten with literals:
-   - `Tracker!A<first>:E<last>` — Date, Tier, Category, Recommended Action, Forwarded to Yobani?
-   - `Tracker!G<first>:G<last>` — Last Check-in Date
-   - `Tracker!I<first>:L<last>` — Email Sender, Email Title / Link, Message Summary,
-     Suggested Helen Email Draft
-   - `Tracker!N<first>:N<last>` — Suggested Yobani 1st Response
+   - `'Tracker (JordanK)'!A<first>:E<last>` — Date, Tier, Category, Recommended Action,
+     Forwarded to Setter?
+   - `'Tracker (JordanK)'!G<first>:G<last>` — Last Check-in Date
+   - `'Tracker (JordanK)'!I<first>:L<last>` — Email Sender, Email Title / Link, Message
+     Summary, Suggested Helen Email Draft
+   - `'Tracker (JordanK)'!N<first>:N<last>` — Suggested Setter 1st Response
 
    **Skip column M.** The Helen Forward Date belongs to `tracker-followup` and must stay
    empty on a new row, so it gets its own gap in the write rather than being swept up in a
-   range ending at N. The old single block `I:M` now lands the Yobani draft in the wrong
-   column — do not use it.
+   range ending at N.
 
    Use `valueInputOption: "USER_ENTERED"` so dates coerce and `=HYPERLINK(...)` renders.
-5. **Fill down F, H, P and R** by writing the same four formulas into the new rows with
-   their row references incremented — for a new row `<n>`:
-   - F: `=if(E<n>="No","Helen",xlookup(C<n>,Responsibility!$A$2:$A$9,Responsibility!$B$2:$B$9))`
+5. **Fill down F, H, P and R** by writing the four formulas into the new rows with their row
+   references set to that row — for a new row `<n>`:
+   - F: `=if(E<n>="No","Helen","Jordan")`
    - H: `=G<n>+1`
    - P: `=M<n>+3`
    - R: `=M<n>+5`
 
-   The lookup ranges are absolute (`$A$2:$A$9`) and must stay exactly as written; only the
-   `E<n>`, `C<n>`, `G<n>` and `M<n>` references change. Never invent a different formula.
-   P and R go in as formulas even though M is empty — they are meant to sit dormant until
-   the forward date arrives.
-6. **Verify.** Re-read `Tracker!A:W` and confirm: row count increased by exactly the number
-   of rows you wrote, F and H are populated and did not spill `#N/A`, P and R hold their
-   formulas, L and N landed on exactly the "Send to Yobani" rows and are empty on the
-   others, M/O/Q/S and T–W are empty on every new row, and no row was duplicated. If
-   verification fails, say so explicitly in Slack — do not report success.
+   Never invent a different formula. P and R go in as formulas even though M is empty —
+   they are meant to sit dormant until the forward date arrives.
+6. **Verify.** Re-read `'Tracker (JordanK)'!A:W` and confirm: row count increased by exactly
+   the number of rows you wrote, F reads Helen or Jordan (never Yobani, never `#N/A`), H is
+   populated, P and R hold their formulas, L and N landed on exactly the "Send to Jordan"
+   rows and are empty on the others, M/O/Q/S and T–W are empty on every new row, and no row
+   was duplicated. If verification fails, say so explicitly in Slack — do not report
+   success.
 
 ### Column contents
 
 - **Date** — today's digest date
 - **Tier** — `1` for Tier 1 rows, `In Progress` for Tracking Handover Progress rows. These
-  are the only two values this routine writes. (Historical rows also contain `2`, `3` and
-  `Uncategorized`; leave them alone.)
+  are the only two values this routine writes.
 - **Category** — `Buy Box`, `Ready Now`, or `Price Wall`. No other value.
-- **Recommended Action** — `Send to Yobani` or `Ignore`, decided in STEP 2. Not a fixed
+- **Recommended Action** — `Send to Jordan` or `Ignore`, decided in STEP 2. Not a fixed
   lookup from the category: read the actual email. "Ignore" covers a lead who has
   disqualified themselves, a lead who is already a paying client or has already had a call
   with the team, *and* a lead whose booked call you verified in Close — the
   existing-relationship and call-booked rules in STEP 2 govern, including their requirement
   to match Close leads by email address rather than name. Handover ("In Progress") rows get
-  this column too: "Send to Yobani" by default, "Ignore" when the existing-relationship rule
+  this column too: "Send to Jordan" by default, "Ignore" when the existing-relationship rule
   applies.
-- **Forwarded to Yobani? (E)** — "Yes" for Tracking Handover Progress ("In Progress") rows,
-  "No" for Tier 1 rows. Called `Action Taken?` before 2026-09-11; the values and the rule
-  are unchanged. It answers whether **Helen** forwarded — not whether Yobani replied, which
+- **Forwarded to Setter? (E)** — "Yes" for Tracking Handover Progress ("In Progress") rows,
+  "No" for Tier 1 rows. It answers whether **Helen** forwarded — not whether Jordan replied, which
   is column O.
 - **Owner (F)** and **Next Check-in Date (H)** — formula-driven, see fill-down above
 - **Last Check-in Date** — the last date anyone at SMB Deal Hunter actually replied to this
@@ -1216,21 +1196,21 @@ majority and the documented format.
   the date Helen actually forwarded the lead once it has confirmed the forward. The
   follow-up cadence in O–R keys off this cell, so a guessed or optimistic date here starts
   a chase clock for a handover that never happened.
-- **Suggested Yobani 1st Response (N)** — the Yobani draft from STEP 2, with
+- **Suggested Setter 1st Response (N)** — the Jordan draft from STEP 2, with
   `[Calendly Link]` and `[today/tomorrow]` still as
   literal placeholders and every `[If they …]` branch already resolved. Same format rule as
   L: plain text with real line breaks, no formula, no surrounding quotes. Same gate as L too
   — **empty** for "Ignore" rows and for Tracking Handover Progress rows. A row gets both
-  drafts or neither; L populated with N blank on a "Send to Yobani" row is a bug worth
+  drafts or neither; L populated with N blank on a "Send to Jordan" row is a bug worth
   reporting in Slack. N is not posted to Slack and not drafted in Gmail — this column is
-  where Yobani reads it. This is the *first* of three touches; the 3-day and 5-day follow-ups
+  where Jordan reads it. This is the *first* of three touches; the 3-day and 5-day follow-ups
   are tracked as dates and status only, and **no draft is written for them** — there is no
   column for one and this task does not generate one.
-- **Yobani 1st Response Done? (O)** — **leave empty.** Owned by `tracker-followup`. `Yes`
-  only once Yobani has actually sent a reply to the prospect, `No` until then — those two
+- **Setter 1st Response Done? (O)** — **leave empty.** Owned by `tracker-followup`. `Yes`
+  only once Jordan has actually sent a reply to the prospect, `No` until then — those two
   values, nothing else. Never mirror E into it.
-- **Yobani 3-day / 5-day follow-up dates (P, R)** — formula-driven, see fill-down above
-- **Yobani 3-day / 5-day follow-up done? (Q, S)** — **leave empty.** Owned by
+- **Setter 3-day / 5-day follow-up dates (P, R)** — formula-driven, see fill-down above
+- **Setter 3-day / 5-day follow-up done? (Q, S)** — **leave empty.** Owned by
   `tracker-followup`. The allowed values are `Yes`, `No`, and `Not Needed - Connected`
   (used when the lead is already connected and the touch is moot) — no other text, and no
   free-form notes. Note these take a third value that O does not.
