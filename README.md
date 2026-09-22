@@ -20,9 +20,9 @@ looks **backward** at leads already logged.
 
 Email access runs through the **Composio** connector (account `gmail_kath-tiou` =
 `helen@smbdealhunter.xyz`), not the first-party Gmail connector, which can only reach
-`sheila@smbdealhunter.xyz`. **Close CRM** is read (never written) to confirm whether a
-lead who says they booked a call actually did — if so the recommended action becomes
-"Ignore" rather than sending them to the setter.
+`sheila@smbdealhunter.xyz`. **Close CRM** is read (never written) for every lead: anyone
+who is already a paying client, has already had a call with the team, or has a call booked
+gets the recommended action "Ignore" rather than being sent to the setter.
 
 Changing the routine's behaviour means editing `SKILL.md` — the Routine picks up the
 change on its next run, with no need to recreate it.

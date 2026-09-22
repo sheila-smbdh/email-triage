@@ -51,8 +51,9 @@ writing drafts it is a live hazard, because an unpinned call would create a repl
 in Helen's words, sitting in **Yobani's** drafts. Pin `gmail_kath-tiou` on every call,
 reads and drafts alike.
 
-One lookup does **not** go through Composio: the call-booked check in STEP 2 reads Close
-CRM through the **first-party Close connector** (`mcp__Close__*`). It is read-only. If the
+One lookup does **not** go through Composio: the Close check in STEP 2 (existing clients,
+past calls with the team, and booked calls) reads Close CRM through the **first-party Close
+connector** (`mcp__Close__*`). It is read-only. If the
 Close connector is missing, that is not a reason to abort the run — the check simply fails
 to confirm and every affected lead keeps the default "Send to Yobani" (see STEP 2). Say so
 in the run report.
@@ -236,19 +237,28 @@ A handed-off thread whose original category is **not** one of the three (an Inve
 Kyle is running, a Sellside thread with Bill) is **dropped**, same as any other untracked
 category. Handover tracking follows the tracked categories; it does not widen them.
 
-### Recommended action — and the call-booked check
+### Recommended action — and the Close checks
 
-Every Tier 1 lead gets a Recommended Action, written to tracker column D. There are two
+Every Tier 1 lead gets a Recommended Action, written to tracker column D — and so does
+every 🟢 handover row, where it is normally "Send to Yobani" unless the
+existing-relationship rule below makes it "Ignore". There are two
 values: **"Send to Yobani"** (the default — a real buyer worth the setter's time) and
 **"Ignore"**.
 
-Three things earn "Ignore":
+Four things earn "Ignore":
 
 1. **The lead has already disqualified themselves** — declined outright, an obvious
    tyre-kicker, or someone who says they cannot afford it.
-2. **The lead has already booked a call, verified in Close CRM** — see below.
-3. **The lead does not want to buy a business** — they are asking about something else
+2. **The lead is already known to the team, verified in Close CRM** — a paying client, or
+   someone who has already had a call with the team. See *The existing-relationship rule*
+   below. **This check runs on every lead**, whatever the email says.
+3. **The lead has already booked a call, verified in Close CRM** — see *The call-booked
+   rule* below.
+4. **The lead does not want to buy a business** — they are asking about something else
    entirely, even when the words look like a buyer's. See the next section.
+
+The same Close lookup settles 2 and 3, so it is one pass per lead (see
+*The existing-relationship rule* for the procedure).
 
 #### Deal talk is not buyer intent
 
@@ -321,6 +331,68 @@ I don't know how much it is."* The second half is a pricing question, but the fi
 already settles it → **Ignore**. Sending the 1% answer to someone who has just said they
 have no money is the wrong reply.
 
+#### The existing-relationship rule
+
+Yobani is the setter: his job is to get a **new** buyer onto a first call. Someone who is
+already paying SMB Deal Hunter, or who has already been on a call with the team, is not that
+— they are already in someone else's hands, and a "let's grab 15 minutes" from a stranger
+tells them the team does not know who they are. **Their emails are not forwarded to a
+setter.** Write **"Ignore"**.
+
+This is not something the email tells you. A paying member asking about a featured deal
+reads exactly like a new Ready Now lead; a prospect who had a discovery call last month
+writes in as if for the first time. Real cases, all logged "Send to Yobani" before this rule
+existed, all wrong:
+
+| Tracker row | Sender | What the email looked like | What Close shows | Action |
+|---|---|---|---|---|
+| 34 | William Polanco | Form submission asking for CIMs on two NY deals — read as Ready Now | Status **Client**; opportunity **WON** 2026-08-19, SMB Deal Hunter Pro $15,000 | Ignore |
+| 49 | Mose Richardson | Form submission about the Ohio compressed-air deal — read as Ready Now. His reply after Helen looped Yobani in: *"I'm a member of your program"* | Status **Client**; opportunity **WON** 2026-01-28, SMB Deal Hunter Pro $15,000 | Ignore |
+| 64 | Kushal Shah | Asked for NDAs/CIMs on four Market Watch listings, gave a phone number — read as Ready Now | Welcome Call 2026-08-20 and Discovery Call 2026-08-24, both before his 9/19 email | Ignore |
+| 88 | Kishin Manglani | Asked about NJ deal flow — read as Buy Box | Intro Call 2026-06-02 and Discovery Call 2026-06-04, months before his 9/22 email | Ignore |
+
+**Run it on every Tier 1 lead and every 🟢 handover row** — not only the ones that mention a
+call. Two of the four above were handovers (rows 34 and 49), and none of the four said
+anything that hinted at the relationship until after Helen had already replied.
+
+Procedure (verified 2026-09-22 against all four rows above):
+
+1. **Get the lead's own email address.** Usually the sender's address. **Form submissions
+   are the exception:** they arrive from `smbdealhunter@softr.app` with the subject *"New
+   form has been submitted - …"*, and the lead's address is the `Email:` field inside the
+   form body (hydrate the message to read it). If the lead has replied on the thread since,
+   their reply's From address works too. Searching Close for `smbdealhunter@softr.app`
+   finds nothing useful — never use it.
+2. `mcp__Close__lead_search` with `full_text: "<that email address>"`. **Match on the email
+   address, never the display name** — the same trap as the call-booked rule below
+   (christopher green / CJ Green).
+3. **Paying client?** Read the lead's `status_label` from the search result, and call
+   `mcp__Close__find_opportunities` with `lead_id`. Write **"Ignore"** if the status is
+   **`Client`** or **`Customer`**, *or* any opportunity has `status_type: "won"`. Either
+   signal is enough on its own; the four rows above had both or neither.
+4. **Already had a call?** Call `mcp__Close__activity_search` with `lead_ids: ["<lead_id>"]`
+   and `activity_types: ["activity.meeting"]`. Write **"Ignore"** if there is any meeting
+   dated **before today** that was not cancelled. Meetings are the Calendly-booked Welcome,
+   Intro and Discovery calls. Logged phone calls (`activity.call`) do **not** count on their
+   own: a setter's unanswered dial or voicemail is logged the same way and is not a
+   conversation.
+5. A meeting dated **today or later** is the call-booked rule below, and it is also
+   "Ignore". Past or future, a meeting with the team means the lead is not Yobani's.
+6. **If the lookup fails to confirm** — no Close lead matches the address, the lead has no
+   won opportunity, no client status and no meeting, or Close errors — leave the action as
+   **"Send to Yobani"**. Same as the call-booked rule: unverified is not a reason to drop a
+   buyer, and most real new leads have no Close history at all.
+
+**What this changes, and what it does not.** Column D becomes "Ignore", and that gate does
+the rest: no Helen draft in column L, no Gmail draft, no Yobani draft in column N, and
+`tracker-followup` skips the row (it never chases Helen to forward an `Ignore` row). The
+lead is still classified on the content of the email, still gets its tracker row, and still
+appears in the Slack digest, with the marker from STEP 4 so Helen can see why there is no
+draft and does not forward it by hand.
+
+In the run report, list every lead this rule turned to "Ignore" and which signal did it
+(client status, won opportunity, or a past meeting with its date).
+
 #### The call-booked rule
 
 Yobani is the setter; his job is to get the call booked. A lead who has already booked one
@@ -346,13 +418,15 @@ Procedure (verified 2026-09-10):
 2. Take the `lead_id` from that result and call `mcp__Close__activity_search` with
    `lead_ids: ["<lead_id>"]` and `activity_types: ["activity.meeting"]`.
 
-3. Read `activity_at` / `starts_at` on the returned meetings. Write **"Ignore"** only if a
-   meeting is dated **today or later**. A meeting entirely in the past is a call that
-   already happened, not the one the sender is describing — that is not a verification.
+3. Read `activity_at` / `starts_at` on the returned meetings. The claim is verified only
+   if a meeting is dated **today or later**. A meeting entirely in the past is a call that
+   already happened, not the one the sender is describing — it does not verify the claim,
+   **but it still makes the action "Ignore"** under *The existing-relationship rule* above,
+   since the lead has already had a call with the team.
 
 4. **If any of this fails to confirm** — the email address matches no lead, the lead has no
-   meeting, the only meeting is in the past, or the Close lookup errors — leave the action
-   as **"Send to Yobani"**. Unverified is not the same as false, and the safe default is to
+   meeting, or the Close lookup errors — leave the action as **"Send to Yobani"**, unless
+   the existing-relationship rule above already made it "Ignore". Unverified is not the same as false, and the safe default is to
    let the setter look.
 
 In the final run report, list every lead that claimed a booked call and whether each one
@@ -923,7 +997,8 @@ marker; a bullet with nothing after it means a normal draft is sitting in Gmail 
 |---|---|
 | **Price Wall call-pushback** draft | `⚠️ Needs your review before sending — long, specific email, and this reply deliberately answers none of it. Yobani is not cc'd; the forward follows their reply.` |
 | Draft **could not be created** (STEP 3 failure) | `⚠️ Draft not created — text is in the thread below.` |
-| Lead's action was **Ignore** | no bullet marker, and no draft — the digest does not show the action, and an `Ignore` lead with no draft is the intended outcome, not a gap |
+| Lead is an **existing client**, or has **already had a call** with the team (the existing-relationship rule in STEP 2) | `ℹ️ Already a client in Close — no draft, do not forward to Yobani.` or `ℹ️ Already had a call with the team (<date of the most recent past meeting>) — no draft, do not forward to Yobani.` Same marker on a 🟢 handover bullet. |
+| Lead's action was **Ignore** for any other reason | no bullet marker, and no draft — the digest does not show the action, and an `Ignore` lead with no draft is the intended outcome, not a gap |
 
 The 🎁 section takes its own one-liner in the header rather than per-bullet markers: say the
 reply is drafted in Gmail, that it is the same text the automation would have sent, and that
@@ -1115,9 +1190,12 @@ majority and the documented format.
 - **Category** — `Buy Box`, `Ready Now`, or `Price Wall`. No other value.
 - **Recommended Action** — `Send to Yobani` or `Ignore`, decided in STEP 2. Not a fixed
   lookup from the category: read the actual email. "Ignore" covers a lead who has
-  disqualified themselves *and* a lead whose booked call you verified in Close — the
-  call-booked rule in STEP 2 governs, including its requirement to match Close leads by
-  email address rather than name.
+  disqualified themselves, a lead who is already a paying client or has already had a call
+  with the team, *and* a lead whose booked call you verified in Close — the
+  existing-relationship and call-booked rules in STEP 2 govern, including their requirement
+  to match Close leads by email address rather than name. Handover ("In Progress") rows get
+  this column too: "Send to Yobani" by default, "Ignore" when the existing-relationship rule
+  applies.
 - **Forwarded to Yobani? (E)** — "Yes" for Tracking Handover Progress ("In Progress") rows,
   "No" for Tier 1 rows. Called `Action Taken?` before 2026-09-11; the values and the rule
   are unchanged. It answers whether **Helen** forwarded — not whether Yobani replied, which
@@ -1171,7 +1249,7 @@ reading Close CRM, posting the Slack digest, and logging rows to this tracker.
 Specifically: do **not** send any email — not a draft, not a reply, not a forward — and do
 **not** label, archive, delete, or mark anything in Helen's mailbox. Do **not** update or
 delete an existing draft, including one this routine created on an earlier run. Do **not**
-create, update, or delete anything in Close: the call-booked check in STEP 2 is a read, and
+create, update, or delete anything in Close: the Close checks in STEP 2 are reads, and
 Close access stays read-only.
 
 **The one write this routine makes to email is a draft.** It was read-only on email until

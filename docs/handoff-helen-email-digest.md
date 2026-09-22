@@ -134,6 +134,27 @@ people, and picking one gives a confident wrong answer.
 This changes column D only. A lead who booked a call is still categorised on the content
 of their email, still appears in the digest, still gets a tracker row.
 
+### The existing-relationship rule (added 2026-09-22)
+
+The call-booked rule only fired when an email *said* there was a call. Four leads showed
+what it missed: people the team already knows, who wrote in sounding brand new, and were
+logged "Send to Yobani". William Polanco (row 34) and Mose Richardson (row 49) are paying
+clients: Close status `Client`, each with a WON $15,000 SMB Deal Hunter Pro opportunity.
+Kushal Shah (row 64) and Kishin Manglani (row 88) had already had Welcome/Intro and
+Discovery calls with the team weeks or months before emailing Helen. Sheila's call: none of
+them should be forwarded to a setter.
+
+So the Close lookup now runs on **every** Tier 1 lead and handover row. "Ignore" if the lead
+is `Client`/`Customer` or has a won opportunity, or has any non-cancelled meeting in Close,
+whether past or upcoming. Logged phone calls alone don't count, because an unanswered setter
+dial is logged the same way. No match means "Send to Yobani", as before.
+
+Second trap: **form submissions** (rows 34 and 49) come from `smbdealhunter@softr.app`, so
+the lead's address has to be read from the form's `Email:` field, not the From line.
+
+The Slack bullet for these leads carries an ℹ️ marker saying why there is no draft, so Helen
+does not forward it by hand. The four existing rows were not changed by the spec edit.
+
 ### Suggested reply drafts (added 2026-09-10)
 
 Every lead that *is* going to Yobani now comes with a ready-to-send reply in Helen's
