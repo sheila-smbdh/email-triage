@@ -1,6 +1,6 @@
 ---
 name: tracker-followup
-description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs, check Jordan's booking progress in Close, and keep column N's Jordan draft current: write it where the digest did not, and never delete one
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs (to Jordan, Scott, or a lead's previous closer/setter), check Jordan's booking progress in Close, and keep column N's Jordan draft current: write it where the digest did not, and never delete one
 ---
 
 You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
@@ -31,6 +31,19 @@ Tier 1, owner Helen  ──Helen forwards to Jordan──▶  In Progress, owner
 
 This task's whole job is to work out where each due lead sits on that path, record it, and
 keep the one artefact that unblocks the next step correct.
+
+**Forward rows take a shorter path.** Since 2026-09-24 the digest also logs leads that go to
+someone who already knows them: column D reads `Forward to <First Last> (<email>)` (Scott
+for an existing client, or the closer/setter who held the lead's most recent call). For those
+rows the only question is whether Helen forwarded to **that person**. Once she has, the row is
+done: that person owns the relationship, there is no Jordan draft, and this task checks
+nothing further.
+
+```
+Tier 1, owner Helen, D = Forward to X  ──Helen forwards to X──▶  In Progress, owner X  (done)
+        │
+        └── not forwarded → nag Helen in Slack
+```
 
 **The draft itself now arrives earlier than this pass.** `helen-email-digest` writes both
 Helen's draft (column L) and Jordan's (column N) the morning a lead is logged, so a lead no
@@ -155,18 +168,23 @@ open lead comes due on effectively every pass.
 ### Scope filter — apply in this order
 
 1. **`Recommended Action` (D) is `Ignore` → out of scope.** Skip the row entirely: no
-   checks, no draft, and **do not touch column G**. These leads were deliberately parked
-   (they disqualified themselves, or their call was already verified in Close). They will
-   read as perpetually due and that is fine — they are skipped every run at no cost.
-2. **`Tier` (B) is `1` → run STEP 2** (the forward check).
-3. **`Tier` (B) is `In Progress` → run STEP 3** (the Jordan check).
-4. Any other tier value is historical. Leave it alone.
+   checks, no draft, and **do not touch column G**. The digest stopped writing `Ignore` on
+   2026-09-24 (those leads are now dropped with no row), so only older rows carry it. They
+   will read as perpetually due and that is fine — they are skipped every run at no cost.
+2. **`Tier` (B) is `1` → run STEP 2** (the forward check), whatever D says.
+3. **`Tier` (B) is `In Progress` and D starts `Forward to ` → out of scope.** Helen has
+   forwarded it to the person who already knows the lead, and that is the end of this
+   task's involvement. Skip it like an `Ignore` row, and do not touch G.
+4. **`Tier` (B) is `In Progress` and D is `Send to Jordan` → run STEP 3** (the Jordan check).
+5. Any other tier value is historical. Leave it alone.
 
 ---
 
 ## STEP 2 — Tier 1: did Helen actually forward it?
 
-For every due Tier 1 row, the question is whether Jordan has been looped in yet.
+For every due Tier 1 row, the question is whether the person in column D has been looped in
+yet: Jordan on a `Send to Jordan` row, or the address inside the parentheses on a
+`Forward to <First Last> (<email>)` row (e.g. `scott@smbdealhunter.xyz`).
 
 ### Get the thread ID out of column J
 
@@ -186,11 +204,12 @@ raw decimal and the fetch 404s.
 The delegation-token URLs no longer open in a browser — that delegation lapsed — but the
 thread ID inside them is still valid. Extract it and ignore the dead prefix.
 
-### Find Jordan's involvement in ONE query
+### Find each forward target's involvement in ONE query per person
 
 Do **not** fetch each thread and scan its participants — that is one call per row for a
 question a single search answers. Jordan is `jkempster@smbdealhunter.xyz`. Run one
-`GMAIL_FETCH_EMAILS` on `gmail_kath-tiou`:
+`GMAIL_FETCH_EMAILS` on `gmail_kath-tiou` for Jordan, and one more, the same shape with the
+address swapped, for each other distinct address in a due row's `Forward to …` action:
 
 ```
 query: {to:jkempster@smbdealhunter.xyz cc:jkempster@smbdealhunter.xyz bcc:jkempster@smbdealhunter.xyz from:jkempster@smbdealhunter.xyz} after:<YYYY/MM/DD>
@@ -202,13 +221,15 @@ Braces are Gmail's OR syntax. Set `after:` a day before the oldest due row's Dat
 window covers every lead in play, and page through `nextPageToken` until it is absent or
 empty-string.
 
-That returns every message in Helen's mailbox that involves Jordan, each with its
+That returns every message in Helen's mailbox that involves that person, each with its
 `threadId`, `subject` and `preview.body`.
 
-**Only Jordan counts.** A forward to or cc of the old setter, `yobani@smbdealhunter.xyz`,
-is not a handoff for a row on this tab — Yobani no longer takes new leads. If you happen to
-see one on a due row's thread, treat the row as **not forwarded** and say in its 🔴 bullet
-that it went to Yobani instead of Jordan.
+**Only the person in column D counts.** Match each due row only against the results for its
+own forward target. A `Send to Jordan` row forwarded to someone else (the old setter,
+`yobani@smbdealhunter.xyz`, say) is **not forwarded**: say in its 🔴 bullet who it went to
+instead of Jordan. The same holds the other way: a `Forward to Scott …` row that Helen sent to
+Jordan is not forwarded, and its bullet says so. Yobani is a valid target only on a row whose
+D reads `Forward to Yobani Mendoza (yobani@smbdealhunter.xyz)`.
 
 ### Match a due row to that set
 
@@ -235,17 +256,21 @@ display name alone** — several leads in this sheet share first names.
   implemented** — see *Columns defined but not yet written* below. Until that lands, M
   stays empty here and the O/Q cadence stays dormant.
 
-Then **immediately run STEP 3 for this row in the same pass.** Column F is the formula
-`=if(E="No","Helen","Jordan")`, so setting E to `Yes` flips the owner to Jordan the
+On a `Send to Jordan` row, then **immediately run STEP 3 for this row in the same pass.**
+Column F is a formula keyed off E, so setting E to `Yes` flips the owner to Jordan the
 moment it lands. The row is a Jordan row now and gets the Jordan check now — it does not
 wait a week for the next cycle.
+
+On a `Forward to …` row, **stop there.** F flips the owner to that person's first name, and
+the row is done; it drops out of scope from the next pass (STEP 1, rule 3). No STEP 3, no
+draft.
 
 **Not forwarded** → nothing has happened. Write:
 
 - **G** → today (the check ran, so the clock resets)
 - B, E, M, N, T, U → unchanged
 
-and flag it to Helen in Slack (STEP 5). This is the output that matters: a Tier 1 lead
+and flag it to Helen in Slack (STEP 5), naming who it should go to. This is the output that matters: a Tier 1 lead
 still owned by Helen days after it arrived is a lead going cold because the handoff never
 happened.
 
@@ -339,7 +364,8 @@ Slack.
 
 ## STEP 4 — Jordan's reply: keep or write
 
-Only for a Jordan-owned row with **no call booked**. A row with a setter call on the board
+Only for a Jordan-owned (`Send to Jordan`) row with **no call booked**. `Forward to …` rows
+never reach this step and never get a Jordan draft. A row with a setter call on the board
 skips this step entirely; whatever is already in N stays put.
 
 **Check what is already in N before writing anything.** Since `helen-email-digest` began
@@ -347,8 +373,8 @@ writing the Jordan draft at log time, most rows reaching this step already have 
 
 | N as read in STEP 1 | Do |
 |---|---|
-| Holds a draft matching the row's category, in one of the current templates below, with every `[If they …]` branch already resolved | **Keep it, unchanged.** Write nothing to N. It has been sitting in the sheet since the digest run and may already have been used |
-| Holds a draft on the **superseded** templates — the tell is `[time slot]`, `Are you free`, or `Can I give you a call at` | **Replace it** with the current template for that category, and say in Slack that you did. Every row logged before the day-1 rules landed is in this state |
+| Holds a draft matching the row's category, in one of the current templates below (opens `Picking up from Helen, …` and carries Jordan's real calendar link) | **Keep it, unchanged.** Write nothing to N. It has been sitting in the sheet since the digest run and may already have been used |
+| Holds a draft on a **superseded** template. The tells: `[Calendly Link]` or `[Calendly link]`, `If they`, `[time slot]`, `Are you free`, `Can I give you a call at`, `Sounds like you're interested in … and I'd love to hop on a call`, `ready to move on`, `Let's grab 15 minutes so I can`, or any `—` | **Replace it** with the current template for that category, and say in Slack that you did. Every row logged before 2026-09-24 is in this state |
 | Empty — a row logged before this change, or a digest run that skipped it | **Write the draft**, exactly as below |
 | Holds something that is not one of these templates, or the wrong category's template | **Replace it** with the right one, and say in Slack that you did and why |
 
@@ -368,39 +394,29 @@ forwarded. It is an **email, and a phone call** if he has a number to call.
 
 | Phone number in their initial email? | Day 1 |
 |---|---|
-| Yes | Email, then call them — today or tomorrow |
-| No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
+| Yes | Email, then call them, today or tomorrow |
+| No | Email only. It asks for their number and offers his calendar link |
 
 **No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
 text. Either way the text is redundant.
 
 "Number provided" means a number in the **initial email they sent** — a signature block
 counts, a number dug out of the CRM or the web does not. Column K's summary usually will not
-settle it, so read the lead's own first message in the thread before picking the branch. You
+settle it, so read the lead's own first message in the thread before writing the draft. You
 already have the thread ID from STEP 2.
-
-### Reading the templates
-
-The `[If they …]` blocks are instructions, not copy. Pick the branch that matches the row,
-write out that sentence, and delete the marker and the brackets around it. The other branch
-disappears. **A draft that still contains the words "If they" has not been finished** — and
-that applies to a draft you are keeping, too: one carried over from the digest run with a
-marker still in it is a draft to replace, not to keep.
-
-`[today/tomorrow]` is pick-one, not literal text.
 
 ### The three templates
 
-One per category, reproduced verbatim. Use the template for the row's category (column C).
+One per category, word for word as Sheila wrote them on 2026-09-24, identical to the ones
+in `helen-email-digest`. Use the template for the row's category (column C). There are no
+variants.
 
 **Buy Box**
 
 ```
 Hi [First Name],
 
-Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to better understand your buy box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
-
-[If they didn't provide a number: What's the best number to reach you at?] I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
+Picking up from Helen, sounds like you're interested in [buy box criteria]. I'd love to grab 15 min to better understand your buy box and see how we can help. What's the best number for me to call? Alternatively, you can grab 15 min here on my calendar: https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter
 ```
 
 **Ready Now**
@@ -408,41 +424,36 @@ Sounds like you're interested in [buy box criteria], and I'd love to hop on a ca
 ```
 Hi [First Name],
 
-Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. [If they provided a number: I will give you a call [today/tomorrow].] [If they didn't provide a number: Grab 15 minutes here: [Calendly Link].]
-
-I want to get sharper on where things stand and figure out the fastest next step.
+Picking up from Helen, I'd love to grab 15 min to learn more and see how we can help. What's the best number for me to call? Alternatively, you can grab 15 min here on my calendar: https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter
 ```
-
-Ready Now is the one category that **doesn't ask for a number** when it's missing — it sends
-the link. That's deliberate; don't borrow the Buy Box line to "fix" it.
 
 **Price Wall**
 
 ```
 Hi [First Name],
 
-Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do. [If they didn't provide a number: What's the best number to reach you at?] I can give you a call [today/tomorrow]. Alternatively, book a time with me here [Calendly link].
+Picking up from Helen, I'd love to grab 15 min to get a better sense of your situation and make sure we're the right fit for what you're looking to do. What's the best number for me to call? Alternatively, you can grab 15 min here on my calendar: https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter
 ```
+
+This template doesn't answer the pricing question. It moves the conversation to a call.
+
+**When they already gave a number**, replace `What's the best number for me to call?` with
+`I'll give you a call [today/tomorrow].` and leave the rest of the template unchanged. With
+no number, the template goes out exactly as written.
 
 ### Filling them in
 
-**`[Calendly Link]` and `[today/tomorrow]` stay as literal bracketed placeholders.** Jordan
-fills them in himself. Do **not** substitute a real link or a real day:
+**`[today/tomorrow]` stays a literal bracketed placeholder** (it only appears when the lead
+gave a number). Jordan picks the day himself: Sheila's Calendly token is role `user` and
+cannot read another user's availability (`event_types-list_event_types` returns Permission
+Denied), so any day you commit him to would be invented.
 
-- Sheila's Calendly token is role `user` and cannot read another user's event types or
-  availability (`event_types-list_event_types` returns Permission Denied), so any day you
-  commit him to would be invented. A day he is not free on is worse than a blank he
-  fills in five seconds.
-- His scheduling page has not been looked up. Leave the placeholder unless Sheila says
-  otherwise — and never reuse the old setter's link
-  (`https://calendly.com/yobani-smbdealhunter`).
+**The calendar link is real**: `https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter`,
+Jordan's own intro-call page, supplied by Sheila on 2026-09-24. Copy it exactly, and never
+use the old setter's link (`https://calendly.com/yobani-smbdealhunter`).
 
-**There is no `[time slot]` placeholder any more.** The templates commit to a call today or
-tomorrow rather than proposing a window, so nothing needs slotting. A draft still carrying
-`[time slot]` is an old one — replace it.
-
-Say in the Slack thread that both brackets need filling before sending, so nobody pastes a
-draft with a bracket still in it.
+**No em dashes.** None in the templates, and none added when filling them in. Do not use an
+en dash or a spaced hyphen as a stand-in either; a comma or a period does the job.
 
 **First name.** The name the sender signs off with in the email body, else the first word
 of their Gmail display name. If there is **no display name** — a bare address like
@@ -453,15 +464,10 @@ the first three words is worse than not using one.
 lead's gender from their name; where a third-person reference is unavoidable, use
 they/them unless the sender's own signature makes it explicit.
 
-**`[buy box criteria]`** (Buy Box) — the concrete thing they asked for, in their own words,
-phrased to follow "interested in": `hotels in California`, `deals in Central FL`,
-`absentee businesses`. If the ask is too vague to name in a few words, write
-`what we've got` rather than inflating it into a specific.
-
-**`[their own words]`** (Ready Now) — a short quote or close paraphrase of their stated
-readiness, from column K or the email: `buying a business`, `the Bethlehem PA deal`,
-`the 50% seller financing terms`. Never invent a deal, a location or a number they did not
-mention.
+**`[buy box criteria]`** (Buy Box) is what they asked for, in their own words, phrased to
+follow "interested in": `hotels in California`, `businesses in Central FL`, `absentee
+businesses`. **Never inflate a vague ask into a specific one.** If the ask is too vague to
+name in a few words, write `what we've got`.
 
 **Never invent commercial terms.** No draft here quotes a price, a fee, a range, a
 guarantee or a timeline. Note that unlike Helen's Price Wall draft, **Jordan's Price Wall
@@ -489,6 +495,9 @@ Sections, each skipped entirely when empty:
   straight into the thread in Helen's mailbox:
 
   `_Category_ — Sender: "[subject](<gmail thread link>)" — waiting N days`
+
+  On a `Forward to …` row, add who it goes to: `— forward to Scott (existing client)` or
+  `— forward to Jabali (previous call)`, so Helen does not send it to Jordan by habit.
 
   Two things carry this section. **The link**: Helen clicks the subject, lands on the
   thread, and forwards it to Jordan — no hunting through the inbox or the tracker for a
@@ -545,8 +554,7 @@ one line in the parent message instead ("3 drafts already current, unchanged").
 Format — one block per draft, each in a code block so it copies cleanly:
 
 > ✍️ *Suggested replies for Jordan* — reply on the existing thread and keep Helen on it.
-> **Fill in `[Calendly Link]` and `[today/tomorrow]` before sending** — and call them the
-> same day if they gave a number.
+> **Fill in `[today/tomorrow]` before sending** where it appears, and call them that day.
 >
 > *Ready Now — Jerome M Limage*
 > ```
@@ -568,7 +576,8 @@ existing leads, it never creates them.
 
 **Columns F and H are formula-driven. Never write a literal to either.**
 
-- **F (Owner)** `=if(E<n>="No","Helen","Jordan")`
+- **F (Owner)** `=if(E<n>="No","Helen",if(left(D<n>,11)="Forward to ",regexextract(D<n>,"^Forward to (\S+)"),"Jordan"))` on rows the digest wrote from 2026-09-24; older rows hold
+  `=if(E<n>="No","Helen","Jordan")`. Either is correct for its row; leave whichever is there
 - **H (Next Check-in Date)** `=G<n>+1`
 - **P (Setter 3-day follow-up date)** `=M<n>+3`
 - **R (Setter 5-day follow-up date)** `=M<n>+5`
@@ -599,7 +608,8 @@ would show Yobani as the owner of Jordan's leads.
 | **W** Closer Progress | short factual context, including a cancellation and who it was with |
 
 Do not touch A, C, D, I, J, K or L. **Do not touch P or R** — they are formulas. Do not
-touch a row whose D is `Ignore`.
+touch a row whose D is `Ignore`. On a `Forward to …` row, write only B, E and G (STEP 2),
+never N or T–W.
 
 **Columns defined but not yet written.** M, O, Q and S are this task's by ownership, but
 the steps above do not populate them yet — the routine change comes separately. Until it
@@ -649,7 +659,8 @@ Google Sheets rate-limits at 60 writes/minute. Batch; do not write cell by cell.
 Re-read `'Tracker (JordanK)'!A1:W<n>` with `valueRenderOption: "FORMULA"` and confirm:
 
 - every G you wrote is today's serial, and H is still the formula `=G<n>+1`
-- every F is still the formula `=if(E<n>="No","Helen","Jordan")`
+- every F is still the formula it held when you read it (either form above), and none reads
+  `#N/A` or `#VALUE!`
 - **P and R are still the formulas `=M<n>+3` and `=M<n>+5`** — a literal date in either
   means a block write ran over them
 - **M, O, Q and S are untouched** on every row

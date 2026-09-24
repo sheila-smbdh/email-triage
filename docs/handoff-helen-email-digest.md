@@ -4,9 +4,54 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
+| **Last updated** | 2026-09-24 — **Routing, drop filters and templates reworked; see §0.** Before that: 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
 
 ---
+
+## 0. Changes on 2026-09-24
+
+Sheila's feedback, applied to `skills/helen-email-digest/SKILL.md` and
+`skills/tracker-followup/SKILL.md`:
+
+1. **No more "Ignore" rows.** A lead is either forwarded or dropped. Everything that used to
+   get an `Ignore` row (can't afford it, declined, tyre-kicker, not a business buyer) is now
+   dropped: no tracker row, no draft, no digest bullet. Each drop is listed in the run report
+   with the rule that caused it, so the filters can be audited. Existing `Ignore` rows in the
+   sheet are left alone, and `tracker-followup` still skips them.
+2. **Four new drop filters** (STEP 2, *Drop rules*): real estate plays (RV parks, mobile home
+   parks, storage; David Mojadidi); a business outside the US (James Baldwin, Sydney); under
+   $50K to invest, financing on top does not count ($40K down plus SBA is dropped; Rohit G);
+   and a "New form has been submitted" email with an empty `Message` field (Justina
+   Onwughalu).
+3. **Clients and returning leads are forwarded, not ignored.** Close decides it on every lead:
+   - an existing client (status `Client`/`Customer`, or a won opportunity) → `Forward to Scott
+     Moorhouse (scott@smbdealhunter.xyz)`;
+   - anyone who has had or booked a call → `Forward to <First Last> (<email>)` for the host of
+     the most recent non-cancelled meeting, looked up via `find_memberships`, provided that
+     person is still active in Close and is not Helen or Sheila. Yobani is still at the company,
+     so his returning leads go back to him;
+   - the host has left (inactive in Close) → `Send to Jordan`, treated as a new buyer.
+   Helen's draft for these uses a new **forwarding** template and cc's that person instead of
+   Jordan. There is no Jordan draft (column N) on a forward row. Column F's formula now reads
+   the first name out of a `Forward to …` action, so the Owner column shows Scott, Jabali and
+   so on once Helen forwards. `tracker-followup` checks that Helen forwarded to the right
+   person, then stops.
+4. **Jordan's first-response templates were replaced** with Sheila's new wording (all three
+   open "Picking up from Helen,"), with his real Calendly link
+   (`https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter`) in place of
+   `[Calendly Link]`. The `[If they …]` branches are gone. The one swap left: when the lead's
+   first email has a phone number, "What's the best number for me to call?" becomes "I'll give
+   you a call [today/tomorrow]." `tracker-followup` replaces older drafts in N with the new
+   templates on its next pass over each row.
+5. **No em dashes in any draft**, Helen's or Jordan's. The one in Helen's Price Wall template
+   is now a period.
+6. **Helen's Gmail drafts end with three blank lines**, so she does not have to add space
+   before sending. Column L keeps the draft without them.
+
+**Open question:** the James Briggs example Sheila gave for "outside the US" ("Beaumont /
+Nederland area") matches Beaumont and Nederland, Texas, which are US towns. It was left out of
+the spec's examples, and the spec warns against dropping US places with foreign-sounding
+names, until Sheila confirms what the email actually said.
 
 ## 1. What this is
 
