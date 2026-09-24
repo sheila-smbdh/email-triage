@@ -1193,7 +1193,7 @@ only, no third state and no free text. It is not a copy of E: Helen can forward 
 (E = `Yes`) and Jordan not get to it for days (O = `No`). On a row this task appends, O is
 **empty**.
 
-**Columns P–S are the setter follow-up cadence**, and they hang off M. P (`=M+3`) and R
+**Columns P–S are the setter follow-up cadence**, and they hang off M. P (`=M+2`) and R
 (`=M+5`) are **formulas**, filled down like F and H — see below. Q and S are the matching
 `done?` flags, owned by `tracker-followup`. This task never writes Q or S.
 
@@ -1217,10 +1217,12 @@ not "fix" them when they are blank on a new row — they are meant to be.
   Jordan's leads — never copy it here, and never edit `Responsibility` to "fix" it.
 - **H (Next Check-in Date):** `=G<n>+1` — the day after the last check-in, so an open lead
   comes due on every follow-up pass.
-- **P (Setter 3-day follow-up date):** `=M<n>+3` — three days after Helen's forward.
+- **P (Setter 3-day follow-up date):** `=M<n>+2` — the next-day follow-up, two days after
+  Helen's forward (the header still says "3-day"). Rows written before 2026-09-24 hold the
+  older `=M<n>+3`; leave those as they are.
 - **R (Setter 5-day follow-up date):** `=M<n>+5` — five days after Helen's forward.
 
-P and R read `3` and `5` on every row where M is still empty. That is the formula doing
+P and R read `2` and `5` on every row where M is still empty. That is the formula doing
 arithmetic on a blank cell, not a stray literal — leave it. Both light up as real dates the
 moment `tracker-followup` writes the forward date into M.
 
@@ -1259,7 +1261,7 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
    references set to that row — for a new row `<n>`:
    - F: `=if(E<n>="No","Helen",if(left(D<n>,11)="Forward to ",regexextract(D<n>,"^Forward to (\S+)"),"Jordan"))`
    - H: `=G<n>+1`
-   - P: `=M<n>+3`
+   - P: `=M<n>+2`
    - R: `=M<n>+5`
 
    Never invent a different formula. P and R go in as formulas even though M is empty —
@@ -1312,7 +1314,7 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
   no surrounding quotes. **Only on `Send to Jordan` Tier 1 rows**: empty on `Forward to …`
   rows and on Tracking Handover Progress rows. A `Send to Jordan` row gets both drafts; L
   populated with N blank on one is a bug worth reporting in Slack. N is not posted to Slack and not drafted in Gmail — this column is
-  where Jordan reads it. This is the *first* of three touches; the 3-day and 5-day follow-ups
+  where Jordan reads it. This is the *first* of three touches; the next-day (P) and 5-day follow-ups
   are tracked as dates and status only, and **no draft is written for them** — there is no
   column for one and this task does not generate one.
 - **Setter 1st Response Done? (O)** — **leave empty.** Owned by `tracker-followup`. `Yes`
