@@ -144,8 +144,9 @@ Jordan's.
   for days (O = `No`); that gap is the whole reason the column exists. Never derive O from
   E. (On the old `Tracker (Yobani)` tab, O matched E on every row only because of a one-off
   backfill on 2026-09-11 — that was never a rule, and it does not carry over.)
-- **P (`=M+3`) and R (`=M+5`)** are formulas giving the dates Jordan's 3-day and 5-day
-  follow-ups come due. They read `3` and `5` while M is empty — arithmetic on a blank cell,
+- **P (`=M+2`) and R (`=M+5`)** are formulas giving the dates Jordan's next-day and 5-day
+  follow-ups come due (the column header still says "3-day"; P moved from `=M+3` to `=M+2`
+  on 2026-09-24). They read `2` and `5` while M is empty — arithmetic on a blank cell,
   not a literal to clean up. **Never write a literal date to P or R.**
 - **Q and S** are the matching `done?` flags, also this task's to write and also **not yet
   implemented**. Allowed values, exactly: `Yes`, `No`, and `Not Needed - Connected` (the
@@ -579,7 +580,8 @@ existing leads, it never creates them.
 - **F (Owner)** `=if(E<n>="No","Helen",if(left(D<n>,11)="Forward to ",regexextract(D<n>,"^Forward to (\S+)"),"Jordan"))` on rows the digest wrote from 2026-09-24; older rows hold
   `=if(E<n>="No","Helen","Jordan")`. Either is correct for its row; leave whichever is there
 - **H (Next Check-in Date)** `=G<n>+1`
-- **P (Setter 3-day follow-up date)** `=M<n>+3`
+- **P (Setter 3-day follow-up date)** `=M<n>+2` on rows the digest wrote from 2026-09-24;
+  older rows hold `=M<n>+3`. Either is correct for its row; leave whichever is there
 - **R (Setter 5-day follow-up date)** `=M<n>+5`
 
 They already hold these formulas on every existing row. Setting E and G is what moves F and
@@ -661,7 +663,8 @@ Re-read `'Tracker (JordanK)'!A1:W<n>` with `valueRenderOption: "FORMULA"` and co
 - every G you wrote is today's serial, and H is still the formula `=G<n>+1`
 - every F is still the formula it held when you read it (either form above), and none reads
   `#N/A` or `#VALUE!`
-- **P and R are still the formulas `=M<n>+3` and `=M<n>+5`** — a literal date in either
+- **P and R are still the formulas `=M<n>+2` (or `=M<n>+3` on older rows) and `=M<n>+5`** —
+  a literal date in either
   means a block write ran over them
 - **M, O, Q and S are untouched** on every row
 - B and E changed on exactly the rows you meant, and nowhere else
