@@ -1,6 +1,6 @@
 ---
 name: helen-email-digest
-description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, with Helen's reply created as a Gmail draft on each lead's thread with Jordan cc'd, and one row per lead in the Google Sheets tracker carrying both the Helen and Jordan reply drafts
+description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, with Helen's reply created as a Gmail draft on each lead's thread cc'ing whoever the lead is forwarded to (Jordan for new buyers, Scott for existing clients, the previous closer/setter for anyone who has had a call), and one row per lead in the Google Sheets tracker; disqualified leads are dropped with no row
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
@@ -10,14 +10,20 @@ fires — every step must complete through connectors, or fail loudly to Slack. 
 work parked for a person to finish by hand.
 
 **It writes drafts, and only drafts.** Since 2026-09-11 the reply for each lead is created
-as a Gmail draft on that lead's thread in Helen's mailbox, with Jordan cc'd, so her whole
-job is to open the thread, read it, and send. Nothing in this task sends email. See STEP 3,
+as a Gmail draft on that lead's thread in Helen's mailbox, with the person the lead is being
+forwarded to cc'd (Jordan for a new buyer; see *Recommended action* in STEP 2 for the
+others), so her whole job is to open the thread, read it, and send. Nothing in this task sends email. See STEP 3,
 and *Scope limits* at the end.
 
 **Scope: buyer leads only.** This routine tracks exactly three categories — **Buy Box**,
 **Ready Now**, and **Price Wall** — plus threads in those three categories that Helen has
 already handed off. Everything else in the inbox is dropped: not digested, not logged, not
 counted. There is no Tier 2, no Tier 3, and no "Uncategorized / needs review" bucket.
+
+**A lead is either forwarded or dropped.** Since 2026-09-24 there is no "Ignore" row. A lead
+the team will not pursue (disqualified, out of scope, under budget; see *Drop rules* in STEP
+2) gets no tracker row, no draft, and no digest bullet. Every lead that is logged is being
+forwarded to someone: Jordan, Scott, or the closer/setter the lead already knows.
 
 **One non-lead exception: bonus claims.** A bare "Yes" reply from someone who has just
 joined is normally answered by Helen's canned-response automation within seconds. When the
@@ -53,7 +59,8 @@ every call, reads and drafts alike.
 
 One lookup does **not** go through Composio: the Close check in STEP 2 (existing clients,
 past calls with the team, and booked calls) reads Close CRM through the **first-party Close
-connector** (`mcp__Close__*`). It is read-only. If the
+connector** (`mcp__Close__*`), including `find_memberships` to resolve who held a lead's
+previous call and whether they are still on the team. It is read-only. If the
 Close connector is missing, that is not a reason to abort the run — the check simply fails
 to confirm and every affected lead keeps the default "Send to Jordan" (see STEP 2). Say so
 in the run report.
@@ -155,7 +162,7 @@ of them, a bonus claim, or dropped. There is no other outcome.
 - **Ready Now** — gave a phone number, explicitly asked for a call, used enrollment
   language ("enroll me", "call me"), OR replies with clear interest/readiness to a
   newsletter or prior outreach about a specific deal (even without a direct call ask or
-  phone number). For this last case, set recommended action to "send to setter", and use the
+  phone number). For this last case, use the
   specific-deal variant of Helen's Ready Now draft — see *Which Ready Now template* below.
 - **Price Wall** — asks for pricing/cost directly without booking a call ("what does it
   cost", "price before scheduling")
@@ -237,28 +244,86 @@ A handed-off thread whose original category is **not** one of the three (an Inve
 Kyle is running, a Sellside thread with Bill) is **dropped**, same as any other untracked
 category. Handover tracking follows the tracked categories; it does not widen them.
 
-### Recommended action — and the Close checks
+### Drop rules: leads the team does not pursue
 
-Every Tier 1 lead gets a Recommended Action, written to tracker column D — and so does
-every 🟢 handover row, where it is normally "Send to Jordan" unless the
-existing-relationship rule below makes it "Ignore". There are two
-values: **"Send to Jordan"** (the default — a real buyer worth the setter's time) and
-**"Ignore"**.
+Some emails are genuinely in one of the three categories on their face and are still not
+worth anyone's time. **These are dropped**, exactly like an untracked category: no tracker
+row, no Helen draft in Gmail, no Jordan draft, and **no bullet in the Slack digest**. Helen
+does not reply to them.
 
-Four things earn "Ignore":
+Until 2026-09-24 most of these got a tracker row marked "Ignore" and sat in the digest with
+no draft. Sheila's call on 2026-09-24: **all of those are dropped instead.** "Ignore" is no
+longer a value this routine writes anywhere.
 
-1. **The lead has already disqualified themselves** — declined outright, an obvious
-   tyre-kicker, or someone who says they cannot afford it.
-2. **The lead is already known to the team, verified in Close CRM** — a paying client, or
-   someone who has already had a call with the team. See *The existing-relationship rule*
-   below. **This check runs on every lead**, whatever the email says.
-3. **The lead has already booked a call, verified in Close CRM** — see *The call-booked
-   rule* below.
-4. **The lead does not want to buy a business** — they are asking about something else
-   entirely, even when the words look like a buyer's. See the next section.
+Drop the lead when any of these holds:
 
-The same Close lookup settles 2 and 3, so it is one pass per lead (see
-*The existing-relationship rule* for the procedure).
+1. **Real estate plays, not a business.** RV parks, mobile home parks, storage facilities,
+   land, rental or investment property. SMB Deal Hunter does not do real estate deals.
+   Real case: David Mojadidi, interested in RV parking / a mobile park / storage → drop.
+2. **The business is outside the US.** SMB Deal Hunter is US only. Judge this by **where the
+   business they want is**, not where the person lives: someone abroad looking to buy in the
+   US stays in. An email that names no location stays in. Real case: James Baldwin, looking
+   in Sydney, Australia → drop. **Watch for US places with foreign names**: Nederland and
+   Beaumont are neighbouring towns in southeast Texas, Paris is in Texas too, and so on. If the
+   email gives a state, a US area code or a zip code, or the place is plausibly a US town, it
+   stays in.
+3. **Under $50K to invest.** The minimum is $50K. Drop anyone who states a figure below it,
+   **whatever financing they plan on top**: "$40K down plus an SBA loan" is still under $50K
+   and is dropped. Exactly $50K stays in. A lead who names no figure stays in. Real case:
+   Rohit G, *"I only have $40K"* → drop.
+4. **Can't afford it.** *"I don't have the funds"*, *"that's out of my budget"*, *"I can't
+   afford that right now"*. See *Price Wall: asking the price vs. not having the money*
+   below. Real case: Andy Garcia → drop.
+5. **An empty web form.** A *"New form has been submitted - …"* email (from
+   `smbdealhunter@softr.app`) whose `Message` field is empty or missing. Real submissions
+   carry a message; one with nothing in it is not a lead. Hydrate the message to read the
+   form body. Any text at all in `Message` means the form is classified normally on what it
+   says. Real case: Justina Onwughalu, no message → drop.
+6. **They have disqualified themselves**: declined outright, or an obvious tyre-kicker.
+7. **They do not want to buy a business**: they are asking about something else entirely,
+   even when the words look like a buyer's. See *Deal talk is not buyer intent* below.
+
+A drop rule **wins over everything below**, including the Close checks: a client asking
+about a Sydney business is still dropped. Where a rule needs a judgement (is this a real
+estate play? is this figure their whole budget?), apply the same 70% bar as *On borderline
+mail*: drop only when the email actually says it.
+
+**List every dropped lead in the run report** (not in Slack), one line each with the rule
+that dropped it, so Sheila can check the filters are cutting the right people. Mail dropped
+for being an untracked category does not need listing; this is only for mail that looked
+like a Buy Box, Ready Now or Price Wall lead and was dropped by one of the rules above.
+
+### Recommended action: who the lead is forwarded to
+
+Every Tier 1 lead and every 🟢 handover row that survives the drop rules gets a Recommended
+Action, written to tracker column D. It names **who Helen forwards the lead to**, and that
+person is the one cc'd on her Gmail draft (STEP 3):
+
+| Close shows | Recommended Action (column D) | Helen's draft cc's |
+|---|---|---|
+| **Existing client**: status `Client` / `Customer`, or any won opportunity | `Forward to Scott Moorhouse (scott@smbdealhunter.xyz)` | Scott |
+| **Has had a call, or has one booked**, and the person who held the most recent one is still on the team (active in Close) and is a closer or setter | `Forward to <First Last> (<their email>)`, e.g. `Forward to Jabali Dumas (bali@smbdealhunter.xyz)` | that person |
+| Has had a call, but that person has **left** (inactive in Close), or is not a closer/setter | `Send to Jordan` | Jordan |
+| Nothing: a new buyer (most leads) | `Send to Jordan` | Jordan |
+
+Those are the only two shapes column D takes: the literal `Send to Jordan`, or `Forward to
+<First Last> (<email>)`. The name is the Close user's first and last name; the email is their
+Close email, copied exactly. Keep the parentheses: `tracker-followup` reads the address out
+of them to check whether Helen forwarded.
+
+**Client wins over a call.** Mose Richardson is a client and also had calls → Scott.
+
+**Jordan himself can be the previous setter.** A lead whose most recent call was with Jordan
+gets `Forward to Jordan Kempster (jkempster@smbdealhunter.xyz)`, not `Send to Jordan`. He
+already knows them, so Helen uses the forwarding template (not the new-buyer one) and no
+first-response draft is written for him (see *Suggested Jordan response*).
+
+**Yobani is still at the company.** He is no longer the setter for new leads, but a lead
+whose most recent call was with him goes back to him like anyone else:
+`Forward to Yobani Mendoza (yobani@smbdealhunter.xyz)`.
+
+The same Close lookup settles every row of the table, so it is one pass per lead; see *The
+existing-relationship rule* for the procedure.
 
 #### Deal talk is not buyer intent
 
@@ -276,7 +341,7 @@ first logged as Tier 1 "Send to Yobani" (the setter at the time). Both were wron
 seller financing with 50% and would want an opted financing on an investment property that I
 tend to hold."* That reads as a buyer discussing financing terms until you notice the asset:
 his **own investment property, which he intends to keep**. He is not buying a business. →
-**Ignore**.
+**Drop**.
 
 **Commenting from the seller's side.** J LaMacchia wrote *"I would counter offer, to get the
 conversation going, with a 50% down payment ($1,250,000) and 2 years funding the balance…
@@ -284,7 +349,7 @@ Any serious offer should be via written letter and a $100,000 deposit check with
 3 contingencies **and I will remove from the market**."* The first sentence looks like a live
 offer. The last clause gives it away — he is talking as an owner about taking a listing off
 the market, not asking to buy one. He is commenting on how the deal should be run, and never
-asks to speak to anyone. → **Ignore**.
+asks to speak to anyone. → **Drop**.
 
 > ⚠️ **The truncated snippet inverted the meaning.** `verbose: false` returns
 > `preview.body` cut at roughly 200 characters. J LaMacchia's preview ended at *"Any serious
@@ -317,18 +382,19 @@ Classify on the ask, flag it in the digest for a human eye, and do not drop it.
 
 #### Price Wall: asking the price vs. not having the money
 
-Both look like Price Wall, and they get opposite actions. Sort on **whether the lead has
+Both look like Price Wall, and they get opposite outcomes. Sort on **whether the lead has
 told you they lack the funds**, not on whether price came up:
 
 - *"What does it cost?"*, *"I have yet to see what the fees are"* — a live buyer with an
   unanswered question. **Send to Jordan**, with the Price Wall draft that answers it.
 - *"I don't have the funds"*, *"that's out of my budget"*, *"I can't afford that right
-  now"* — they have disqualified themselves. **Ignore**, no draft.
+  now"*, or a stated budget under $50K — they have disqualified themselves. **Drop**: no
+  row, no draft.
 
 A statement of not having the money **wins over a pricing question in the same email**.
 Real case from 2026-09-09: Andy Garcia wrote *"I am interested but I don't have the funds,
 I don't know how much it is."* The second half is a pricing question, but the first half
-already settles it → **Ignore**. Sending the 1% answer to someone who has just said they
+already settles it → **Drop**. Sending the 1% answer to someone who has just said they
 have no money is the wrong reply.
 
 #### The existing-relationship rule
@@ -336,26 +402,31 @@ have no money is the wrong reply.
 Jordan is the setter: his job is to get a **new** buyer onto a first call. Someone who is
 already paying SMB Deal Hunter, or who has already been on a call with the team, is not that
 — they are already in someone else's hands, and a "let's grab 15 minutes" from a stranger
-tells them the team does not know who they are. **Their emails are not forwarded to a
-setter.** Write **"Ignore"**.
+tells them the team does not know who they are. **Their emails go back to the person who
+already knows them**: Scott for a client, the closer or setter they spoke with for anyone
+who has had a call. That is the table in *Recommended action* above.
 
 This is not something the email tells you. A paying member asking about a featured deal
 reads exactly like a new Ready Now lead; a prospect who had a discovery call last month
 writes in as if for the first time. Real cases, all logged "Send to Yobani" on the old
-`Tracker (Yobani)` tab before this rule existed, all wrong:
+`Tracker (Yobani)` tab before this rule existed, all wrong. The Action column is what they
+get today; for Kushal and Kishin it is whoever held their most recent call, looked up fresh
+on each run:
 
 | Old tab row | Sender | What the email looked like | What Close shows | Action |
 |---|---|---|---|---|
-| 34 | William Polanco | Form submission asking for CIMs on two NY deals — read as Ready Now | Status **Client**; opportunity **WON** 2026-08-19, SMB Deal Hunter Pro $15,000 | Ignore |
-| 49 | Mose Richardson | Form submission about the Ohio compressed-air deal — read as Ready Now. The reply after Helen looped Yobani in: *"I'm a member of your program"* | Status **Client**; opportunity **WON** 2026-01-28, SMB Deal Hunter Pro $15,000 | Ignore |
-| 64 | Kushal Shah | Asked for NDAs/CIMs on four Market Watch listings, gave a phone number — read as Ready Now | Welcome Call 2026-08-20 and Discovery Call 2026-08-24, both before the 9/19 email | Ignore |
-| 88 | Kishin Manglani | Asked about NJ deal flow — read as Buy Box | Intro Call 2026-06-02 and Discovery Call 2026-06-04, months before the 9/22 email | Ignore |
+| 34 | William Polanco | Form submission asking for CIMs on two NY deals — read as Ready Now | Status **Client**; opportunity **WON** 2026-08-19, SMB Deal Hunter Pro $15,000 | Forward to Scott |
+| 49 | Mose Richardson | Form submission about the Ohio compressed-air deal — read as Ready Now. The reply after Helen looped Yobani in: *"I'm a member of your program"* | Status **Client**; opportunity **WON** 2026-01-28, SMB Deal Hunter Pro $15,000 | Forward to Scott |
+| 64 | Kushal Shah | Asked for NDAs/CIMs on four Market Watch listings, gave a phone number — read as Ready Now | Welcome Call 2026-08-20 and Discovery Call 2026-08-24, both before the 9/19 email | Forward to the host of the 8/24 call |
+| 88 | Kishin Manglani | Asked about NJ deal flow — read as Buy Box | Intro Call 2026-06-02 and Discovery Call 2026-06-04, months before the 9/22 email | Forward to the host of the 6/04 call |
 
-**Run it on every Tier 1 lead and every 🟢 handover row** — not only the ones that mention a
-call. Two of the four above were handovers (rows 34 and 49), and none of the four said
-anything that hinted at the relationship until after Helen had already replied.
+**Run it on every Tier 1 lead and every 🟢 handover row** that survived the drop rules, not
+only the ones that mention a call. Two of the four above were handovers (rows 34 and 49), and
+none of the four said anything that hinted at the relationship until after Helen had already
+replied.
 
-Procedure (verified 2026-09-22 against all four rows above):
+Procedure (Close lookups verified 2026-09-22 against all four rows above; host lookup
+verified 2026-09-24 on CJ Green):
 
 1. **Get the lead's own email address.** Usually the sender's address. **Form submissions
    are the exception:** they arrive from `smbdealhunter@softr.app` with the subject *"New
@@ -367,115 +438,129 @@ Procedure (verified 2026-09-22 against all four rows above):
    address, never the display name** — the same trap as the call-booked rule below
    (christopher green / CJ Green).
 3. **Paying client?** Read the lead's `status_label` from the search result, and call
-   `mcp__Close__find_opportunities` with `lead_id`. Write **"Ignore"** if the status is
-   **`Client`** or **`Customer`**, *or* any opportunity has `status_type: "won"`. Either
-   signal is enough on its own; the four rows above had both or neither.
-4. **Already had a call?** Call `mcp__Close__activity_search` with `lead_ids: ["<lead_id>"]`
-   and `activity_types: ["activity.meeting"]`. Write **"Ignore"** if there is any meeting
-   dated **before today** that was not cancelled. Meetings are the Calendly-booked Welcome,
-   Intro and Discovery calls. Logged phone calls (`activity.call`) do **not** count on their
-   own: a setter's unanswered dial or voicemail is logged the same way and is not a
-   conversation.
-5. A meeting dated **today or later** is the call-booked rule below, and it is also
-   "Ignore". Past or future, a meeting with the team means the lead is not Jordan's.
-6. **If the lookup fails to confirm** — no Close lead matches the address, the lead has no
-   won opportunity, no client status and no meeting, or Close errors — leave the action as
-   **"Send to Jordan"**. Same as the call-booked rule: unverified is not a reason to drop a
-   buyer, and most real new leads have no Close history at all.
+   `mcp__Close__find_opportunities` with `lead_id`. If the status is **`Client`** or
+   **`Customer`**, *or* any opportunity has `status_type: "won"`, the action is
+   **`Forward to Scott Moorhouse (scott@smbdealhunter.xyz)`**. Either signal is enough on
+   its own; the four rows above had both or neither. Stop here: a client goes to Scott
+   whatever their meeting history says.
+4. **Had a call, or has one booked?** Call `mcp__Close__activity_search` with
+   `lead_ids: ["<lead_id>"]` and `activity_types: ["activity.meeting"]`. Set aside every
+   meeting whose title starts `Canceled:`. Of what is left, past or future, take the **most
+   recent** (latest `starts_at`). Meetings are the Calendly-booked Welcome, Intro and
+   Discovery calls. Logged phone calls (`activity.call`) do **not** count: a setter's
+   unanswered dial or voicemail is logged the same way and is not a conversation. No
+   meeting left → step 7.
+5. **Who held it?** The meeting's `user_id` is the host (the title also names them:
+   `Chris Green and Jordan Kempster`). Call `mcp__Close__find_memberships` with
+   `include_inactive: true` **once per run** and look the `user_id` up in it; that gives the
+   host's first name, last name, email, and `is_active`.
+6. **Pick the action from the host:**
+   - Host `is_active: true`, and a closer or setter → **`Forward to <First Last> (<email>)`**.
+     Anyone who hosts a Welcome, Intro or Discovery call counts as a closer or setter, so
+     the event itself settles it; the exceptions are **Helen Guo and Sheila Xu**, who are
+     never forwarded to.
+   - Host `is_active: false` (they have left SMB Deal Hunter), host is Helen or Sheila, or the
+     `user_id` is not in the membership list → **`Send to Jordan`**. The lead is treated as a
+     new buyer: Jordan's normal templates, and a Jordan draft in column N.
+7. **If the lookup fails to confirm** — no Close lead matches the address, no client status,
+   no won opportunity and no meeting, or Close errors — the action is **`Send to Jordan`**.
+   Unverified is not a reason to hold a buyer back, and most real new leads have no Close
+   history at all.
 
-**What this changes, and what it does not.** Column D becomes "Ignore", and that gate does
-the rest: no Helen draft in column L, no Gmail draft, no Jordan draft in column N, and
-`tracker-followup` skips the row (it never chases Helen to forward an `Ignore` row). The
-lead is still classified on the content of the email, still gets its tracker row, and still
-appears in the Slack digest, with the marker from STEP 4 so Helen can see why there is no
-draft and does not forward it by hand.
+Worked example, 2026-09-24: CJ Green (`cjgreen7904@yahoo.com`) has three meetings: a
+`Canceled:` Discovery Call on 9/18 with Adam Larkins, and Intro / Welcome Calls on 9/14 and
+9/11 with Jordan Kempster. The cancelled one is set aside, the most recent remaining one is
+Jordan's → `Forward to Jordan Kempster (jkempster@smbdealhunter.xyz)`.
 
-In the run report, list every lead this rule turned to "Ignore" and which signal did it
-(client status, won opportunity, or a past meeting with its date).
+**What a forward row gets.** A `Forward to …` row is classified on the content of the email
+like any other, gets its tracker row, and appears in the Slack digest. Helen's draft uses the
+**forwarding template** (see *The templates*), cc'ing the person in column D instead of
+Jordan. There is **no Jordan first-response draft** in column N: the person being forwarded to
+already knows the lead and writes their own reply. `tracker-followup` still checks that Helen
+forwarded it to that person.
+
+In the run report, list every lead this rule forwarded somewhere other than Jordan and which
+signal did it (client status, won opportunity, or the meeting's date and host), and every lead
+whose previous host had left and so went to Jordan.
 
 #### The call-booked rule
 
-Jordan is the setter; his job is to get the call booked. A lead who has already booked one
-is not work for him, so passing them along is wasted effort. When an email says the sender
-has scheduled a call — "I have a call scheduled", "I have booked a call", "we're speaking
-Thursday" — check Close, and if it is confirmed there, write **"Ignore"** instead of "Send
-to Jordan".
+A lead who says they have booked a call — "I have a call scheduled", "I have booked a call",
+"we're speaking Thursday" — is handled by the existing-relationship rule above: an upcoming
+meeting counts the same as a past one, and the lead is forwarded to the host of the most
+recent one. This section records the two traps that make the check go wrong.
 
-**Verify in Close before writing "Ignore". Never take the claim at face value** — a sender
-can misremember, book with someone else, or have cancelled since writing.
+**Verify in Close. Never take the claim at face value** — a sender can misremember, book
+with someone else, or have cancelled since writing. A claim Close does not show changes
+nothing: the action is whatever the procedure above gives, usually `Send to Jordan`.
 
-Procedure (verified 2026-09-10):
-
-1. `mcp__Close__lead_search` with `full_text: "<the sender's email address>"`.
-
-   **Match on the email address, never the display name.** Gmail display names and Close
-   lead names routinely disagree, and a fuzzy name match produces a confidently wrong
-   answer. Real case from this inbox: `christopher green <cjgreen7904@yahoo.com>` is the
-   Close lead **"CJ Green"** — but a name search for "christopher green" returns *"Chris
-   Green"*, *"Chris Greene"* and *"CJ Green"* as three separate leads, and two of them are
-   other people. The email search returns exactly one.
-
-2. Take the `lead_id` from that result and call `mcp__Close__activity_search` with
-   `lead_ids: ["<lead_id>"]` and `activity_types: ["activity.meeting"]`.
-
-3. Read `activity_at` / `starts_at` on the returned meetings. The claim is verified only
-   if a meeting is dated **today or later**. A meeting entirely in the past is a call that
-   already happened, not the one the sender is describing — it does not verify the claim,
-   **but it still makes the action "Ignore"** under *The existing-relationship rule* above,
-   since the lead has already had a call with the team.
-
-4. **If any of this fails to confirm** — the email address matches no lead, the lead has no
-   meeting, or the Close lookup errors — leave the action as **"Send to Jordan"**, unless
-   the existing-relationship rule above already made it "Ignore". Unverified is not the same as false, and the safe default is to
-   let the setter look.
+**Match on the email address, never the display name.** Gmail display names and Close lead
+names routinely disagree, and a fuzzy name match produces a confidently wrong answer. Real
+case from this inbox: `christopher green <cjgreen7904@yahoo.com>` is the Close lead
+**"CJ Green"** — but a name search for "christopher green" returns *"Chris Green"*, *"Chris
+Greene"* and *"CJ Green"* as three separate leads, and two of them are other people. The
+email search returns exactly one.
 
 In the final run report, list every lead that claimed a booked call and whether each one
 verified. A lead claiming a call that Close doesn't show is worth a human's attention.
 
-Worked examples, both verified 2026-09-10:
+Worked examples, verified 2026-09-10 (the action column is what they get under today's rule):
 
 | Sender | Claim | Close lead | Meeting found | Action |
 |---|---|---|---|---|
-| Jim Jacobsen | "I have a call scheduled but I have yet to see what the fees are" | Jim Jacobsen | 2026-09-14 14:00 UTC — Discovery Call | Ignore |
-| christopher green (`cjgreen7904@yahoo.com`) | "I am still interested and have booked a call" | **CJ Green** | 2026-09-11 16:00 UTC — Welcome Call | Ignore |
+| Jim Jacobsen | "I have a call scheduled but I have yet to see what the fees are" | Jim Jacobsen | 2026-09-14 14:00 UTC — Discovery Call | Forward to that call's host |
+| christopher green (`cjgreen7904@yahoo.com`) | "I am still interested and have booked a call" | **CJ Green** | 2026-09-11 16:00 UTC — Welcome Call with Jordan Kempster | Forward to the host of the most recent non-cancelled call (Jordan Kempster, as of 2026-09-24) |
 
 **This rule changes column D only.** It does not change classification: a lead who has
 booked a call is still Buy Box / Ready Now / Price Wall on the content of their email,
-still appears in the Slack digest under Tier 1, and still gets a tracker row. The
-Recommended Action is not shown in Slack.
+still appears in the Slack digest under Tier 1, and still gets a tracker row.
 
 ### Suggested Helen email draft
 
-Every lead whose Recommended Action is **"Send to Jordan"** also gets a ready-to-send
-reply draft. It is written twice: into tracker column L, and — as of 2026-09-11 — into
-**Helen's Gmail as a real draft on the lead's own thread, with Jordan cc'd** (STEP 3), so
-she opens the thread, reviews, and sends. Rows marked "Ignore" and Tracking Handover
-Progress rows get **no draft** — leave the cell empty, and create nothing in Gmail for
-them.
+Every Tier 1 lead (Recommended Action **"Send to Jordan"** or **"Forward to …"**) gets a
+ready-to-send reply draft. It is written twice: into tracker column L, and — as of
+2026-09-11 — into **Helen's Gmail as a real draft on the lead's own thread, with the person
+in column D cc'd** (STEP 3), so she opens the thread, reviews, and sends. Tracking Handover
+Progress rows get **no draft** (Helen has already handed them off) — leave the cell empty,
+and create nothing in Gmail for them. Dropped leads have no row and no draft.
+
+**No em dashes, in any draft.** Not in Helen's drafts, not in Jordan's, not in anything this
+routine writes for a lead or a member to read. Sheila's call on 2026-09-24: they make a
+message read as machine-written. The templates below contain none; do not add one when
+filling in a placeholder, and do not swap in an en dash (–) or a spaced hyphen ( - ) as a
+stand-in. Use a comma, a period or "and". (The bonus reply's `Hey -` is the automation's own
+wording, copied exactly, and stays.) Before creating a draft, check its text for `—` and
+`–`; if either is there, rewrite that sentence.
 
 🎁 **Bonus claims also get a draft**, and they are the one kind that is not a lead: no
 tracker row, no Recommended Action, no cc. Their template is *The bonus reply*, below.
 
-The draft is a **reply in Helen's voice**, cc'ing Jordan Kempster
-(`jkempster@smbdealhunter.xyz`, the setter). No subject line, no signature, no greeting
-block — Helen is replying inside an existing thread.
+The draft is a **reply in Helen's voice**, cc'ing the person in column D: Jordan Kempster
+(`jkempster@smbdealhunter.xyz`, the setter) on a `Send to Jordan` row, or the person named in
+a `Forward to …` row. No subject line, no signature, no greeting block — Helen is replying
+inside an existing thread.
 
-**Jordan replaced Yobani as the setter on 2026-09-23.** From that run on, no draft cc's
-`yobani@smbdealhunter.xyz` or names Yobani in its body — a draft that does is a wrong send.
+**Jordan replaced Yobani as the setter on 2026-09-23.** From that run on, no *new-buyer*
+draft cc's `yobani@smbdealhunter.xyz` or names Yobani in its body. The one exception is a
+`Forward to Yobani Mendoza (…)` row: a lead whose most recent call was with him goes back to
+him (STEP 2), and that draft names and cc's him.
 
-**Two drafts do not cc Jordan**: the Price Wall call-pushback variant, which asks the lead's
+**Two drafts cc nobody**: the Price Wall call-pushback variant, which asks the lead's
 permission to loop someone in rather than doing it, and the bonus reply, which has nothing
-to do with him. Both say so where they are defined. Every other draft cc's him.
+to do with a setter. Both say so where they are defined. Every other draft cc's the person in
+column D.
 
-The cc is now real, not an instruction to Helen: STEP 3 puts `jkempster@smbdealhunter.xyz` on
-the Cc line of the Gmail draft itself, and leaves it off for those two. Getting that wrong
-is not cosmetic — a bonus claim or a call-pushback reply that goes out with the setter on it
-contradicts what the message says.
+The cc is now real, not an instruction to Helen: STEP 3 puts that address on the Cc line of
+the Gmail draft itself, and leaves it off for those two. Getting that wrong is not cosmetic —
+a bonus claim or a call-pushback reply that goes out with the setter on it contradicts what
+the message says, and a client's reply cc'ing Jordan instead of Scott tells them the team
+does not know who they are.
 
 #### The templates
 
-Use the template for the lead's category — and, for Ready Now and Price Wall, the variant
-that matches what the lead asked for. Each one is a fully written-out message to the lead,
+On a `Send to Jordan` row, use the template for the lead's category — and, for Ready Now and
+Price Wall, the variant that matches what the lead asked for. On a `Forward to …` row, use
+the **forwarding** template instead, whatever the category (see the end of this list). Each one is a fully written-out message to the lead,
 with Jordan mentioned inside it where he is being looped in — not a set of separate notes to
 different people. The last template, the bonus reply, is the exception to all of this: it is
 not a lead draft at all.
@@ -506,7 +591,7 @@ Hey [First Name], deals like these go pretty quickly, but we can help you move f
 **Price Wall**
 
 ```
-Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call — @Jordan on our team can find a time that works for you.
+Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call. @Jordan on our team can find a time that works for you.
 ```
 
 **Price Wall — pushing back on the call itself** (use this one instead when the lead is
@@ -523,8 +608,24 @@ So it is a two way thing, and that is why we do not get into the details until t
 Let me know if you're still interested and want me to loop someone from our team in.
 ```
 
-The `@Jordan` is literal text in the body of an email, not a Slack or Gmail mention. It
-reads as a nudge to him because he is cc'd.
+**Forwarding: a client, or someone who has already had or booked a call** (use this one on
+every `Forward to …` row, in place of the category template). Pick the line that matches why
+the lead is being forwarded:
+
+```
+Hey [First Name], great to hear from you. Looping in [Name], who you've worked with. @[Name], do you mind picking this up with [First Name]?
+```
+
+- `who you've worked with`: an existing client, forwarded to Scott.
+- `who you spoke with before`: the most recent call with that person is in the past.
+- `who you have a call booked with`: the most recent call with that person is still upcoming.
+
+`[Name]` is the first name of the person in column D (`Scott`, `Jabali`, `Jordan`). This
+template takes no 1% line, no category-specific wording and no deal talk: the person being
+looped in already knows the lead and takes it from there.
+
+The `@Jordan` (or `@[Name]`) is literal text in the body of an email, not a Slack or Gmail
+mention. It reads as a nudge to that person because they are cc'd.
 
 **The bonus reply** — for 🎁 bonus claims only, not for any lead category. Word for word
 what Helen's automation sends, so a member who got it late cannot tell the difference:
@@ -556,8 +657,9 @@ California", "finding absentee businesses". If their ask is too vague to name in
 four words, use "that" — *"Hey Scott, that is something we can help with."* Never inflate
 a vague ask into a specific one.
 
-Ready Now and Price Wall take no personalisation beyond the first name. Do not restructure
-a template to suit the email.
+Ready Now and Price Wall take no personalisation beyond the first name. The forwarding
+template takes the lead's first name, the forward target's first name, and one of its three
+`who you …` lines. Do not restructure a template to suit the email.
 
 **Which Ready Now template.** Ready Now covers two different asks, and they open
 differently:
@@ -635,7 +737,8 @@ If a lead asks something the template does not answer, send the template as-is a
 call handle it.
 
 **Nothing else goes in.** A finished lead draft should be the template plus a first name
-and, for Buy Box, their ask — and nothing more. The bonus reply takes no substitutions at
+and, for Buy Box, their ask (or, for the forwarding template, the forward target's name and
+the right `who you …` line) — and nothing more. The bonus reply takes no substitutions at
 all. If a draft says something the template does not, take that back out.
 
 ### Suggested Jordan response
@@ -652,10 +755,12 @@ Helen's handoff was one paste away on day one, and Jordan's reply did not exist 
 later pass picked the row up. Both drafts now come out of this run, so a lead's whole path
 is written the morning it arrives.
 
-**Same gate as Helen's draft.** Every lead whose Recommended Action is `Send to Jordan`
-gets one. `Ignore` rows and Tracking Handover Progress rows get none — leave N empty. 🎁
-Bonus claims are not leads and have no row, so there is nothing to write: they get no Jordan
-draft at all.
+**Only on `Send to Jordan` rows.** Every lead whose Recommended Action is `Send to Jordan`
+gets one. `Forward to …` rows get none, even `Forward to Jordan Kempster (…)`: the person
+being forwarded to already knows the lead, and a "grab 15 min" intro to someone they have
+already spoken to is the wrong message. Tracking Handover Progress rows get none either —
+leave N empty. 🎁 Bonus claims are not leads and have no row, so there is nothing to write:
+they get no Jordan draft at all.
 
 **Jordan's draft is not created in Gmail.** STEP 3 drafts Helen's reply only. Jordan sends
 his from his own mailbox after she forwards, and column N is where he reads it from.
@@ -666,9 +771,12 @@ runs that check on a later pass and remains the authority on where the lead stan
 N here does not mark the row handled and does not exempt it from the follow-up pass. (Drafts
 are never cleared — see STEP 5.)
 
+**No em dashes.** Same rule as Helen's drafts: none in the templates, none added when filling
+them in.
+
 #### When it goes out
 
-As soon as Helen forwards. Jordan replies on the **same thread**, with Helen kept on it — so
+As soon as Helen forwards. Jordan replies on the **same thread**, with Helen kept on it, so
 the handoff stays tracked. Not a fresh email: the lead has been talking to Helen, so the
 reply picks up from her rather than introducing a stranger.
 
@@ -678,49 +786,30 @@ An **email, and a phone call** if he has a number to call.
 
 | Phone number in their initial email? | Day 1 |
 |---|---|
-| Yes | Email, then call them — today or tomorrow |
-| No | Email only. Buy Box and Price Wall ask for the number; Ready Now sends the Calendly link instead |
+| Yes | Email, then call them, today or tomorrow |
+| No | Email only. It asks for their number and offers his calendar link |
 
 **No texting on day 1.** If he has the number he calls; if he doesn't, there's nothing to
 text. Either way the text is redundant.
 
 "Number provided" means a number in the **initial email they sent** — a signature block
 counts, a number dug out of the CRM or the web does not. This task is reading that email
-already, so settle the branch while writing the draft rather than leaving the choice to
-whoever pastes it.
-
-#### Reading the templates
-
-The `[If they …]` blocks are instructions, not copy. Pick the branch that matches the row,
-write out that sentence, and delete the marker and the brackets around it. The other branch
-disappears. **A draft that still contains the words "If they" has not been finished.**
-
-`[today/tomorrow]` is pick-one, not literal text.
+already, so settle it while writing the draft rather than leaving the choice to whoever
+pastes it.
 
 #### The three templates
 
-One per category. Use the template for the row's category — the same category that chose
-Helen's draft.
-
-**There are no variants here.** Helen's Ready Now and Price Wall drafts each have two
-openings; Jordan's have one apiece.
-
-- A lead who asked about a deal Helen featured takes the plain Ready Now template below,
-  with `[their own words]` set to the deal they named — *the wellness center in Virginia*.
-  The scarcity line is Helen's opening only.
-- A lead who pushed back on the call takes the plain Price Wall template below, unchanged.
-  Helen's reply to them asks whether they want someone looped in, so Jordan's draft may sit
-  unused for longer than most — that is expected, and `tracker-followup` still owns column N
-  from there.
+One per category, word for word as Sheila wrote them on 2026-09-24. Use the template for the
+row's category, the same category that chose Helen's draft. **There are no variants**: a lead
+who asked about a specific featured deal, or who pushed back on the call, takes the plain
+template for their category.
 
 **Buy Box**
 
 ```
 Hi [First Name],
 
-Sounds like you're interested in [buy box criteria], and I'd love to hop on a call to better understand your buy box and figure out how SMB Deal Hunter can help kickstart your business buying journey.
-
-[If they didn't provide a number: What's the best number to reach you at?] I will give you a call [today/tomorrow]. Alternatively, find a time slot that works for you here [Calendly Link].
+Picking up from Helen, sounds like you're interested in [buy box criteria]. I'd love to grab 15 min to better understand your buy box and see how we can help. What's the best number for me to call? Alternatively, you can grab 15 min here on my calendar: https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter
 ```
 
 **Ready Now**
@@ -728,44 +817,50 @@ Sounds like you're interested in [buy box criteria], and I'd love to hop on a ca
 ```
 Hi [First Name],
 
-Picking up from Helen, sounds like you're ready to move on [their own words], so let's not waste time. [If they provided a number: I will give you a call [today/tomorrow].] [If they didn't provide a number: Grab 15 minutes here: [Calendly Link].]
-
-I want to get sharper on where things stand and figure out the fastest next step.
+Picking up from Helen, I'd love to grab 15 min to learn more and see how we can help. What's the best number for me to call? Alternatively, you can grab 15 min here on my calendar: https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter
 ```
-
-Ready Now is the one category that **doesn't ask for a number** when it's missing — it sends
-the link. That's deliberate; don't borrow the Buy Box line to "fix" it.
 
 **Price Wall**
 
 ```
 Hi [First Name],
 
-Let's grab 15 minutes so I can get a better sense of your situation and make sure SMB Deal Hunter is the right fit for what you're looking to do. [If they didn't provide a number: What's the best number to reach you at?] I can give you a call [today/tomorrow]. Alternatively, book a time with me here [Calendly link].
+Picking up from Helen, I'd love to grab 15 min to get a better sense of your situation and make sure we're the right fit for what you're looking to do. What's the best number for me to call? Alternatively, you can grab 15 min here on my calendar: https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter
 ```
+
+This template doesn't answer the pricing question. It moves the conversation to a call.
+
+#### When they already gave a number
+
+If the lead's initial email has a phone number in it, asking for one reads as if Jordan did
+not read their email. In that case, and only that case, replace the sentence
+
+`What's the best number for me to call?`
+
+with
+
+`I'll give you a call [today/tomorrow].`
+
+and leave the rest of the template unchanged. With no number, the template goes out exactly
+as written above.
 
 #### Placeholders
 
-- `[First Name]`, `[buy box criteria]`, `[their own words]` — filled in when the draft is
-  written, per the rules below.
-- `[Calendly Link]` — stays a literal bracketed placeholder; Jordan fills it in before
-  sending.
-- `[today/tomorrow]` — stays bracketed too, and Jordan picks one before sending. This task
-  has no way to know which day he is free.
+- `[First Name]` and `[buy box criteria]`: filled in when the draft is written, per the
+  rules below.
+- `[today/tomorrow]` (only present when they gave a number): stays bracketed, and Jordan
+  picks one before sending. This task has no way to know which day he is free. Sheila's
+  Calendly token is role `user` and cannot read Jordan's availability
+  (`event_types-list_event_types` returns Permission Denied for another user), so any day
+  chosen here would be invented.
+- **The calendar link is real, not a placeholder**: Jordan's own intro-call page,
+  `https://calendly.com/jkempster-smbdealhunter/intro-call-with-smb-deal-hunter`, supplied by
+  Sheila on 2026-09-24. Copy it exactly. Never use the old setter's link
+  (`https://calendly.com/yobani-smbdealhunter`).
 
-**There is no `[time slot]` placeholder any more.** The templates commit to a call today or
-tomorrow rather than proposing a window, so nothing needs slotting. This also retires the
-old reason for leaving it blank: Sheila's Calendly token is role `user` and cannot read
-Jordan's event types or availability (`event_types-list_event_types` returns Permission
-Denied for another user), so any time proposed here would have been invented. That constraint
-still applies to `[Calendly Link]` — do not substitute a real link. Jordan's scheduling page
-has not been looked up; leave the placeholder unless Sheila says otherwise, and never reuse
-the old setter's link (`https://calendly.com/yobani-smbdealhunter`).
-
-Both `[Calendly Link]` and `[today/tomorrow]` stay bracketed in column N and are filled in
-by Jordan before he sends. This draft is not posted to Slack and is not created in Gmail, so
-there is nothing here for Helen to send by accident — but leave the brackets literal so it is
-obvious to him that they need filling.
+This draft is not posted to Slack and is not created in Gmail, so there is nothing here for
+Helen to send by accident. Leave `[today/tomorrow]` literal so it is obvious to Jordan that it
+needs filling.
 
 **First name.** Resolved exactly as for Helen's draft: the name the sender signs off with,
 else the first word of their Gmail display name, else — for a bare address like
@@ -775,16 +870,11 @@ else the first word of their Gmail display name, else — for a bare address lik
 gender from their name; where a third-person reference is unavoidable, use they/them unless
 the sender's own signature makes it explicit.
 
-**`[buy box criteria]`** (Buy Box) — the concrete thing they asked for, in their own words,
-phrased to follow "interested in": `hotels in California`, `deals in Central FL`, `absentee
+**`[buy box criteria]`** (Buy Box) is what they asked for, in their own words, phrased to
+follow "interested in": `hotels in California`, `businesses in Central FL`, `absentee
 businesses`. Note this reads differently from Helen's `[their ask]`, which is a gerund
-("finding deals in Central FL"); do not paste one into the other. If the ask is too vague to
-name in a few words, write `what we've got` rather than inflating it into a specific.
-
-**`[their own words]`** (Ready Now) — a short quote or close paraphrase of their stated
-readiness, from the email or the message summary: `buying a business`, `the Bethlehem PA
-deal`, `the 50% seller financing terms`. Never invent a deal, a location or a number they
-did not mention.
+("finding deals in Central FL"); do not paste one into the other. **Never inflate a vague ask
+into a specific one.** If the ask is too vague to name in a few words, write `what we've got`.
 
 #### What day 1 never does
 
@@ -794,9 +884,9 @@ in this same file, and importing it here would put a commercial commitment in a 
 is supposed to be an invitation. If a lead asked a direct pricing question, Helen's reply
 answers it and the call handles the rest.
 
-**Nothing else goes in.** A finished draft is the template plus the substitutions above, with
-every `[If they …]` branch resolved. If it says something the template does not, take that
-back out.
+**Nothing else goes in.** A finished draft is the template plus the substitutions above, and
+the phone-number swap where it applies. If it says something the template does not, take
+that back out.
 
 
 ### On borderline mail
@@ -821,7 +911,7 @@ the strength of that phrasing.
 ## STEP 3 — Create Helen's reply as a Gmail draft
 
 Every draft written in STEP 2 is also created as a **real Gmail draft in Helen's mailbox**,
-sitting on the lead's own thread with Jordan cc'd. Helen opens the thread, finds the reply
+sitting on the lead's own thread with the person in column D cc'd. Helen opens the thread, finds the reply
 already written in the box, edits it if she wants, and hits send. **She never pastes
 anything** — which is why the drafts no longer go in a Slack thread (STEP 4).
 
@@ -831,17 +921,18 @@ before the tracker write so column L records text that is known to exist in Gmai
 ### Which messages get a draft
 
 Exactly the ones that got a draft in STEP 2, and nothing else. The cc follows the same rule
-stated there — every lead draft cc's Jordan except the two that say they do not:
+stated there — every lead draft cc's the person in column D, except the two that cc nobody:
 
-| | Gmail draft | Cc Jordan |
+| | Gmail draft | Cc |
 |---|---|---|
-| Tier 1, Recommended Action `Send to Jordan` | Yes | **Yes** |
-| Tier 1, Price Wall **call-pushback** variant | Yes | **No** — it asks the lead's permission to loop someone in |
-| 🎁 Bonus claim | Yes | **No** — nothing to do with him |
-| Tier 1, Recommended Action `Ignore` | No | — |
+| Tier 1, Recommended Action `Send to Jordan` | Yes | **`jkempster@smbdealhunter.xyz`** |
+| Tier 1, Recommended Action `Forward to <First Last> (<email>)` | Yes | **the `<email>` in column D**: Scott for a client, the previous closer/setter otherwise |
+| Tier 1, Price Wall **call-pushback** variant (on a `Send to Jordan` row) | Yes | **None** — it asks the lead's permission to loop someone in |
+| 🎁 Bonus claim | Yes | **None** — nothing to do with a setter |
 | 🟢 Tracking Handover Progress | No | — |
+| Dropped lead (STEP 2 drop rules) | No | — |
 
-A draft in Gmail for an `Ignore` lead is worse than no draft: it puts a ready-to-send reply
+A draft in Gmail for a dropped lead is worse than no draft: it puts a ready-to-send reply
 in front of Helen for someone the routine decided not to pursue. The gate here is the same
 gate as column L — if STEP 2 wrote no draft, create none.
 
@@ -871,8 +962,8 @@ GMAIL_CREATE_EMAIL_DRAFT
   account:          gmail_kath-tiou
   thread_id:        <the lead's threadId>
   recipient_email:  <the lead's own email address>
-  cc:               ["jkempster@smbdealhunter.xyz"]     # omit entirely for the two no-cc rows above
-  body:             <the STEP 2 draft, verbatim>
+  cc:               ["<the address from column D>"]     # omit entirely for the two no-cc rows above
+  body:             <the STEP 2 draft, verbatim, then three blank lines>
   is_html:          false
   subject:          (omit — see below)
 ```
@@ -887,14 +978,19 @@ of the thread. Several of these threads are replies to a newsletter blast; **thi
 to the person, not a reply-all to everyone the blast touched.** No `extra_recipients`, ever,
 and no `bcc`.
 
-**`cc` is Jordan, and only Jordan** — `jkempster@smbdealhunter.xyz`. For the two no-cc cases,
-omit the field rather than passing an empty list with a placeholder in it.
+**`cc` is one person, and only that person**: `jkempster@smbdealhunter.xyz` on a `Send to
+Jordan` row, or the address inside the parentheses of a `Forward to …` row
+(`scott@smbdealhunter.xyz` for a client). For the two no-cc cases, omit the field rather than
+passing an empty list with a placeholder in it.
 
-**`body` is the STEP 2 draft, character for character**, with `is_html: false` so the plain
-text is converted to line breaks for you. Do not add a greeting, a signature, a subject line
-or a sign-off that the template does not have — Helen is replying inside a thread she is
-already part of, and the template is the whole message. The same text goes in tracker column
-L in STEP 5, and the two must match.
+**`body` is the STEP 2 draft, character for character, followed by three blank lines** (the
+draft text, then `\n\n\n\n`), with `is_html: false` so the plain text is converted to line
+breaks for you. The blank lines are Sheila's ask from 2026-09-24: they leave space under the
+message so Helen does not have to add it by hand before she hits send. Add nothing else — no
+greeting, signature, subject line or sign-off that the template does not have. Helen is
+replying inside a thread she is already part of, and the template is the whole message. The
+same draft text goes in tracker column L in STEP 5 **without** the trailing blank lines;
+apart from those, the two must match.
 
 The call returns both a draft id and a nested message id. **Keep the draft id** — it is what
 `GMAIL_GET_DRAFT` takes, and the message id will not work there.
@@ -909,10 +1005,14 @@ the draft id from the create call) and confirm four things:
 
 1. It is **on the lead's thread** — the draft's `threadId` matches the one you passed.
 2. The **To** is the lead's address, and nobody else is on the To line.
-3. The **Cc** is exactly `jkempster@smbdealhunter.xyz` — or, for the call-pushback and bonus
-   drafts, that there is **no Cc at all**. A bonus claim or a pushback reply that goes out
-   with Jordan on it is a wrong send, not a cosmetic slip.
-4. The **body** matches the STEP 2 draft.
+3. The **Cc** is exactly the address from column D (`jkempster@smbdealhunter.xyz` on a
+   `Send to Jordan` row) — or, for the call-pushback and bonus drafts, that there is **no Cc
+   at all**. A bonus claim or a pushback reply that goes out with Jordan on it, or a client's
+   reply cc'ing Jordan instead of Scott, is a wrong send, not a cosmetic slip.
+4. The **body** matches the STEP 2 draft, contains no `—` or `–`, and ends with the blank
+   lines. If Gmail has trimmed the trailing blank lines but the text is otherwise right, the
+   draft still counts as created: note it in the run report rather than failing the lead or
+   creating a second draft.
 
 A draft that fails verification is reported as a failure (below). Do not quietly fix it by
 creating a second one.
@@ -952,11 +1052,14 @@ tracker write, or the drafts that did land.
 
 Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
 
-- **Header:** date + total count of leads found (the post-drop count, not raw inbox volume)
+- **Header:** date + total count of leads found (the post-drop count, not raw inbox volume).
+  Leads removed by the STEP 2 drop rules are not counted and get no bullet anywhere in the
+  digest; they are listed in the run report only.
 - **🔴 Tier 1** — bold header, categories as sub-bullets in this exact format:
   `*Category* — Sender: "subject line" — snippet`
   with the subject line as the Gmail thread link. Do NOT include the recommended-action
-  field in the visible digest text, even when it's set internally.
+  field in the visible digest text, even when it's set internally. The one exception is the
+  `↪️` marker on a `Forward to …` lead (see below), which tells Helen who to forward to.
 - **🟢 Tracking Handover Progress** — same bullet format, with owner inserted right after
   the category:
   `*Category* — Owner: Name — Sender: "subject line" — snippet`
@@ -972,7 +1075,7 @@ Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
 ### The drafts are not in this message, and not in a thread under it
 
 **Do not post the reply drafts to Slack.** As of 2026-09-11 they are waiting in Helen's
-Gmail, on each lead's own thread with Jordan already cc'd (STEP 3) — she opens the thread and
+Gmail, on each lead's own thread with the right person already cc'd (STEP 3) — she opens the thread and
 sends, so there is nothing to paste and nothing to copy out of Slack. Posting them again here
 would give her two copies to reconcile, and the one in Slack would be the stale one the
 moment she edits the real draft.
@@ -990,7 +1093,7 @@ surfaces a row once it is actually his.
 
 Under the 🔴 Tier 1 header, one line:
 
-> ✍️ _Drafts are waiting in Helen's Gmail — open the thread, review, send. Jordan is cc'd._
+> ✍️ _Drafts are waiting in Helen's Gmail. Open the thread, review, send. Jordan is cc'd unless a lead says otherwise._
 
 Then mark only the exceptions, inline on the lead's own bullet. The default case needs no
 marker; a bullet with nothing after it means a normal draft is sitting in Gmail ready to go.
@@ -999,8 +1102,8 @@ marker; a bullet with nothing after it means a normal draft is sitting in Gmail 
 |---|---|
 | **Price Wall call-pushback** draft | `⚠️ Needs your review before sending — long, specific email, and this reply deliberately answers none of it. Jordan is not cc'd; the forward follows their reply.` |
 | Draft **could not be created** (STEP 3 failure) | `⚠️ Draft not created — text is in the thread below.` |
-| Lead is an **existing client**, or has **already had a call** with the team (the existing-relationship rule in STEP 2) | `ℹ️ Already a client in Close — no draft, do not forward to Jordan.` or `ℹ️ Already had a call with the team (<date of the most recent past meeting>) — no draft, do not forward to Jordan.` Same marker on a 🟢 handover bullet. |
-| Lead's action was **Ignore** for any other reason | no bullet marker, and no draft — the digest does not show the action, and an `Ignore` lead with no draft is the intended outcome, not a gap |
+| `Forward to …` row: an **existing client** (the existing-relationship rule in STEP 2) | `↪️ Existing client, forward to Scott. Scott is cc'd, not Jordan.` Same marker on a 🟢 handover bullet, minus the cc sentence. |
+| `Forward to …` row: has **had or booked a call** with someone still on the team | `↪️ Had a call with <First name> on <date of the most recent meeting>, forward to <First name>. <First name> is cc'd, not Jordan.` (for an upcoming call: `Has a call booked with <First name> on <date>, …`). Same on a 🟢 handover bullet, minus the cc sentence. |
 
 The 🎁 section takes its own one-liner in the header rather than per-bullet markers: say the
 reply is drafted in Gmail, that it is the same text the automation would have sent, and that
@@ -1058,15 +1161,17 @@ writes it). The headers that named Yobani now say **Setter**. Columns A–W:
 
 `Date | Tier | Category | Recommended Action | Forwarded to Setter? | Owner | Last Check-in Date | Next Check-in Date | Email Sender | Email Title / Link | Message Summary | Suggested Helen Email Draft | Helen Forward Date | Suggested Setter 1st Response | Setter 1st Response Done? | Setter 3-day follow-up date | Setter 3-day follow-up done? | Setter 5-day follow-up date | Setter 5-day follow-up done? | Setter Call Date | Setter Progress | Closer Call Date | Closer Progress`
 
-In this file "the setter" is Jordan.
+In this file "the setter" is Jordan. On a `Forward to …` row, read "Setter" in E as "the
+person in column D"; the other Setter columns (N–U) stay empty on those rows, because nobody
+is chasing a first call.
 
 **Column E — "Forwarded to Setter?"** answers whether **Helen** has handed this lead to
-Jordan: `No` on Tier 1 rows, `Yes` on Tracking Handover Progress rows. Column F keys off
+the person in column D: `No` on Tier 1 rows, `Yes` on Tracking Handover Progress rows. Column F keys off
 `E="No"`. Do not confuse it with **O**, which asks whether *Jordan* replied. E is Helen's
 action; O is Jordan's.
 
 **Column L — "Suggested Helen Email Draft"** is Helen's draft, byte-identical to the Gmail
-draft from STEP 3.
+draft from STEP 3 apart from the Gmail draft's trailing blank lines.
 
 **Column N — "Suggested Setter 1st Response" — is written by this task too.** On a row this
 task creates, N arrives populated. `tracker-followup` still owns N on every later pass — it
@@ -1101,9 +1206,12 @@ not "fix" them when they are blank on a new row — they are meant to be.
 **Columns F, H, P and R are formula-driven. Never write literal values to them.** For a row
 `<n>`:
 
-- **F (Owner):** `=if(E<n>="No","Helen","Jordan")` — rows where Forwarded to Setter? is
-  "No" read Helen; handed-over rows read Jordan. **This tab does not use the
-  `Responsibility` lookup.** That tab still maps Buy Box, Ready Now and Price Wall to
+- **F (Owner):** `=if(E<n>="No","Helen",if(left(D<n>,11)="Forward to ",regexextract(D<n>,"^Forward to (\S+)"),"Jordan"))`
+  — rows where Forwarded to Setter? is "No" read Helen; handed-over rows read the first name
+  from a `Forward to …` action (Scott, Jabali, Jordan…), and Jordan on a `Send to Jordan`
+  row. Rows written before 2026-09-24 still hold the older `=if(E<n>="No","Helen","Jordan")`;
+  leave those as they are, they only ever carried `Send to Jordan` or `Ignore`.
+  **This tab does not use the `Responsibility` lookup.** That tab still maps Buy Box, Ready Now and Price Wall to
   *Yobani*, and it is left that way so the old tab keeps reading correctly as history. The
   old tab's `xlookup(C<n>,Responsibility!…)` formula would show Yobani as the owner of
   Jordan's leads — never copy it here, and never edit `Responsibility` to "fix" it.
@@ -1149,7 +1257,7 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
    Use `valueInputOption: "USER_ENTERED"` so dates coerce and `=HYPERLINK(...)` renders.
 5. **Fill down F, H, P and R** by writing the four formulas into the new rows with their row
    references set to that row — for a new row `<n>`:
-   - F: `=if(E<n>="No","Helen","Jordan")`
+   - F: `=if(E<n>="No","Helen",if(left(D<n>,11)="Forward to ",regexextract(D<n>,"^Forward to (\S+)"),"Jordan"))`
    - H: `=G<n>+1`
    - P: `=M<n>+3`
    - R: `=M<n>+5`
@@ -1157,9 +1265,11 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
    Never invent a different formula. P and R go in as formulas even though M is empty —
    they are meant to sit dormant until the forward date arrives.
 6. **Verify.** Re-read `'Tracker (JordanK)'!A:W` and confirm: row count increased by exactly
-   the number of rows you wrote, F reads Helen or Jordan (never Yobani, never `#N/A`), H is
-   populated, P and R hold their formulas, L and N landed on exactly the "Send to Jordan"
-   rows and are empty on the others, M/O/Q/S and T–W are empty on every new row, and no row
+   the number of rows you wrote, F reads Helen, Jordan, or the first name from column D
+   (never `#N/A` or `#VALUE!`), H is populated, P and R hold their formulas, L landed on
+   every Tier 1 row and N on exactly the "Send to Jordan" Tier 1 rows, both are empty on the
+   handover rows, N is empty on `Forward to …` rows, no L or N contains `—` or `–`, no row
+   says `Ignore`, M/O/Q/S and T–W are empty on every new row, and no row
    was duplicated. If verification fails, say so explicitly in Slack — do not report
    success.
 
@@ -1169,14 +1279,13 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
 - **Tier** — `1` for Tier 1 rows, `In Progress` for Tracking Handover Progress rows. These
   are the only two values this routine writes.
 - **Category** — `Buy Box`, `Ready Now`, or `Price Wall`. No other value.
-- **Recommended Action** — `Send to Jordan` or `Ignore`, decided in STEP 2. Not a fixed
-  lookup from the category: read the actual email. "Ignore" covers a lead who has
-  disqualified themselves, a lead who is already a paying client or has already had a call
-  with the team, *and* a lead whose booked call you verified in Close — the
-  existing-relationship and call-booked rules in STEP 2 govern, including their requirement
-  to match Close leads by email address rather than name. Handover ("In Progress") rows get
-  this column too: "Send to Jordan" by default, "Ignore" when the existing-relationship rule
-  applies.
+- **Recommended Action** — `Send to Jordan` or `Forward to <First Last> (<email>)`, decided
+  in STEP 2. Not a fixed lookup from the category: the existing-relationship rule in STEP 2
+  governs, including its requirement to match Close leads by email address rather than name.
+  `Forward to Scott Moorhouse (scott@smbdealhunter.xyz)` for an existing client; `Forward to
+  <the previous host>` for a lead who has had or booked a call with someone still on the
+  team. Handover ("In Progress") rows get this column too, by the same rule. **Never
+  `Ignore`**: a lead that would once have been Ignore is dropped in STEP 2 and has no row.
 - **Forwarded to Setter? (E)** — "Yes" for Tracking Handover Progress ("In Progress") rows,
   "No" for Tier 1 rows. It answers whether **Helen** forwarded — not whether Jordan replied, which
   is column O.
@@ -1190,19 +1299,19 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
 - **Message Summary** — same quoted snippet used in the Slack digest
 - **Suggested Helen Email Draft (L)** — the draft from STEP 2, byte-identical to the Gmail
   draft created for that lead in STEP 3. Write it as plain text with real line breaks, not a
-  formula and not wrapped in quotes. Leave the cell **empty** for "Ignore" rows and for Tracking
-  Handover Progress rows.
+  formula and not wrapped in quotes, and without the trailing blank lines the Gmail draft
+  carries. Filled on every Tier 1 row (`Send to Jordan` and `Forward to …` alike); leave
+  the cell **empty** for Tracking Handover Progress rows.
 - **Helen Forward Date (M)** — **leave empty.** Owned by `tracker-followup`, which writes
   the date Helen actually forwarded the lead once it has confirmed the forward. The
   follow-up cadence in O–R keys off this cell, so a guessed or optimistic date here starts
   a chase clock for a handover that never happened.
-- **Suggested Setter 1st Response (N)** — the Jordan draft from STEP 2, with
-  `[Calendly Link]` and `[today/tomorrow]` still as
-  literal placeholders and every `[If they …]` branch already resolved. Same format rule as
-  L: plain text with real line breaks, no formula, no surrounding quotes. Same gate as L too
-  — **empty** for "Ignore" rows and for Tracking Handover Progress rows. A row gets both
-  drafts or neither; L populated with N blank on a "Send to Jordan" row is a bug worth
-  reporting in Slack. N is not posted to Slack and not drafted in Gmail — this column is
+- **Suggested Setter 1st Response (N)** — the Jordan draft from STEP 2, with Jordan's real
+  calendar link in it and, where the lead gave a number, `[today/tomorrow]` still as a
+  literal placeholder. Same format rule as L: plain text with real line breaks, no formula,
+  no surrounding quotes. **Only on `Send to Jordan` Tier 1 rows**: empty on `Forward to …`
+  rows and on Tracking Handover Progress rows. A `Send to Jordan` row gets both drafts; L
+  populated with N blank on one is a bug worth reporting in Slack. N is not posted to Slack and not drafted in Gmail — this column is
   where Jordan reads it. This is the *first* of three touches; the 3-day and 5-day follow-ups
   are tracked as dates and status only, and **no draft is written for them** — there is no
   column for one and this task does not generate one.
