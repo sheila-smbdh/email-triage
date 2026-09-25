@@ -62,10 +62,18 @@ Identical to `helen-email-digest`. All email and tracker access goes through the
 | Purpose | Composio toolkit | Account id | Mailbox |
 |---|---|---|---|
 | Read Helen's mail | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
+| Read Jordan's mail (STEP 3A) | `gmail` | `gmail_dah-ceyx` | `jkempster@smbdealhunter.xyz` |
 | Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
 
-**Account selection is required on every Gmail call** — two mailboxes are connected and
-the default is a flippable setting. Pin `gmail_kath-tiou` explicitly every time.
+**Account selection is required on every Gmail call.** Four mailboxes are connected
+(Helen's, Jordan's, Sheila's `gmail_uncast-hoop`, and the former setter Yobani's
+`gmail_nickle-quaver`), and the default is a flippable setting. As of 2026-09-25 the
+default is **Jordan's**, so an unpinned call meant for Helen silently reads the wrong
+mailbox. Pin `gmail_kath-tiou` on every Helen call and `gmail_dah-ceyx` on every Jordan
+call. Jordan's mailbox is **read-only** to this task, like Helen's.
+
+If Jordan's connection is not ACTIVE, the pass still runs: only STEP 3A loses its main
+source, and STEP 3A says what to do.
 
 Close CRM is read through the **first-party Close connector** (`mcp__Close__*`),
 read-only.
@@ -378,8 +386,9 @@ Slack.
 
 For every `Send to Jordan` row now at `In Progress` (forwarded this pass or earlier), record
 the handover date and whether each of Jordan's three touches happened. `Forward to …` rows
-never reach this step. Everything here comes from data you already have: the Jordan result
-set from STEP 2 and the Close activities from STEP 3. No new queries.
+never reach this step. M comes from the Jordan result set in STEP 2. The touches come from
+**Jordan's own mailbox** (one query, below), backed up by that result set and the Close
+activities from STEP 3.
 
 ### M — backfill it if it is empty
 
@@ -392,17 +401,30 @@ the row: without M there is no cadence to measure against.
 ### Jordan's touches
 
 A **touch** is a message **from Jordan** (`jkempster@smbdealhunter.xyz`) **to the lead**,
-dated on or after M. Collect them from two sources and merge them:
+dated on or after M. Collect them from three sources and merge them:
 
-- **Gmail** — Jordan result set messages that are `from:` Jordan and are either in the row's
-  thread or addressed to the lead's email address. Jordan replies keeping Helen on the thread,
-  so these land in her mailbox.
-- **Close** — outgoing `activity.email` from Jordan to the lead's address. This catches a
-  reply that left Helen off.
+- **Jordan's mailbox (main source)** — one `GMAIL_FETCH_EMAILS` on `gmail_dah-ceyx` covering
+  every STEP 3A row's lead address (from STEP 3), both directions, so it also shows the
+  lead's replies:
 
-The same message found in both counts once (match on date and subject). Sort the touches by
-date. A message to Helen or anyone else, or a forward between staff, is not a touch.
-Never count a message by display name alone.
+  ```
+  query: {to:<lead1> cc:<lead1> from:<lead1> to:<lead2> cc:<lead2> from:<lead2> …} after:<YYYY/MM/DD>
+  max_results: 100
+  verbose: false
+  ```
+
+  Set `after:` a day before the earliest M among those rows, and page through
+  `nextPageToken` as in STEP 2. Messages in this set sent by Jordan to a lead's address are
+  that lead's touches; this sees his email whether or not Helen was on it. If the address
+  list makes the query unwieldy, split it into a few queries of about 15 leads each.
+- **Helen's mailbox** — Jordan result set messages from STEP 2 that are `from:` Jordan and are
+  either in the row's thread or addressed to the lead. Normally a subset of the above; it
+  matters when Jordan's connection is down.
+- **Close** — outgoing `activity.email` from Jordan to the lead's address.
+
+The same message found in more than one place counts once (match on date and subject). Sort
+the touches by date. A message to Helen or anyone else, or a forward between staff, is not a
+touch. Never count a message by display name alone.
 
 **Connected** means the lead has a setter call on the board (upcoming or held, not
 `Canceled:`, per STEP 3), or has replied to Jordan: a message from the lead's address dated
@@ -427,10 +449,15 @@ after Jordan's first touch.
 - **On a failed Close lookup**, you cannot see Close emails or whether the lead is
   connected. Write `Yes` where Gmail alone shows the touch; otherwise leave O, Q and S
   exactly as found, and say in Slack that the chase check was partial.
-- **Jordan can be missed.** A reply that neither cc'd Helen nor synced to Close is
-  invisible to this task, so a `No` means "no touch found", not proof. When O, Q or S is
-  `No`, say in column U what was checked (`No reply from Jordan found in Helen's mailbox or
-  Close`) so a reader can tell.
+- **If Jordan's mailbox could not be read** (connection not ACTIVE, or the query errored),
+  treat it like a failed Close lookup: write `Yes` where Helen's mailbox or Close shows the
+  touch, otherwise leave O, Q and S exactly as found, and say in Slack that the chase check
+  ran without Jordan's mailbox. Never write `No` from the fallback sources alone; missing
+  Jordan's own sent mail is exactly how a real reply gets marked as not sent.
+- **What `No` means.** With Jordan's mailbox read, `No` means nothing from Jordan to that
+  address exists in his mail, Helen's, or Close. The one thing still invisible is contact
+  outside email (a call or text). Where O, Q or S is `No`, say in column U what was checked
+  (`No email from Jordan to <address> in his mailbox, Helen's or Close`).
 
 ---
 
@@ -773,7 +800,7 @@ pass that only partly completed.
 
 ## Scope limits
 
-Read email, read Close, write the tracker, post to Slack. Nothing else. Specifically: do
+Read email (Helen's and Jordan's mailboxes), read Close, write the tracker, post to Slack. Nothing else. Specifically: do
 **not** reply to, forward, label, archive or delete any email — including the forward to
 Jordan that Step 2 is checking for. If Helen has not forwarded a lead, this task says so;
 it does not do it for her. Do not create, update or delete anything in Close.

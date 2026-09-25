@@ -134,15 +134,16 @@ F, G, M, O, Q, S and T–W from its checks (N stays as before). How each is deci
   STEP 2 Gmail search. It is backfilled on forwarded rows where it is empty, and never
   overwritten once set.
 - **O, Q, S** count Jordan's *touches*: messages from Jordan to the lead dated on or after
-  M, found in Helen's mailbox (he keeps her on the thread) or as outgoing emails in Close.
+  M, read mainly from **Jordan's own mailbox** (Composio `gmail_dah-ceyx`, connected by
+  2026-09-25), plus Helen's mailbox and outgoing emails in Close.
   O is `Yes` on the first touch, Q on the second, S on the third. Q and S stay **blank until
   their date in P/R arrives** (Sheila's choice), then read `Not Needed - Connected` if the
   lead has a setter call or has replied to Jordan, else `No`. `Yes` and `Not Needed -
   Connected` are never downgraded.
 - **F** is kept a formula (Sheila's choice): the pass moves it by writing E, then re-reads
   it and restores the formula on any row where it was pasted over or errors.
-- A `No` means "no touch found". A reply Jordan sent without cc'ing Helen that also never
-  synced to Close is invisible, so U says what was checked.
+- With Jordan's mailbox read, a reply that left Helen off is still seen. If his connection is
+  down, the pass only upgrades to `Yes` and never writes `No`, and says so in Slack.
 
 ### 3.1 Column M — now N — changed hands on 2026-09-11
 
@@ -358,7 +359,7 @@ removed, row 10 untouched.
 | 5 | **`H = G+5` is 5 days, not a week.** Sheila's phrasing was "so the next check-in date becomes next week"; the formula is +5 calendar days, so from a Monday check-in it lands on a Saturday. Reviewed and accepted as-is on 2026-09-10. | Accepted |
 | 6 | **Re-review of the deleted 8/29 rows: explicitly declined.** Two of the ten surviving rows were misclassified from truncated snippets, so the ~16 rows deleted on 9/10 could hold the opposite error — a real buyer dropped as Tier 3. Sheila's call on 2026-09-10 was that recovering them from version history is not worth it. Recorded so it is not mistaken for an oversight. The hydration rule prevents the same error going forward. | Closed |
 | 7 | **Loop-in detection is email-only.** If Helen hands a lead to Yobani in Slack, in Close, or verbally, this task will report it as never forwarded. | Accepted |
-| 8 | **Yobani's mailbox is not connected.** If he replies to a lead without Helen on the thread, that reply is invisible here and the row could be drafted for again. Keeping Helen on the thread (§5) is the mitigation. | Accepted |
+| 8 | ✅ **Setter mailbox now connected (2026-09-25).** Jordan's Gmail is in Composio as `gmail_dah-ceyx`, read-only to this task, so his replies are seen even without Helen on the thread (STEP 3A). It is also the Composio Gmail **default** now, which makes pinning `gmail_kath-tiou` on every Helen call more important, not less. | Closed |
 | 9 | **DST rollover on 2026-11-01.** Cron `3 12 * * *` is UTC and does not observe daylight saving, so this fires at 07:03 ET after that date until the cron is changed to `3 13 * * *`. Inherited from the digest Routine; now affects both tasks. | Sheila |
 
 ---
