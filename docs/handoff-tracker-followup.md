@@ -5,7 +5,7 @@
 | **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
-| **Last updated** | 2026-09-24 — **`Forward to <First Last> (<email>)` rows** (clients → Scott, returning leads → their previous closer/setter) are checked for a forward to *that* person and then drop out of scope, with no Jordan check and no draft. Jordan's templates were replaced with Sheila's new wording and his real Calendly link; older N drafts are replaced on the next pass. No em dashes in drafts. The digest no longer writes `Ignore` rows; old ones are still skipped. See §0 of the digest handoff. Before that: 2026-09-23 — **the pass now works only the new `Tracker (JordanK)` tab and checks for forwards to Jordan Kempster (`jkempster@smbdealhunter.xyz`) instead of Yobani.** The old tab, renamed `Tracker (Yobani)`, is frozen: its open leads are no longer chased (Sheila's call). Before that: 2026-09-22 — the **🔴 Needs Helen** section of the Slack digest now links each bullet's subject into the thread in Helen's mailbox, so she can forward to Yobani in one click (§4). Before that: 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
+| **Last updated** | 2026-09-25 — **the pass now writes M, O, Q and S** (forward date and Jordan's 1st, 3-day and 5-day touches, from Helen's mailbox and Close; Q/S blank until due) and repairs a broken F formula instead of never checking it. See §3. Before that: 2026-09-24 — **`Forward to <First Last> (<email>)` rows** (clients → Scott, returning leads → their previous closer/setter) are checked for a forward to *that* person and then drop out of scope, with no Jordan check and no draft. Jordan's templates were replaced with Sheila's new wording and his real Calendly link; older N drafts are replaced on the next pass. No em dashes in drafts. The digest no longer writes `Ignore` rows; old ones are still skipped. See §0 of the digest handoff. Before that: 2026-09-23 — **the pass now works only the new `Tracker (JordanK)` tab and checks for forwards to Jordan Kempster (`jkempster@smbdealhunter.xyz`) instead of Yobani.** The old tab, renamed `Tracker (Yobani)`, is frozen: its open leads are no longer chased (Sheila's call). Before that: 2026-09-22 — the **🔴 Needs Helen** section of the Slack digest now links each bullet's subject into the thread in Helen's mailbox, so she can forward to Yobani in one click (§4). Before that: 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
 
 ---
 
@@ -63,13 +63,13 @@ everything after L shifted right. The final state:
 | Col | Header | Written by |
 |---|---|---|
 | E | Forwarded to Yobani? | renamed from `Action Taken?`; same values, same writers |
-| M | Helen Forward Date | this task — **not yet implemented** |
+| M | Helen Forward Date | this task — written from 2026-09-25 (STEP 2, backfill in STEP 3A) |
 | N | Suggested Yobani 1st Response | **`helen-email-digest` writes it first** (2026-09-11); this task keeps it current |
-| O | Yobani 1st Response Done? | this task — **not yet implemented** |
+| O | Yobani 1st Response Done? | this task — written from 2026-09-25 (STEP 3A) |
 | P | Yobani 3-day follow-up date | formula `=M+3` — nobody writes it |
-| Q | Yobani 3-day follow-up done? | this task — **not yet implemented** |
+| Q | Yobani 3-day follow-up done? | this task — written from 2026-09-25 (STEP 3A), blank until P's date |
 | R | Yobani 5-day follow-up date | formula `=M+5` — nobody writes it |
-| S | Yobani 5-day follow-up done? | this task — **not yet implemented** |
+| S | Yobani 5-day follow-up done? | this task — written from 2026-09-25 (STEP 3A), blank until R's date |
 | T | Setter Call Date | this task |
 | U | Setter Progress | this task |
 | V | Closer Call Date | this task |
@@ -127,9 +127,23 @@ setter/closer block. Confirmed with her on 2026-09-11:
 open lead now comes due on effectively every pass rather than every fifth day, which makes
 this task's Slack nag a daily one for anything sitting un-forwarded.
 
-**None of M, P or R is written yet.** The columns are defined and the specs say who owns
-them, but Sheila asked for the docs first and the routine change separately. Until that
-lands the three sit blank, and the O/Q cadence stays dormant because it keys off M.
+**M, O, Q and S are written from 2026-09-25.** Sheila asked for the pass to fill in B, E,
+F, G, M, O, Q, S and T–W from its checks (N stays as before). How each is decided:
+
+- **M** is the date of the earliest message that loops the forward target in, from the
+  STEP 2 Gmail search. It is backfilled on forwarded rows where it is empty, and never
+  overwritten once set.
+- **O, Q, S** count Jordan's *touches*: messages from Jordan to the lead dated on or after
+  M, read mainly from **Jordan's own mailbox** (Composio `gmail_dah-ceyx`, connected by
+  2026-09-25), plus Helen's mailbox and outgoing emails in Close.
+  O is `Yes` on the first touch, Q on the second, S on the third. Q and S stay **blank until
+  their date in P/R arrives** (Sheila's choice), then read `Not Needed - Connected` if the
+  lead has a setter call or has replied to Jordan, else `No`. `Yes` and `Not Needed -
+  Connected` are never downgraded.
+- **F** is kept a formula (Sheila's choice): the pass moves it by writing E, then re-reads
+  it and restores the formula on any row where it was pasted over or errors.
+- With Jordan's mailbox read, a reply that left Helen off is still seen. If his connection is
+  down, the pass only upgrades to `Yes` and never writes `No`, and says so in Slack.
 
 ### 3.1 Column M — now N — changed hands on 2026-09-11
 
@@ -345,7 +359,7 @@ removed, row 10 untouched.
 | 5 | **`H = G+5` is 5 days, not a week.** Sheila's phrasing was "so the next check-in date becomes next week"; the formula is +5 calendar days, so from a Monday check-in it lands on a Saturday. Reviewed and accepted as-is on 2026-09-10. | Accepted |
 | 6 | **Re-review of the deleted 8/29 rows: explicitly declined.** Two of the ten surviving rows were misclassified from truncated snippets, so the ~16 rows deleted on 9/10 could hold the opposite error — a real buyer dropped as Tier 3. Sheila's call on 2026-09-10 was that recovering them from version history is not worth it. Recorded so it is not mistaken for an oversight. The hydration rule prevents the same error going forward. | Closed |
 | 7 | **Loop-in detection is email-only.** If Helen hands a lead to Yobani in Slack, in Close, or verbally, this task will report it as never forwarded. | Accepted |
-| 8 | **Yobani's mailbox is not connected.** If he replies to a lead without Helen on the thread, that reply is invisible here and the row could be drafted for again. Keeping Helen on the thread (§5) is the mitigation. | Accepted |
+| 8 | ✅ **Setter mailbox now connected (2026-09-25).** Jordan's Gmail is in Composio as `gmail_dah-ceyx`, read-only to this task, so his replies are seen even without Helen on the thread (STEP 3A). It is also the Composio Gmail **default** now, which makes pinning `gmail_kath-tiou` on every Helen call more important, not less. | Closed |
 | 9 | **DST rollover on 2026-11-01.** Cron `3 12 * * *` is UTC and does not observe daylight saving, so this fires at 07:03 ET after that date until the cron is changed to `3 13 * * *`. Inherited from the digest Routine; now affects both tasks. | Sheila |
 
 ---

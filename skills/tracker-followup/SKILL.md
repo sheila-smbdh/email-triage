@@ -1,6 +1,6 @@
 ---
 name: tracker-followup
-description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs (to Jordan, Scott, or a lead's previous closer/setter), check Jordan's booking progress in Close, and keep column N's Jordan draft current: write it where the digest did not, and never delete one
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs (to Jordan, Scott, or a lead's previous closer/setter), check Jordan's booking progress in Close, record the forward date and Jordan's 1st/3-day/5-day touches (M, O, Q, S), and keep column N's Jordan draft current: write it where the digest did not, and never delete one
 ---
 
 You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
@@ -62,10 +62,18 @@ Identical to `helen-email-digest`. All email and tracker access goes through the
 | Purpose | Composio toolkit | Account id | Mailbox |
 |---|---|---|---|
 | Read Helen's mail | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
+| Read Jordan's mail (STEP 3A) | `gmail` | `gmail_dah-ceyx` | `jkempster@smbdealhunter.xyz` |
 | Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
 
-**Account selection is required on every Gmail call** — two mailboxes are connected and
-the default is a flippable setting. Pin `gmail_kath-tiou` explicitly every time.
+**Account selection is required on every Gmail call.** Four mailboxes are connected
+(Helen's, Jordan's, Sheila's `gmail_uncast-hoop`, and the former setter Yobani's
+`gmail_nickle-quaver`), and the default is a flippable setting. As of 2026-09-25 the
+default is **Jordan's**, so an unpinned call meant for Helen silently reads the wrong
+mailbox. Pin `gmail_kath-tiou` on every Helen call and `gmail_dah-ceyx` on every Jordan
+call. Jordan's mailbox is **read-only** to this task, like Helen's.
+
+If Jordan's connection is not ACTIVE, the pass still runs: only STEP 3A loses its main
+source, and STEP 3A says what to do.
 
 Close CRM is read through the **first-party Close connector** (`mcp__Close__*`),
 read-only.
@@ -133,13 +141,13 @@ Jordan's.
 **M–S track the handover and the chase; T–W track the two stages of a lead's journey.**
 
 - **M (Helen Forward Date)** is the date Helen *actually* forwarded the lead to Jordan,
-  verified from the thread — not the date the handover was recommended. It is **this task's
-  to write**, on the pass where STEP 2 confirms the forward — but that write is **not yet
-  implemented** (see *Columns defined but not yet written* in STEP 6). Empty means the
-  forward has not been confirmed yet, and the whole chase cadence below stays dormant.
+  verified from the thread — not the date the handover was recommended. **This task writes
+  it** on the pass where STEP 2 confirms the forward, and backfills it on any forwarded row
+  where it is still empty (STEP 3A). Empty means the forward has not been confirmed yet, and
+  the whole chase cadence below stays dormant.
 - **O (Setter 1st Response Done?)** is `Yes` once Jordan has **actually sent a reply to the
   prospect**, `No` until then. Those two values only — it does **not** take
-  `Not Needed - Connected`. This task's to write, **not yet implemented**.
+  `Not Needed - Connected`. **This task writes it** (STEP 3A).
   **O is not a copy of E.** Helen can forward a lead (E = `Yes`) and Jordan not get to it
   for days (O = `No`); that gap is the whole reason the column exists. Never derive O from
   E. (On the old `Tracker (Yobani)` tab, O matched E on every row only because of a one-off
@@ -148,9 +156,10 @@ Jordan's.
   follow-ups come due (the column header still says "3-day"; P moved from `=M+3` to `=M+2`
   on 2026-09-24). They read `2` and `5` while M is empty — arithmetic on a blank cell,
   not a literal to clean up. **Never write a literal date to P or R.**
-- **Q and S** are the matching `done?` flags, also this task's to write and also **not yet
-  implemented**. Allowed values, exactly: `Yes`, `No`, and `Not Needed - Connected` (the
-  lead is already connected, so the touch is moot). No other text, no free-form notes.
+- **Q and S** are the matching `done?` flags, also this task's to write (STEP 3A). Allowed
+  values, exactly: `Yes`, `No`, and `Not Needed - Connected` (the lead is already connected,
+  so the touch is moot). No other text, no free-form notes. Each stays **blank until its
+  date in P or R arrives**.
 - **N is the *first* of three touches.** There is no column for a 2nd or 3rd draft, and
   this task does not write one — O–S carry dates and status only.
 - **T/U are the setter stage** — the short intro call that gets a lead onto the board,
@@ -223,7 +232,12 @@ window covers every lead in play, and page through `nextPageToken` until it is a
 empty-string.
 
 That returns every message in Helen's mailbox that involves that person, each with its
-`threadId`, `subject` and `preview.body`.
+`threadId`, `subject`, `messageTimestamp` and `preview.body`.
+
+**Run the Jordan query once per pass, over every due row — not just the Tier 1 ones.** STEP 3A
+reads the same result set to see what Jordan has sent on the `In Progress` rows, so set its
+`after:` from the oldest due row of either kind. One query answers both questions; do not run
+it twice.
 
 **Only the person in column D counts.** Match each due row only against the results for its
 own forward target. A `Send to Jordan` row forwarded to someone else (the old setter,
@@ -253,9 +267,12 @@ display name alone** — several leads in this sheet share first names.
 - **B** → `In Progress` (literal text)
 - **E** → `Yes`
 - **G** → today
-- **M** (`Helen Forward Date`) → the date of the forward you just confirmed. **Not yet
-  implemented** — see *Columns defined but not yet written* below. Until that lands, M
-  stays empty here and the O/Q cadence stays dormant.
+- **M** (`Helen Forward Date`) → the date of the forward you just confirmed: the
+  `messageTimestamp` of the **earliest** matching message (the first message in the row's
+  thread that involves the forward target, or the `Fwd:` message), taken as a calendar date
+  the same way you compute today. Write it as a date (`YYYY-MM-DD`, which `USER_ENTERED`
+  coerces), never as text. Writing M is what turns P and R into real dates. If M already
+  holds a date, leave it: the first forward is the one that counts.
 
 On a `Send to Jordan` row, then **immediately run STEP 3 for this row in the same pass.**
 Column F is a formula keyed off E, so setting E to `Yes` flips the owner to Jordan the
@@ -264,12 +281,13 @@ wait a week for the next cycle.
 
 On a `Forward to …` row, **stop there.** F flips the owner to that person's first name, and
 the row is done; it drops out of scope from the next pass (STEP 1, rule 3). No STEP 3, no
-draft.
+STEP 3A, no draft. M is still written (it records when Helen handed the lead over), but O,
+Q and S stay blank: they track Jordan's chase, and Jordan is not on this lead.
 
 **Not forwarded** → nothing has happened. Write:
 
 - **G** → today (the check ran, so the clock resets)
-- B, E, M, N, T, U → unchanged
+- B, E, M, N, O, Q, S, T–W → unchanged
 
 and flag it to Helen in Slack (STEP 5), naming who it should go to. This is the output that matters: a Tier 1 lead
 still owned by Helen days after it arrived is a lead going cold because the handoff never
@@ -308,9 +326,10 @@ column U (`Setter Progress`), and flag it in Slack.
 
 1. `mcp__Close__lead_search` with `full_text: "<the lead's email address>"`.
 2. `mcp__Close__activity_search` with `lead_ids: ["<lead_id>"]` and
-   `activity_types: ["activity.meeting", "activity.call"]`. Batch the lead IDs into one
-   call rather than one call per lead.
-3. Read each result's `title`, `starts_at` / `activity_at`, and `note`.
+   `activity_types: ["activity.meeting", "activity.call", "activity.email"]`. Batch the lead
+   IDs into one call rather than one call per lead.
+3. Read each result's `title`, `starts_at` / `activity_at`, and `note`. The emails are for
+   STEP 3A: keep each one's direction, sender, recipients and date.
 
 ### Sort each meeting into setter or closer
 
@@ -360,6 +379,85 @@ Jordan's job is done and there is nothing further for him to draft. Resolving a 
 when the *closer* call then fell through: a cancelled discovery call needs re-booking by
 whoever owns that stage, which is not a setter intro. Record it in V/W and mention it in
 Slack.
+
+---
+
+## STEP 3A — Jordan's chase: M, O, Q, S
+
+For every `Send to Jordan` row now at `In Progress` (forwarded this pass or earlier), record
+the handover date and whether each of Jordan's three touches happened. `Forward to …` rows
+never reach this step. M comes from the Jordan result set in STEP 2. The touches come from
+**Jordan's own mailbox** (one query, below), backed up by that result set and the Close
+activities from STEP 3.
+
+### M — backfill it if it is empty
+
+If M already holds a date, leave it. If it is empty (the forward was confirmed before this
+column was written), find the forward in the Jordan result set exactly as STEP 2 does and
+write its date by the same rule. If the forward cannot be found (it fell outside the
+`after:` window, say), leave M empty, say so in column U, and do not write O, Q or S for
+the row: without M there is no cadence to measure against.
+
+### Jordan's touches
+
+A **touch** is a message **from Jordan** (`jkempster@smbdealhunter.xyz`) **to the lead**,
+dated on or after M. Collect them from three sources and merge them:
+
+- **Jordan's mailbox (main source)** — one `GMAIL_FETCH_EMAILS` on `gmail_dah-ceyx` covering
+  every STEP 3A row's lead address (from STEP 3), both directions, so it also shows the
+  lead's replies:
+
+  ```
+  query: {to:<lead1> cc:<lead1> from:<lead1> to:<lead2> cc:<lead2> from:<lead2> …} after:<YYYY/MM/DD>
+  max_results: 100
+  verbose: false
+  ```
+
+  Set `after:` a day before the earliest M among those rows, and page through
+  `nextPageToken` as in STEP 2. Messages in this set sent by Jordan to a lead's address are
+  that lead's touches; this sees his email whether or not Helen was on it. If the address
+  list makes the query unwieldy, split it into a few queries of about 15 leads each.
+- **Helen's mailbox** — Jordan result set messages from STEP 2 that are `from:` Jordan and are
+  either in the row's thread or addressed to the lead. Normally a subset of the above; it
+  matters when Jordan's connection is down.
+- **Close** — outgoing `activity.email` from Jordan to the lead's address.
+
+The same message found in more than one place counts once (match on date and subject). Sort
+the touches by date. A message to Helen or anyone else, or a forward between staff, is not a
+touch. Never count a message by display name alone.
+
+**Connected** means the lead has a setter call on the board (upcoming or held, not
+`Canceled:`, per STEP 3), or has replied to Jordan: a message from the lead's address dated
+after Jordan's first touch.
+
+### What to write
+
+| Column | When to write it | Value |
+|---|---|---|
+| **O** 1st Response Done? | once M is set | `Yes` if there is at least one touch, else `No`. **Two values only**, never `Not Needed - Connected` |
+| **Q** 3-day follow-up done? | once today ≥ the date in P | `Yes` if there is a second touch; else `Not Needed - Connected` if connected; else `No` |
+| **S** 5-day follow-up done? | once today ≥ the date in R | `Yes` if there is a third touch; else `Not Needed - Connected` if connected; else `No` |
+
+- **Before its date, Q or S stays blank.** A follow-up that is not due yet is not "not
+  done". Read P and R as the serials they compute to (the sheet does the `M+2`/`M+3`/`M+5`
+  arithmetic; do not recompute with your own offsets).
+- **Never downgrade.** `Yes` and `Not Needed - Connected` are final: once written, leave
+  them. A `No` moves to `Yes` or `Not Needed - Connected` on a later pass when the evidence
+  appears.
+- **Never derive O from E**, and never set O to `Yes` because a setter call exists. A lead
+  can book off Helen's email without Jordan ever writing; O asks whether Jordan did.
+- **On a failed Close lookup**, you cannot see Close emails or whether the lead is
+  connected. Write `Yes` where Gmail alone shows the touch; otherwise leave O, Q and S
+  exactly as found, and say in Slack that the chase check was partial.
+- **If Jordan's mailbox could not be read** (connection not ACTIVE, or the query errored),
+  treat it like a failed Close lookup: write `Yes` where Helen's mailbox or Close shows the
+  touch, otherwise leave O, Q and S exactly as found, and say in Slack that the chase check
+  ran without Jordan's mailbox. Never write `No` from the fallback sources alone; missing
+  Jordan's own sent mail is exactly how a real reply gets marked as not sent.
+- **What `No` means.** With Jordan's mailbox read, `No` means nothing from Jordan to that
+  address exists in his mail, Helen's, or Close. The one thing still invisible is contact
+  outside email (a call or text). Where O, Q or S is `No`, say in column U what was checked
+  (`No email from Jordan to <address> in his mailbox, Helen's or Close`).
 
 ---
 
@@ -590,6 +688,14 @@ way off M: writing the forward date into M is what turns `3` and `5` into real d
 Writing any of the four by hand converts a live formula to a dead literal and the row stops
 tracking.
 
+**F is updated through E, then checked.** This task is responsible for F reading the right
+owner on every row it touches, but it gets there by writing E, not by writing a name into F.
+After the write, the verify step re-reads F. If a row's F is no longer a formula (someone
+typed or pasted a name over it) or reads `#N/A`, `#VALUE!` or `#ERROR!`, **restore the
+formula** in that one cell with the 2026-09-24 form above, which gives the same answer as the
+older form on a `Send to Jordan` row. Say in Slack which rows you repaired. Never write a
+plain name into F.
+
 **F on this tab does not use the `Responsibility` lookup.** `Responsibility!A2:B9` still maps
 Buy Box, Ready Now and Price Wall to *Yobani*, and it stays that way so the old tab's owner
 column keeps reading correctly as history. The new tab names Jordan directly instead. Do not
@@ -598,61 +704,67 @@ would show Yobani as the owner of Jordan's leads.
 
 ### What to write per row
 
+The pass writes **B, E, F, G, M, N, O, Q, S, T, U, V and W**, each only as the steps above
+decide. F is the exception to "write": it is kept correct through E and repaired if broken
+(see above), never given a literal.
+
 | Column | Value |
 |---|---|
 | **B** Tier | `In Progress` — only on a row whose forward you just confirmed |
 | **E** Forwarded to Setter? | `Yes` — same rows only. Match the existing casing exactly |
+| **F** Owner | nothing written directly. It follows E; the verify step restores the formula if it is broken |
 | **G** Last Check-in Date | today, on **every** row you checked (including not-forwarded rows) |
+| **M** Helen Forward Date | the forward's date (STEP 2), or a backfill on a forwarded row where it is empty (STEP 3A). Never overwrite a date already there |
 | **N** Suggested Setter 1st Response | per STEP 4: **omit the cell from the write** when the existing draft stands; the new draft (plain text with real line breaks, not a formula, not quote-wrapped) when you wrote or replaced one. **Never an empty string** — drafts are not deleted, including on a resolved row. On a failed Close lookup, omit it: leave what is there |
+| **O** Setter 1st Response Done? | `Yes` or `No` per STEP 3A, once M is set |
+| **Q** Setter 3-day follow-up done? | `Yes`, `No` or `Not Needed - Connected` per STEP 3A, once P's date has arrived. Blank before then |
+| **S** Setter 5-day follow-up done? | same three values, once R's date has arrived. Blank before then |
 | **T** Setter Call Date | the intro call's date. Empty when there is none |
-| **U** Setter Progress | short factual context: who with, event name, any note the lead left |
+| **U** Setter Progress | short factual context: who with, event name, any note the lead left, and what the chase check found when O, Q or S is `No` |
 | **V** Closer Call Date | the discovery/closing call's date. Empty when there is none |
 | **W** Closer Progress | short factual context, including a cancellation and who it was with |
 
-Do not touch A, C, D, I, J, K or L. **Do not touch P or R** — they are formulas. Do not
-touch a row whose D is `Ignore`. On a `Forward to …` row, write only B, E and G (STEP 2),
-never N or T–W.
+Do not touch A, C, D, H, I, J, K or L. **Do not touch P or R** — they are formulas. Do not
+touch a row whose D is `Ignore`. On a `Forward to …` row, write only B, E, G and M (STEP 2),
+never N, O, Q, S or T–W.
 
-**Columns defined but not yet written.** M, O, Q and S are this task's by ownership, but
-the steps above do not populate them yet — the routine change comes separately. Until it
-lands:
-
-| Column | Owner | Written today? | Allowed values |
-|---|---|---|---|
-| **M** Helen Forward Date | this task | **no** — STEP 2 confirms the forward but does not record its date | a real date, only once the forward is verified in the thread |
-| **O** Setter 1st Response Done? | this task | **no** | `Yes`, `No` — **two values only**, no `Not Needed - Connected` |
-| **Q** Setter 3-day follow-up done? | this task | **no** | `Yes`, `No`, `Not Needed - Connected` — nothing else |
-| **S** Setter 5-day follow-up done? | this task | **no** | same three values |
-
-Leave all four exactly as found. Do not improvise a value into them, and do not treat a
-blank as a bug. In particular **never copy E into O** — they answer different questions
-(Helen forwarded vs. Jordan replied). They matched on every row of the old tab only
-because of a one-off backfill, which was never a rule.
+**Never copy E into O**, and never fill O, Q or S with a guess. They answer different
+questions (Helen forwarded vs. Jordan replied), and they matched on every row of the old tab
+only because of a one-off backfill, which was never a rule. A value in O, Q or S comes from
+the touches STEP 3A counted, or it is not written.
 
 ### How to write
 
 Use `GOOGLESHEETS_VALUES_UPDATE` with `value_input_option: "USER_ENTERED"` so dates coerce
 to real dates. Because the due rows are usually contiguous but the columns are not, write
 in per-column blocks — `'Tracker (JordanK)'!B<a>:B<b>`, `'Tracker (JordanK)'!E<a>:E<b>`,
-`'Tracker (JordanK)'!G<a>:G<b>`, `'Tracker (JordanK)'!N<a>:N<b>`,
+`'Tracker (JordanK)'!G<a>:G<b>`, `'Tracker (JordanK)'!M<a>:M<b>`,
+`'Tracker (JordanK)'!N<a>:N<b>`, `'Tracker (JordanK)'!O<a>:O<b>`,
+`'Tracker (JordanK)'!Q<a>:Q<b>`, `'Tracker (JordanK)'!S<a>:S<b>`,
 `'Tracker (JordanK)'!T<a>:W<b>` — which keeps F, H, P and R untouched by construction.
+Send them together in one `GOOGLESHEETS_UPDATE_VALUES_BATCH` (note: it takes
+`valueInputOption` in camelCase, unlike the singular tool's `value_input_option`) and check
+every entry in `data.responses[*]`.
 
-**The old `M:Q` block is now wrong and destructive.** That rectangle covers Helen Forward
-Date, the draft, the 1st-response flag and both follow-up formulas; writing it would blank M
-and O and overwrite P and R with literals. The draft moved to N and the setter/closer pair
-to T–W, and the two are no longer adjacent, so they take **two separate blocks** with M and
-O–S left out entirely.
+**Never write a rectangle that spans M to S.** `M:S` covers the date formulas in P and R;
+writing it would overwrite them with literals. M, O, Q and S each take their own
+single-column block, with P and R left out.
 
-**The N block overwrites every cell in its range, including N on rows whose draft you
-decided to keep.** A block write has no "leave this one alone". So for each row in the
-block, put in the N slot the value that should end up there: the **exact string you read in
-STEP 1** for a kept draft, or your new text for one you wrote or replaced. Round-tripping
-the value you read is what "keep unchanged" means mechanically. **No row ever gets `""`** —
-a resolved row keeps its draft like any other. If echoing a long draft back is awkward,
-write the rewritten rows individually instead — but never send a block that blanks N on a
-row you meant to leave alone. For scattered rows use
-`GOOGLESHEETS_UPDATE_VALUES_BATCH` (note: it takes `valueInputOption` in camelCase, unlike
-the singular tool's `value_input_option`) and check every entry in `data.responses[*]`.
+**Every block overwrites every cell in its range**, including rows you meant to leave alone.
+A block write has no "leave this one alone". So for each row in a block, put in the value
+that should end up there: the **exact value you read in STEP 1** for a cell you are keeping,
+or the new value for one you are changing. Round-tripping the value you read is what "keep
+unchanged" means mechanically. This matters most in three places:
+
+- **N** — a kept draft goes back byte for byte. **No row ever gets `""`**; a resolved row
+  keeps its draft like any other.
+- **M** — an existing date goes back as the same date, never blanked or moved.
+- **O, Q, S** — a `Yes` or `Not Needed - Connected` goes back as is, and a blank that is not
+  due yet goes back blank.
+
+If echoing a long draft back is awkward, write the changed rows individually as separate
+ranges in the batch instead — but never send a block that blanks a cell you meant to leave
+alone.
 
 Google Sheets rate-limits at 60 writes/minute. Batch; do not write cell by cell.
 
@@ -661,14 +773,20 @@ Google Sheets rate-limits at 60 writes/minute. Batch; do not write cell by cell.
 Re-read `'Tracker (JordanK)'!A1:W<n>` with `valueRenderOption: "FORMULA"` and confirm:
 
 - every G you wrote is today's serial, and H is still the formula `=G<n>+1`
-- every F is still the formula it held when you read it (either form above), and none reads
-  `#N/A` or `#VALUE!`
+- every F is a formula (either form above) and none reads `#N/A`, `#VALUE!` or `#ERROR!`.
+  Where one is a literal or an error, restore the formula in that cell (see *F is updated
+  through E, then checked*) and re-read it. Then confirm, with a formatted read of F, that
+  each row you moved shows the owner you expected: `Jordan` on a forwarded `Send to Jordan`
+  row, the forward target's first name on a forwarded `Forward to …` row, `Helen` otherwise
 - **P and R are still the formulas `=M<n>+2` (or `=M<n>+3` on older rows) and `=M<n>+5`** —
   a literal date in either
   means a block write ran over them
-- **M, O, Q and S are untouched** on every row
+- every M you wrote is a date serial, not text, and no M that held a date before has changed
+- **O, Q and S hold only their allowed values** (`Yes`/`No` in O; `Yes`/`No`/`Not Needed -
+  Connected` in Q and S) or blank; Q and S are blank on every row whose P or R date is still
+  in the future; no `Yes` or `Not Needed - Connected` you read in STEP 1 has changed
 - B and E changed on exactly the rows you meant, and nowhere else
-- N/T/U landed on the right rows
+- N and T–W landed on the right rows
 - **no draft cell is empty that was not empty before.** Every L and N you read in STEP 1 is
   still there, byte for byte, unless this pass deliberately rewrote it. A draft that came
   back blank means the block write clobbered it; restore it from what you read in STEP 1 and
@@ -682,7 +800,7 @@ pass that only partly completed.
 
 ## Scope limits
 
-Read email, read Close, write the tracker, post to Slack. Nothing else. Specifically: do
+Read email (Helen's and Jordan's mailboxes), read Close, write the tracker, post to Slack. Nothing else. Specifically: do
 **not** reply to, forward, label, archive or delete any email — including the forward to
 Jordan that Step 2 is checking for. If Helen has not forwarded a lead, this task says so;
 it does not do it for her. Do not create, update or delete anything in Close.

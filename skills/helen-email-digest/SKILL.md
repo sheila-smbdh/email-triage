@@ -50,12 +50,12 @@ every Gmail call**. Pin it explicitly:
 | Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
 
 Omitting `account` on a Gmail call lets it default to whichever account is marked default,
-and **that is no longer Helen's.** Three Gmail accounts are connected: Helen's, Sheila's
-(`gmail_uncast-hoop`), and — added 2026-09-11 — Yobani's (`gmail_nickle-quaver`), the former
-setter's, which is currently the default. This used to be a "never rely on it" caution; since
-STEP 3 began writing drafts it is a live hazard, because an unpinned call would create a
-reply to a lead, in Helen's words, sitting in **Yobani's** drafts. Pin `gmail_kath-tiou` on
-every call, reads and drafts alike.
+and **that is no longer Helen's.** Four Gmail accounts are connected: Helen's, Sheila's
+(`gmail_uncast-hoop`), Yobani's (`gmail_nickle-quaver`, the former setter, added 2026-09-11),
+and Jordan's (`gmail_dah-ceyx`, the current setter), which is the default as of 2026-09-25.
+This used to be a "never rely on it" caution; since STEP 3 began writing drafts it is a live
+hazard, because an unpinned call would create a reply to a lead, in Helen's words, sitting in
+**Jordan's** drafts. Pin `gmail_kath-tiou` on every call, reads and drafts alike.
 
 One lookup does **not** go through Composio: the Close check in STEP 2 (existing clients,
 past calls with the team, and booked calls) reads Close CRM through the **first-party Close
