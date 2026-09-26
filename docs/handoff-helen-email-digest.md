@@ -4,7 +4,7 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-24 — **Routing, drop filters and templates reworked; see §0.** Before that: 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
+| **Last updated** | 2026-09-26 — **New drop rule 9, a retort rather than a request** (Ryan Hogan, *"Help me finance one then"*): sarcastic or venting replies to a newsletter that ask for nothing actionable are dropped. Also 2026-09-26 — **Helen's Price Wall draft gained a third variant, for a lead asking what a business sells for** (Anjubala Jacob); see *A third Price Wall opening* below. Before that: 2026-09-24 — **Routing, drop filters and templates reworked; see §0.** Before that: 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
 
 ---
 
@@ -295,6 +295,20 @@ Asking whether a featured deal is available is also, explicitly, a buyer signal 
 in *Deal talk is not buyer intent* alongside the two leads who discussed deal terms and were
 not buying. The line is between analysing a deal and asking for one, not between mentioning
 a deal and not mentioning one.
+
+### A third Price Wall opening, for a business's sale price (2026-09-26)
+
+Anjubala Jacob's contact form (2026-09-24) read *"daycare inquiry regarding the price sale"*,
+company name `daycare`. The routine took "price" to mean SMB Deal Hunter's fees and drafted
+the plain Price Wall reply with the 1% line. Sheila: it is not a price ask. The lead wants to
+know what a daycare sells for. Helen's actual reply, now the template for this case:
+
+> Hey Anjubala, great question. Let's get you on a quick call. @Jordan on our team can find a time that works for you.
+
+The rule is **whose price**: our cost → plain template (1% line); a business's sale, asking
+or listing price, or what a business type "goes for" → this one, which quotes nothing. When
+the email does not say, and names a business or business type, it is the business's. The
+lead stays Price Wall, `Send to Jordan`, Jordan cc'd, Jordan's plain Price Wall draft in N.
 
 ### A second Price Wall opening, for leads refusing the call (2026-09-11)
 
