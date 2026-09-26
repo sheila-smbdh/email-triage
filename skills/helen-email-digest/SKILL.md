@@ -660,8 +660,23 @@ unavoidable, use they/them unless the sender's own signature makes it explicit.
 **Their ask (Buy Box).** `[their ask]` is the concrete thing they asked for, phrased as a
 gerund and in their own words: "finding deals in Central FL", "finding hotels in
 California", "finding absentee businesses". If their ask is too vague to name in three or
-four words, use "that" — *"Hey Scott, that is something we can help with."* Never inflate
-a vague ask into a specific one.
+four words, use "that" — *"Hey Scott, that's likely something we can help with."* Never
+inflate a vague ask into a specific one.
+
+**Keep it short, or it reads as copy-and-paste.** `[their ask]` is at most a few words and
+sounds like something Helen would type. When the ask is a list — several brands, several
+industries, several cities — or would need more than one proper noun to name, do not
+recite it back; use the "that" opener instead. Real case, 2026-09-26: David Pack asked about
+five closet franchises. The draft read *"Hey David, finding a California Closets, Closet
+Factory, Inspired Closets, Closets by Design, or Container Store (Elfa) franchise for sale is
+something we can help with."* Helen rewrote it to:
+
+```
+Hey David, that's likely something we can help with. @Jordan on our team can grab 15 minutes with you to better understand what you're looking for.
+```
+
+A single short, concrete ask ("finding a closet franchise", "finding hotels in California")
+still gets named.
 
 Ready Now and Price Wall take no personalisation beyond the first name. The forwarding
 template takes the lead's first name, the forward target's first name, and one of its three
