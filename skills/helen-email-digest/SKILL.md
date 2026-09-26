@@ -282,6 +282,12 @@ Drop the lead when any of these holds:
 6. **They have disqualified themselves**: declined outright, or an obvious tyre-kicker.
 7. **They do not want to buy a business**: they are asking about something else entirely,
    even when the words look like a buyer's. See *Deal talk is not buyer intent* below.
+8. **The sender is on the never-track list.** These people reply to Helen's emails all the
+   time with no intention of becoming a client. Drop **everything** from them, whatever it
+   says: no tracker row, no draft, no digest bullet, no bonus-claim bullet, no handover row.
+   Match on the sender's name (display name or sign-off), since their address may vary.
+   Sheila's call, 2026-09-26.
+   - **Hani Sammour**
 
 A drop rule **wins over everything below**, including the Close checks: a client asking
 about a Sydney business is still dropped. Where a rule needs a judgement (is this a real
