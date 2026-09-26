@@ -165,7 +165,10 @@ of them, a bonus claim, or dropped. There is no other outcome.
   phone number). For this last case, use the
   specific-deal variant of Helen's Ready Now draft — see *Which Ready Now template* below.
 - **Price Wall** — asks for pricing/cost directly without booking a call ("what does it
-  cost", "price before scheduling")
+  cost", "price before scheduling"). Also covers a lead asking what a **business** is
+  selling for (*"daycare inquiry regarding the price sale"*). That is still Price Wall, but it
+  is not a question about what SMB Deal Hunter costs, and it takes a different Helen draft;
+  see *Which Price Wall template* below
 
 ### BONUS CLAIMS (🎁) — bare "Yes" replies
 
@@ -600,6 +603,15 @@ Hey [First Name], deals like these go pretty quickly, but we can help you move f
 Hey [First Name], fair question. For our average member, the cost comes out to roughly 1% of the purchase price that is due upfront. We do have a success guarantee, which we can talk more about live. Let's get you on a quick call. @Jordan on our team can find a time that works for you.
 ```
 
+**Price Wall — asking what a business sells for** (use this one instead when the price the
+lead is asking about is a business's sale or asking price, not what SMB Deal Hunter costs;
+see *Which Price Wall template* below). Word for word Helen's own reply to Anjubala Jacob on
+2026-09-25:
+
+```
+Hey [First Name], great question. Let's get you on a quick call. @Jordan on our team can find a time that works for you.
+```
+
 **Price Wall — pushing back on the call itself** (use this one instead when the lead is
 refusing or questioning the call and asking a list of specific questions about terms; see
 *Which Price Wall template* below)
@@ -694,12 +706,17 @@ other draft, no price, no deal specific, no timeline the template does not carry
 Damian also opened with *"I'm a business owner"*. That does not move him out of Ready Now —
 classify on the ask, the same judgement as narinder Singh in STEP 2.
 
-**Which Price Wall template.** Price Wall also covers two different asks, and the answers
+**Which Price Wall template.** Price Wall covers three different asks, and the answers
 are close to opposite:
 
 - **Price came up, in passing** — *"what does it cost?"*, *"I have yet to see what the fees
   are"*. They have not objected to a call; they just want the number. → the plain **Price
   Wall** template, which gives them the 1% answer and moves to a call.
+- **They are asking what a business sells for** — the sale price, asking price or valuation
+  of a business or a type of business (*"daycare inquiry regarding the price sale"*, *"what
+  is the asking price on the laundromat?"*, *"how much do daycares go for?"*). → the **what a
+  business sells for** template, which answers nothing and moves to a call. The 1% line
+  would be answering a question they did not ask.
 - **They are pushing back on the call itself** — questioning why a call is needed before
   they can see terms, and asking a list of specific questions about price, fees, contract
   terms, refunds, or what exactly is included. → the **call-pushback** template, which does
@@ -714,6 +731,22 @@ its principal purpose is to explain standard terms or provide the price."* He is
 buyer: an experienced operator who has evaluated acquisitions before and says he is
 seriously interested. The plain Price Wall template would have answered one of his eight
 questions with the 1% line and then asked him onto the call he had just objected to.
+
+Real case, 2026-09-24. Anjubala Jacob submitted the contact form with company name
+`daycare` and the message *"daycare inquiry regarding the price sale."* The routine read
+"price" as a question about SMB Deal Hunter's fees and drafted the plain Price Wall
+template, 1% line and all. Sheila's call, 2026-09-26: it is not a price ask. The lead wants to
+know what a daycare sells for, which is a question about a deal. Helen's actual reply was
+the template above. **Sort on whose price it is**: *our* cost (fees, membership, "what do
+you charge") → the plain template; *a business's* price (sale, asking, listing, "go for",
+valuation, a business type or a listing named next to the word "price") → this one. If the
+email does not say whose price, and names a business or business type, it is the
+business's.
+
+This template quotes no price, no multiple, no range and no deal specific. Do not answer
+what the business sells for, even with a rough figure: this task does not know, and the call
+handles it. It cc's Jordan like the plain template, and the lead is still **Price Wall** and
+**Send to Jordan**, with Jordan's plain Price Wall draft in column N.
 
 **The call-pushback template deliberately answers none of the questions**, including the
 price. That is the whole point of it: the position it states is that the call comes before
@@ -734,9 +767,9 @@ The lead is still **Price Wall**, still **Send to Jordan**, and still gets a tra
 a Jordan draft in column N. Only Helen's opening move changes.
 
 **Never invent commercial terms.** The 1% figure appears in the plain Price Wall template
-and nowhere else — not even in the call-pushback variant, which is a Price Wall draft that
-deliberately withholds it. The guarantee is named, without terms, in both Price Wall
-templates. Do not quote a price, a fee, a range, a guarantee, a timeline, or a deal specific
+and nowhere else — not in the call-pushback variant, which deliberately withholds it, and
+not in the what-a-business-sells-for variant, which is answering a different question. The guarantee is named, without terms, in the plain and
+call-pushback Price Wall templates, and nowhere else. Do not quote a price, a fee, a range, a guarantee, a timeline, or a deal specific
 in any other draft, do not elaborate on the 1% beyond the sentence given, and do not state
 what the guarantee actually promises — even if the lead asked a direct question about either.
 If a lead asks something the template does not answer, send the template as-is and let the
