@@ -292,6 +292,26 @@ Drop the lead when any of these holds:
    Sheila's call, 2026-09-26.
    - **Hani Sammour**
 
+9. **A retort, not a request.** A short reply to a newsletter or campaign that vents at it
+   or dares Helen to hand them something, instead of asking for anything real: *"help me
+   finance one then"*, *"just give me one then"*, *"must be nice"*, *"you don't help, scam"*.
+   There is nothing in it about the sender (no criteria, no budget, no phone number, no
+   question about a deal or about how SMB Deal Hunter works), and the tone is sarcastic or
+   bitter. Helen does not answer these. Sheila's call, 2026-09-26. Real case: Ryan Hogan,
+   replying to the 9/24 New Deals newsletter with *"Help me finance one then"* → drop. His
+   9/26 reply to the Plumbing newsletter, *"Yes but you don't help scam nofo"*, is the same
+   kind of email → drop.
+   - **The word "finance" does not make it a Buy Box lead.** A lead who asks a real
+     financing question (*"can you help with SBA financing? I have $150K down"*, *"do you
+     work with buyers who need seller financing?"*) stays in. The retort has no question in
+     it, only a demand.
+   - **It is not a bonus claim either.** *"Yes but you don't help scam"* starts with "Yes",
+     but the bonus rule is for bare "Yes" replies (see *BONUS CLAIMS*). A "Yes" followed by a
+     complaint is a retort.
+   - **Short is not the test.** *"Interested, call me"* and *"is this still available?"* are
+     short and real. Drop only when the email is hostile or a dare **and** asks for nothing
+     the team could act on.
+
 A drop rule **wins over everything below**, including the Close checks: a client asking
 about a Sydney business is still dropped. Where a rule needs a judgement (is this a real
 estate play? is this figure their whole budget?), apply the same 70% bar as *On borderline
