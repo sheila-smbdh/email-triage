@@ -247,6 +247,24 @@ A handed-off thread whose original category is **not** one of the three (an Inve
 Kyle is running, a Sellside thread with Bill) is **dropped**, same as any other untracked
 category. Handover tracking follows the tracked categories; it does not widen them.
 
+**A lead already on the tracker is not a new handover.** Most 🟢 threads are leads this task
+logged on an earlier day: Helen forwarded them, and now Jordan's outreach or the lead's
+answer to him is the new message in the thread. Those leads already have a row, and
+`tracker-followup` owns that row from then on (M, O, Q, S, T–W, the progress notes). Before
+listing a 🟢 thread, look the sender up on `Tracker (JordanK)` (see *Dedup* in STEP 5). If
+they are already there, on any row and any date, **drop the thread from the digest and write
+no row**; count it in the run report as "already tracked (row N)". This applies to Tier 1
+too: a sender who already has a row never gets a second one.
+
+This rule exists because of the 2026-09-26 run, which appended rows 32-42 as brand-new
+`In Progress` rows for eleven leads that were already on the tab (rows 12-25): Mick
+Petrucci, Angelo Buscemi, David Pack, Tracey Radillo, Rhett Townsend, PK Kumar, Dan Lessen,
+Alvino Zau, Anjubala Jacob, Butch Gentry and Gene Simeona. Each duplicate had a progress
+note in K instead of the lead's message, and blank M, O and T–W, so it looked like a broken
+row and started a second chase next to the real one. The old dedup key (same sender + same
+subject + same date) could not catch them, because the date was a day or two later and some
+subjects differed.
+
 ### Drop rules: leads the team does not pursue
 
 Some emails are genuinely in one of the three categories on their face and are still not
@@ -1287,6 +1305,9 @@ moment `tracker-followup` writes the forward date into M.
 
 Dates in A and G are stored as Google serial numbers and displayed as dates; writing a
 plain `9/23/2026` string with `valueInputOption: "USER_ENTERED"` is coerced correctly.
+**Write A and G as that date string, never as a bare serial number** (`46291`). A number
+written into an unformatted cell stays a number: on 2026-09-26 rows 26-43 got `46291` in G,
+so G and H displayed `46291` / `46292` instead of dates.
 
 Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
 
@@ -1299,9 +1320,18 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
    true last data row (row 1 alone means the tab is empty and the first new row is 2).
    Compute your target range explicitly rather than relying on the append API's table
    detection.
-3. **Dedup.** Before writing a row, check it isn't already in the sheet (same sender + same
-   subject + same date, e.g. a recurring broker broadcast logged earlier the same day).
-   Skip duplicates rather than creating a second row.
+3. **Dedup: one row per person, across the whole tab.** Before writing a row, compare it
+   against **every** existing data row on `Tracker (JordanK)`, whatever its date. Skip it
+   if either matches:
+   - the **Gmail thread id** in its J hyperlink matches one already in column J (read J with
+     `valueRenderOption: "FORMULA"` to see the link), or
+   - the **sender name** in I matches an existing I, compared case-insensitively with
+     whitespace trimmed (`anjubala jacob` = `Anjubala Jacob`).
+
+   A skipped lead gets no row and no 🟢 bullet (see *A lead already on the tracker is not a
+   new handover* in STEP 2); list it in the run report as "already tracked (row N)". Do not
+   update the existing row either: it belongs to `tracker-followup`. Do not narrow this back
+   to same-day matching; that is what let the 2026-09-26 run duplicate eleven leads.
 4. Write with `GOOGLESHEETS_VALUES_UPDATE` at explicit ranges, in four blocks, so F and H
    are never overwritten with literals:
    - `'Tracker (JordanK)'!A<first>:E<last>` — Date, Tier, Category, Recommended Action,
@@ -1330,8 +1360,8 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
    (never `#N/A` or `#VALUE!`), H is populated, P and R hold their formulas, L landed on
    every Tier 1 row and N on exactly the "Send to Jordan" Tier 1 rows, both are empty on the
    handover rows, N is empty on `Forward to …` rows, no L or N contains `—` or `–`, no row
-   says `Ignore`, M/O/Q/S and T–W are empty on every new row, and no row
-   was duplicated. If verification fails, say so explicitly in Slack — do not report
+   says `Ignore`, M/O/Q/S and T–W are empty on every new row, A, G and H display as dates
+   (not 5-digit numbers), and no sender name appears on more than one row of the tab. If verification fails, say so explicitly in Slack — do not report
    success.
 
 ### Column contents
