@@ -1221,7 +1221,7 @@ The spreadsheet has **three tabs**:
 | Tab | Sheet id | What it is |
 |---|---|---|
 | **`Tracker (JordanK)`** | `1722038405` | **The live tracker. Every row this task writes goes here.** |
-| `Tracker (Yobani)` | `0` | The old tracker, renamed from `Tracker`. History — **never read or write it** |
+| `Tracker (Yobani)` | `0` | The old tracker, renamed from `Tracker`. History — **never write it**; the only read is the dedup check in *How to write* |
 | `Responsibility` | `232853052` | The old category → owner lookup. Not used by the new tab; never edit it |
 
 **Why the tab changed.** From 2026-09-23 Helen cc's and forwards to **Jordan Kempster**
@@ -1328,6 +1328,13 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
    - the **sender name** in I matches an existing I, compared case-insensitively with
      whitespace trimmed (`anjubala jacob` = `Anjubala Jacob`).
 
+   Run the same two checks against **`'Tracker (Yobani)'!A:W`**, read-only. A lead already
+   on the Yobani tab stays there: it gets no row on `Tracker (JordanK)` and no 🟢 bullet,
+   even when its thread has new activity or Close shows a call booked with Yobani. On
+   2026-09-26 Phil Navratil (Yobani tab row 68, forwarded to Yobani on 9/18) was appended to
+   the JordanK tab as `Forward to Yobani Mendoza (…)`; Sheila had it removed. Never write to
+   the Yobani tab to "move" a lead there.
+
    A skipped lead gets no row and no 🟢 bullet (see *A lead already on the tracker is not a
    new handover* in STEP 2); list it in the run report as "already tracked (row N)". Do not
    update the existing row either: it belongs to `tracker-followup`. Do not narrow this back
@@ -1361,7 +1368,8 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
    every Tier 1 row and N on exactly the "Send to Jordan" Tier 1 rows, both are empty on the
    handover rows, N is empty on `Forward to …` rows, no L or N contains `—` or `–`, no row
    says `Ignore`, M/O/Q/S and T–W are empty on every new row, A, G and H display as dates
-   (not 5-digit numbers), and no sender name appears on more than one row of the tab. If verification fails, say so explicitly in Slack — do not report
+   (not 5-digit numbers), no sender name appears on more than one row of the tab, and no
+   sender on a new row is also on `Tracker (Yobani)`. If verification fails, say so explicitly in Slack — do not report
    success.
 
 ### Column contents
