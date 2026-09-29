@@ -5,9 +5,35 @@
 | **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
-| **Last updated** | 2026-09-25 — **the pass now writes M, O, Q and S** (forward date and Jordan's 1st, 3-day and 5-day touches, from Helen's mailbox and Close; Q/S blank until due) and repairs a broken F formula instead of never checking it. See §3. Before that: 2026-09-24 — **`Forward to <First Last> (<email>)` rows** (clients → Scott, returning leads → their previous closer/setter) are checked for a forward to *that* person and then drop out of scope, with no Jordan check and no draft. Jordan's templates were replaced with Sheila's new wording and his real Calendly link; older N drafts are replaced on the next pass. No em dashes in drafts. The digest no longer writes `Ignore` rows; old ones are still skipped. See §0 of the digest handoff. Before that: 2026-09-23 — **the pass now works only the new `Tracker (JordanK)` tab and checks for forwards to Jordan Kempster (`jkempster@smbdealhunter.xyz`) instead of Yobani.** The old tab, renamed `Tracker (Yobani)`, is frozen: its open leads are no longer chased (Sheila's call). Before that: 2026-09-22 — the **🔴 Needs Helen** section of the Slack digest now links each bullet's subject into the thread in Helen's mailbox, so she can forward to Yobani in one click (§4). Before that: 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
+| **Last updated** | 2026-09-29 — **One short Slack post a day** (Helen's forward list, with a Jordan-test tracker summary in the thread; no drafts in Slack). See §0. Before that: 2026-09-25 — **the pass now writes M, O, Q and S** (forward date and Jordan's 1st, 3-day and 5-day touches, from Helen's mailbox and Close; Q/S blank until due) and repairs a broken F formula instead of never checking it. See §3. Before that: 2026-09-24 — **`Forward to <First Last> (<email>)` rows** (clients → Scott, returning leads → their previous closer/setter) are checked for a forward to *that* person and then drop out of scope, with no Jordan check and no draft. Jordan's templates were replaced with Sheila's new wording and his real Calendly link; older N drafts are replaced on the next pass. No em dashes in drafts. The digest no longer writes `Ignore` rows; old ones are still skipped. See §0 of the digest handoff. Before that: 2026-09-23 — **the pass now works only the new `Tracker (JordanK)` tab and checks for forwards to Jordan Kempster (`jkempster@smbdealhunter.xyz`) instead of Yobani.** The old tab, renamed `Tracker (Yobani)`, is frozen: its open leads are no longer chased (Sheila's call). Before that: 2026-09-22 — the **🔴 Needs Helen** section of the Slack digest now links each bullet's subject into the thread in Helen's mailbox, so she can forward to Yobani in one click (§4). Before that: 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
 
 ---
+
+## 0. Changes on 2026-09-29: one short Slack post a day
+
+Sheila's feedback: the daily Slack output (a lead digest plus a separate follow-up report,
+each with several sections) was too long. Now:
+
+1. **One message a day**, posted by `tracker-followup` STEP 5 after its tracker write. The
+   digest no longer posts; its STEP 4 builds the 🆕 *New today* section and hands it on. If
+   the follow-up pass does not reach its Slack step, the digest posts its section alone with
+   a line saying the rest is missing.
+2. **The message is only Helen's forward list**: 🆕 new leads to forward and ⏳ older Tier 1
+   leads still not forwarded. Each bullet has the lead name, a one-line summary, the thread
+   link, days waiting (older ones), and a "before you send" line only when there is something
+   to know (forward to Scott or a previous host instead of Jordan, call-pushback, failed
+   draft, a fact from the lead). 🟢 handovers, 🎁 bonus claims, 🟡/🟢 Jordan progress, draft
+   counts and verification chatter moved to the run report. Real failures still get their
+   own notice.
+3. **No draft text in Slack at all**, including the thread. A failed Gmail draft now points
+   Helen to tracker column L instead of posting the text in a thread.
+4. **The one thread reply is a Jordan test summary**, cumulative since 2026-09-23 and computed
+   from the verified tracker: forwarded to Jordan, calls set up, setter calls held (names),
+   set to a closer, and the names not set to a closer, each marked with whether Jordan has
+   posted his call notes in the channel.
+
+**Accepted trade-off:** bonus claims are no longer in Slack; the Gmail draft on the thread is
+the only prompt for Helen to send a missed member their bonuses.
 
 ## 1. What this is and why it exists
 

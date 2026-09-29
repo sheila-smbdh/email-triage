@@ -1,6 +1,6 @@
 ---
 name: tracker-followup
-description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs (to Jordan, Scott, or a lead's previous closer/setter), check Jordan's booking progress in Close, record the forward date and Jordan's 1st/3-day/5-day touches (M, O, Q, S), and keep column N's Jordan draft current: write it where the digest did not, and never delete one
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs (to Jordan, Scott, or a lead's previous closer/setter), check Jordan's booking progress in Close, record the forward date and Jordan's 1st/3-day/5-day touches (M, O, Q, S), keep column N's Jordan draft current (write it where the digest did not, and never delete one), and post the single daily Slack message: Helen's forward list (new leads from the digest plus older ones still not forwarded) with a Jordan-test tracker summary in the thread
 ---
 
 You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
@@ -93,7 +93,7 @@ If the **Close** connector is missing, that is not a reason to abort — but it 
 to leave column N alone. Every Jordan check fails to confirm, and an unconfirmed check is
 **not** evidence either way. Write no new drafts for those rows and leave N exactly as you
 found it. Note in column U (`Setter Progress`) that the check could not run, and say so in
-Slack. Treating a Close outage as "no call booked" would put a fresh "let's grab 15 minutes"
+the run report. Treating a Close outage as "no call booked" would put a fresh "let's grab 15 minutes"
 draft against a lead who has already had their call.
 
 ---
@@ -115,8 +115,8 @@ to. Every read and write in this task goes to **`Tracker (JordanK)`** and only t
 - The tab name contains a space and parentheses, so it must be quoted in A1 notation:
   `'Tracker (JordanK)'!A1:W<n>`. Unquoted, the range fails to parse.
 - The new tab started empty (header only). On the first passes there may be no due rows at
-  all — that is expected, not a failed read. Say so in the run report and post nothing to
-  Slack (STEP 5).
+  all — that is expected, not a failed read. Say so in the run report; the daily message
+  (STEP 5) still goes out.
 
 Read `'Tracker (JordanK)'!A1:W<n>` with **`valueRenderOption: "FORMULA"`**. This matters: column J
 holds `=HYPERLINK(...)` and the formatted read gives you only the visible subject text,
@@ -180,7 +180,7 @@ open lead comes due on effectively every pass.
 0. **The sender (column I) is on the never-track list → out of scope.** The list lives in
    `helen-email-digest` STEP 2, drop rule 8, and is currently **Hani Sammour** and **Ryan
    Hogan**. Match on the name, ignoring case. Skip the row entirely: no checks, no draft, no
-   writes to any column, and **never mention them in the Slack post**, not in 🔴, 🟡, 🟢 or
+   writes to any column, and **never mention them in the Slack post**, not in 🆕, ⏳, the summary or
    anywhere else, and not in a count. The digest writes no new rows for them, so a row like
    this is left over from before the sender was added; Sheila deletes those by hand. Say in
    the run report (not Slack) which row you skipped, so it can be removed.
@@ -300,15 +300,15 @@ Q and S stay blank: they track Jordan's chase, and Jordan is not on this lead.
 - **G** → today (the check ran, so the clock resets)
 - B, E, M, N, O, Q, S, T–W → unchanged
 
-and flag it to Helen in Slack (STEP 5), naming who it should go to. This is the output that matters: a Tier 1 lead
+and list it for Helen under ⏳ *Still not forwarded* (STEP 5), naming who it should go to. This is the output that matters: a Tier 1 lead
 still owned by Helen days after it arrived is a lead going cold because the handoff never
 happened.
 
 **One Price Wall row is expected to sit here for a while.** When a lead pushed back on the
 call itself, `helen-email-digest` gives Helen a draft that asks whether they want someone
 looped in rather than cc'ing Jordan, so the forward waits on their reply. Flag it the same
-way — an unanswered lead is still worth surfacing — but say in Slack that the handoff is
-waiting on the lead, not on Helen. Column N is unaffected: that row carries the ordinary
+way — an unanswered lead is still worth surfacing — but its bullet says the handoff is
+waiting on the lead, not on Helen (STEP 5). Column N is unaffected: that row carries the ordinary
 Price Wall draft and this step does not touch it.
 
 ---
@@ -326,7 +326,7 @@ forward (`preview.body` of the Step 2 results carries it, e.g.
 `From: Michael Wilson <michaeljwilson11@gmail.com>`).
 
 If you cannot resolve an address, do not guess. Treat it as "no call booked", say so in
-column U (`Setter Progress`), and flag it in Slack.
+column U (`Setter Progress`), and list it in the run report.
 
 > **The name-matching trap.** `christopher green <cjgreen7904@yahoo.com>` is the Close lead
 > **"CJ Green"**, while a name search for "christopher green" also returns *"Chris Green"*
@@ -365,10 +365,10 @@ one as progress.
 | What Close shows | T/U (setter) | V/W (closer) | N (draft) |
 |---|---|---|---|
 | A setter call, upcoming or already held | its date + who with, event name, any lead note | closer call if one exists | **leave it** — resolved |
-| A setter call held **and** a cancelled closer call | the setter call | the cancelled call's date + that it was cancelled and by whom | **leave it** — resolved. Surface in Slack |
+| A setter call held **and** a cancelled closer call | the setter call | the cancelled call's date + that it was cancelled and by whom | **leave it** — resolved. Note it in the run report |
 | No setter call, or the only one was cancelled | empty, or `No call booked` | — | **keep or write the draft** (STEP 4) |
 | No Close record for the address | `No Close record for <address>` | — | **keep or write the draft** |
-| Close lookup failed | that the check could not run | — | **leave exactly as found** — say so in Slack |
+| Close lookup failed | that the check could not run | — | **leave exactly as found** — say so in the run report |
 
 > **Drafts are never deleted — confirmed with Sheila, 2026-09-11.** Neither L nor N is ever
 > cleared, by this task or any other. An earlier version of this spec told you to write an
@@ -389,7 +389,7 @@ Jordan's job is done and there is nothing further for him to draft. Resolving a 
 **writing no new draft** — it does not mean removing the one already there. That holds even
 when the *closer* call then fell through: a cancelled discovery call needs re-booking by
 whoever owns that stage, which is not a setter intro. Record it in V/W and mention it in
-Slack.
+the run report.
 
 ---
 
@@ -459,10 +459,10 @@ after Jordan's first touch.
   can book off Helen's email without Jordan ever writing; O asks whether Jordan did.
 - **On a failed Close lookup**, you cannot see Close emails or whether the lead is
   connected. Write `Yes` where Gmail alone shows the touch; otherwise leave O, Q and S
-  exactly as found, and say in Slack that the chase check was partial.
+  exactly as found, and say in the run report that the chase check was partial.
 - **If Jordan's mailbox could not be read** (connection not ACTIVE, or the query errored),
   treat it like a failed Close lookup: write `Yes` where Helen's mailbox or Close shows the
-  touch, otherwise leave O, Q and S exactly as found, and say in Slack that the chase check
+  touch, otherwise leave O, Q and S exactly as found, and say in the run report that the chase check
   ran without Jordan's mailbox. Never write `No` from the fallback sources alone; missing
   Jordan's own sent mail is exactly how a real reply gets marked as not sent.
 - **What `No` means.** With Jordan's mailbox read, `No` means nothing from Jordan to that
@@ -484,9 +484,9 @@ writing the Jordan draft at log time, most rows reaching this step already have 
 | N as read in STEP 1 | Do |
 |---|---|
 | Holds a draft matching the row's category, in one of the current templates below (opens `Picking up from Helen, …` and carries Jordan's real calendar link) | **Keep it, unchanged.** Write nothing to N. It has been sitting in the sheet since the digest run and may already have been used |
-| Holds a draft on a **superseded** template. The tells: `[Calendly Link]` or `[Calendly link]`, `If they`, `[time slot]`, `Are you free`, `Can I give you a call at`, `Sounds like you're interested in … and I'd love to hop on a call`, `ready to move on`, `Let's grab 15 minutes so I can`, or any `—` | **Replace it** with the current template for that category, and say in Slack that you did. Every row logged before 2026-09-24 is in this state |
+| Holds a draft on a **superseded** template. The tells: `[Calendly Link]` or `[Calendly link]`, `If they`, `[time slot]`, `Are you free`, `Can I give you a call at`, `Sounds like you're interested in … and I'd love to hop on a call`, `ready to move on`, `Let's grab 15 minutes so I can`, or any `—` | **Replace it** with the current template for that category, and say in the run report that you did. Every row logged before 2026-09-24 is in this state |
 | Empty — a row logged before this change, or a digest run that skipped it | **Write the draft**, exactly as below |
-| Holds something that is not one of these templates, or the wrong category's template | **Replace it** with the right one, and say in Slack that you did and why |
+| Holds something that is not one of these templates, or the wrong category's template | **Replace it** with the right one, and say in the run report that you did and why |
 
 Rewriting a draft that is already correct is not free: one wording in the sheet on Monday
 and a different one on Friday reads as two different people replying, and whoever pastes has
@@ -590,92 +590,141 @@ If it says something the template does not, take that back out.
 
 ---
 
-## STEP 5 — Post the follow-up digest to Slack
+## STEP 5 — Post the daily Slack message and its tracker summary
 
-Post to channel `C0BTCGZSF9R` (#helen-email-digest) as its **own message**, separate from
-the morning lead digest — the two answer different questions and merging them buries both.
+**Run this after STEP 6**, once the tracker write has verified: the summary in the thread
+reply is computed from the tracker as this pass left it. (The step keeps its number so older
+references still point here.)
 
-Use the channel's established format: a bold header, emoji section headers, and
-`_Category_ — Sender: "<link|subject>" — detail` bullets.
+Since 2026-09-29 the Routine posts **one** message a day to `C0BTCGZSF9R`
+(#helen-email-digest), and this step posts it. It replaces both the old morning lead digest
+and the old follow-up report. Sheila's ask: those two posts were too long. The message is
+now a to-do list for Helen, and the thread reply under it is a data summary of the Jordan
+test for Sheila. Nothing else goes in either.
 
-Sections, each skipped entirely when empty:
+### The message: Helen's forward list
 
-- **Header** — `**Tracker Follow-up — <Month D, YYYY>**` and the count of due rows checked.
-- **🔴 Needs Helen** — Tier 1 rows never forwarded. One bullet each, subject linked
-  straight into the thread in Helen's mailbox:
+```
+*Helen's forward list — <Month D, YYYY>*  <@U04ATRJKXPD>
 
-  `_Category_ — Sender: "[subject](<gmail thread link>)" — waiting N days`
+🆕 *New today* (<n>)
+• ...the section helen-email-digest built in STEP 4, as it built it...
 
-  On a `Forward to …` row, add who it goes to: `— forward to Scott (existing client)` or
-  `— forward to Jabali (previous call)`, so Helen does not send it to Jordan by habit.
+⏳ *Still not forwarded* (<n>)
+• *<Lead name>* — <Category> — <one-line summary> — <link|subject> — waiting <N> days
+    ↳ <Before you send: ...>        (only when there is something to say)
+```
 
-  Two things carry this section. **The link**: Helen clicks the subject, lands on the
-  thread, and forwards it to Jordan — no hunting through the inbox or the tracker for a
-  lead that has already gone cold. **The number of days**: say how long each has been
-  waiting, because that is what makes the bullet urgent rather than informational. Mention
-  Helen as `<@U04ATRJKXPD>` once, in this section.
+Mention Helen once, in the header line. No `@channel` or `@here`.
 
-  **Build the link yourself from the thread ID — do not paste column J's URL into Slack.**
-  Two of the three formats in the sheet (see STEP 2) do not open in a browser: the legacy
-  `%23thread-f%3A<decimal>` fragment, and the delegation-token URL whose delegation lapsed.
-  You already extracted the hex thread ID in STEP 2; rebuild the link from it in the current
-  form, the same one `helen-email-digest` writes:
+**🆕 New today** is the section `helen-email-digest` handed over from its STEP 4 earlier in
+this session. Post it as built; do not re-derive it or add to it. If the digest did not run
+or failed before building it, put the one line `_Today's new-lead scan did not run
+(<reason>)._` in its place. If it ran and found nothing, its section is the line
+`No new leads to forward today.`
 
-  ```
-  https://mail.google.com/mail/u/?authuser=helen@smbdealhunter.xyz#all/<hex threadId>
-  ```
+**⏳ Still not forwarded** is every Tier 1 row STEP 2 found **not forwarded**, oldest first.
+Nothing else goes here: forwarded rows, Jordan's progress, rows STEP 3 could not resolve, and
+drafts all stay out of the message. When there are none, the line is `None. Every older lead
+has been forwarded.`
 
-  `authuser=` pins the link to Helen's mailbox. The `/mail/u/0/` form opens whichever
-  account happens to be first in the reader's browser, which for anyone but Helen is the
-  wrong mailbox or a 404.
+Each bullet has the same shape as the digest's, so Helen reads one list:
 
-  If a row's thread ID cannot be recovered at all, still list the row with the subject
-  unlinked and say the link is missing. A lead going cold is worth flagging without a link;
-  dropping it because the link failed is not a trade worth making.
-- **🟡 Needs a decision** — rows Step 3 could not resolve: an address that would not
-  resolve to a Close lead, a failed Close lookup.
-- **🟢 Moving** — rows with a setter call on the board. One line each: who with, and when.
-  Where the closer call was cancelled, say so on the same line — it is the one actionable
-  fact on an otherwise resolved row. Their drafts stay in the sheet untouched; there is
-  nothing to report about them.
-- **✍️ Drafts** — *not in the message body.* See below.
+- **Lead name** — column I.
+- **Summary** — one plain line drawn from column K.
+- **Link** — the Gmail thread, subject as the link text (see *The link* below).
+- **Waiting N days** — today minus column A. It is what makes the bullet urgent.
+- **Before you send** — a second line, only when one of these applies:
+
+| Case | "Before you send" line |
+|---|---|
+| `Forward to …` row, existing client | `↳ Existing client: forward to Scott, not Jordan.` |
+| `Forward to …` row, had or booked a call | `↳ Had a call with <First name>: forward to <First name> (<email>), not Jordan.` Use the name and address in column D; when two teammates share a first name (Jordan Kempster and Jordan Zadrozny), give the full name |
+| Price Wall call-pushback row (Helen's draft in L asks whether they want someone looped in) | `↳ Waiting on the lead's reply, not on you. Forward once they say yes.` |
+| The row has a Gmail draft still sitting unsent on the thread | nothing: that is the normal case, and the draft is where the link lands |
+| Column U or K records something Jordan must hear before he calls (a stated deadline, "email only") | `↳ <that fact, one line>` |
+
+**The link.** Build it yourself from the thread ID — do not paste column J's URL into Slack.
+Two of the three formats in the sheet (see STEP 2) do not open in a browser: the legacy
+`%23thread-f%3A<decimal>` fragment, and the delegation-token URL whose delegation lapsed.
+You already extracted the hex thread ID in STEP 2; rebuild the link from it in the current
+form, the same one `helen-email-digest` writes:
+
+```
+https://mail.google.com/mail/u/?authuser=helen@smbdealhunter.xyz#all/<hex threadId>
+```
+
+`authuser=` pins the link to Helen's mailbox. The `/mail/u/0/` form opens whichever account
+happens to be first in the reader's browser, which for anyone but Helen is the wrong mailbox
+or a 404. If a row's thread ID cannot be recovered at all, still list the row with the
+subject unlinked and `(link missing)`. A lead going cold is worth flagging without a link.
+
+**What never goes in the message** (all of it belongs in the run report): the count of due
+rows checked, rows forwarded this pass, 🟡 rows that could not be resolved, 🟢 setter calls,
+draft kept/written/replaced counts, F repairs, verification results, partial chase checks.
+The only exception is a real failure, which still gets its own separate notice per *Failure
+reporting*. **Never post draft text**, Helen's or Jordan's, in the message or the thread.
 
 Write the message in standard markdown (`**bold**`, `_italic_`, `[text](url)`); the Slack
-tool converts it to Slack mrkdwn on send. **Do not add a "Sent using Claude" footer** —
-the platform appends one automatically, and including your own produces it twice.
+tool converts it to Slack mrkdwn on send. **Do not add a "Sent using Claude" footer** — the
+platform appends one automatically, and including your own produces it twice.
 
-If no row was due at all, post nothing. A daily "nothing to do" message in a channel that
-also carries the lead digest is noise. Say it in the run report instead.
+**Post it every day**, including a day where nothing was due: the new-leads half and the
+summary still apply. Capture the returned `ts` for the thread reply.
 
-### Drafts go in a threaded reply
+### The thread reply: Jordan test summary
 
-Capture the parent message's `ts` and post the drafts as **one threaded reply** with
-`thread_ts`. Full drafts inline would bury the flags the message exists to deliver.
+Post **one** reply under the message (`thread_ts` = its `ts`). It answers five questions
+about the test of Helen forwarding leads to Jordan, which started **2026-09-23**, the day the
+`Tracker (JordanK)` tab opened. It is cumulative from that date, not a daily delta.
 
-Include a lead here only when **this pass** wrote or replaced its draft. A draft carried
-over unchanged from the digest run is already sitting in column N, where Jordan reads it;
-reposting it on every pass turns the channel into an echo and makes it unclear which copy is
-live. (The digest run stopped posting drafts to Slack on 2026-09-11, when Helen's reply moved
-into her Gmail as a draft — Jordan's has always lived in the sheet, and now that is the only
-place it appears until a pass here changes it.)
-If the section would be empty because every due row's draft was already correct, say so in
-one line in the parent message instead ("3 drafts already current, unchanged").
+**Compute it from the verified STEP 6 re-read of `'Tracker (JordanK)'`**, across every data
+row (not just the due rows), with these rules:
 
-Format — one block per draft, each in a code block so it copies cleanly:
+- **Leave out** never-track senders (STEP 1 scope filter, rule 0), `Ignore` rows, and any row
+  dated before 2026-09-23.
+- **Forwarded to Jordan** = rows where E is `Yes` **and** Jordan Kempster is the forward
+  target: D is `Send to Jordan`, or D is a `Forward to …` naming `jkempster@smbdealhunter.xyz`.
+  A `Forward to` Scott or any other teammate is not a forward to Jordan and is not counted
+  (Jordan Zadrozny is a different person).
+- **Call set up** = forwarded rows with a setter call on the board: a date in T that U does
+  not mark as cancelled. Upcoming calls count. A setter call held by someone other than Jordan
+  still counts (STEP 3); add who held it after the name.
+- **Setter call held** = call-set-up rows whose T date is **before today** and that U does not
+  mark as cancelled or a no-show. A call later today has not been held yet.
+- **Set to a closer** = held rows with a closer call in V, upcoming or held. One that was
+  later cancelled still counts as set; add `(closer call cancelled)` after the name.
+- **Not set to a closer** = held rows with V empty. These are the names Sheila wants to ask
+  Jordan about.
 
-> ✍️ *Suggested replies for Jordan* — reply on the existing thread and keep Helen on it.
-> **Fill in `[today/tomorrow]` before sending** where it appears, and call them that day.
->
-> *Ready Now — Jerome M Limage*
-> ```
-> Hi Jerome,
-> …
-> ```
+T/U/V are only written on `Send to Jordan` rows. For a `Forward to … jkempster` row, read its
+setter and closer calls from Close the same way STEP 3 does (by email address, read-only) to
+place it in the counts. Write nothing to the row.
 
-If this pass wrote or replaced no draft, **post no thread reply at all** — not an empty one.
-A pass where every draft was already current is the normal case, not a failure.
+**Jordan's notes.** Sheila asked Jordan on 2026-09-28 to post call feedback in this channel
+(lead quality, how well they knew the Pro program, why he did or did not set them to a
+closer, how the call differed). For each name under *Not set to a closer*, check the
+channel's history since 2026-09-23 for a top-level message from Jordan Kempster
+(`U0B0UQE7DSM`) that names the lead, and mark it `(Jordan's notes posted)` or `(no notes
+yet)`. That is the whole check: do not summarise his notes here.
 
-Do not use `@channel` or `@here`.
+Format:
+
+```
+📊 *Jordan test: tracker summary since 9/23/2026*
+• Forwarded to Jordan: <n>
+• Jordan set up a call: <n> of <forwarded>
+• Setter calls held: <n>: <Name>, <Name>, <Name> (held by Jose Rodriguez), ...
+• Set to a closer: <n> of <held>: <Name>, <Name>
+• Not set to a closer: <Name> (Jordan's notes posted), <Name> (no notes yet), ...
+```
+
+Write `0` rather than dropping a line, and `none` for an empty name list. Names are column
+I as written. If STEP 6's verify failed, do not compute from a tracker you know is wrong:
+post `📊 Tracker summary skipped today: the tracker write did not verify (see the failure
+notice).` instead.
+
+This reply is the **only** thread reply the routine posts under the daily message.
 
 ---
 
@@ -704,7 +753,7 @@ owner on every row it touches, but it gets there by writing E, not by writing a 
 After the write, the verify step re-reads F. If a row's F is no longer a formula (someone
 typed or pasted a name over it) or reads `#N/A`, `#VALUE!` or `#ERROR!`, **restore the
 formula** in that one cell with the 2026-09-24 form above, which gives the same answer as the
-older form on a `Send to Jordan` row. Say in Slack which rows you repaired. Never write a
+older form on a `Send to Jordan` row. Say in the run report which rows you repaired. Never write a
 plain name into F.
 
 **F on this tab does not use the `Responsibility` lookup.** `Responsibility!A2:B9` still maps
@@ -801,11 +850,12 @@ Re-read `'Tracker (JordanK)'!A1:W<n>` with `valueRenderOption: "FORMULA"` and co
 - **no draft cell is empty that was not empty before.** Every L and N you read in STEP 1 is
   still there, byte for byte, unless this pass deliberately rewrote it. A draft that came
   back blank means the block write clobbered it; restore it from what you read in STEP 1 and
-  say so in Slack
+  say so in the run report
 - no row was added or removed
 
-If verification fails, **say so explicitly in Slack**. Never post a success digest for a
-pass that only partly completed.
+If verification fails, **say so explicitly in Slack**, as its own failure notice (see
+*Failure reporting*), and skip the tracker summary in STEP 5 as that step describes. Never
+post a success digest for a pass that only partly completed.
 
 ---
 
