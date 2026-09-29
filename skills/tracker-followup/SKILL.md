@@ -177,6 +177,17 @@ open lead comes due on effectively every pass.
 
 ### Scope filter — apply in this order
 
+0. **The sender (column I) is on the never-track list → out of scope.** The list lives in
+   `helen-email-digest` STEP 2, drop rule 8, and is currently **Hani Sammour** and **Ryan
+   Hogan**. Match on the name, ignoring case. Skip the row entirely: no checks, no draft, no
+   writes to any column, and **never mention them in the Slack post**, not in 🔴, 🟡, 🟢 or
+   anywhere else, and not in a count. The digest writes no new rows for them, so a row like
+   this is left over from before the sender was added; Sheila deletes those by hand. Say in
+   the run report (not Slack) which row you skipped, so it can be removed.
+
+   This rule exists because the 2026-09-28 follow-up post listed Hani Sammour twice and Ryan
+   Hogan once under 🔴 *Needs Helen*: their rows were logged before the digest started
+   dropping them, and this filter had no idea the list existed.
 1. **`Recommended Action` (D) is `Ignore` → out of scope.** Skip the row entirely: no
    checks, no draft, and **do not touch column G**. The digest stopped writing `Ignore` on
    2026-09-24 (those leads are now dropped with no row), so only older rows carry it. They
