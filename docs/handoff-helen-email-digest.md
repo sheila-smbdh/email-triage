@@ -4,9 +4,35 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-26 — **Dedup is now one row per person across the whole tab.** The 9/26 run appended rows 32-42 of `Tracker (JordanK)` as new `In Progress` rows for eleven leads already logged on rows 12-25: the new message in their threads was Jordan's outreach or the lead's reply to him, so they read as fresh 🟢 handovers, and the old same-sender/subject/**date** dedup key missed them. A sender or Gmail thread already on the tab now gets no new row and no 🟢 bullet. The same run wrote G as a bare serial (`46291`), so G/H showed numbers; A and G must be written as date strings. Also 2026-09-26 — **New drop rule 9, a retort rather than a request** (Ryan Hogan, *"Help me finance one then"*): sarcastic or venting replies to a newsletter that ask for nothing actionable are dropped. Also 2026-09-26 — **Helen's Price Wall draft gained a third variant, for a lead asking what a business sells for** (Anjubala Jacob); see *A third Price Wall opening* below. Before that: 2026-09-24 — **Routing, drop filters and templates reworked; see §0.** Before that: 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
+| **Last updated** | 2026-09-29 — **One short Slack post a day** (Helen's forward list, with a Jordan-test tracker summary in the thread; no drafts in Slack). See §0a. Before that: 2026-09-26 — **Dedup is now one row per person across the whole tab.** The 9/26 run appended rows 32-42 of `Tracker (JordanK)` as new `In Progress` rows for eleven leads already logged on rows 12-25: the new message in their threads was Jordan's outreach or the lead's reply to him, so they read as fresh 🟢 handovers, and the old same-sender/subject/**date** dedup key missed them. A sender or Gmail thread already on the tab now gets no new row and no 🟢 bullet. The same run wrote G as a bare serial (`46291`), so G/H showed numbers; A and G must be written as date strings. Also 2026-09-26 — **New drop rule 9, a retort rather than a request** (Ryan Hogan, *"Help me finance one then"*): sarcastic or venting replies to a newsletter that ask for nothing actionable are dropped. Also 2026-09-26 — **Helen's Price Wall draft gained a third variant, for a lead asking what a business sells for** (Anjubala Jacob); see *A third Price Wall opening* below. Before that: 2026-09-24 — **Routing, drop filters and templates reworked; see §0.** Before that: 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
 
 ---
+
+## 0a. Changes on 2026-09-29: one short Slack post a day
+
+Sheila's feedback: the daily Slack output (a lead digest plus a separate follow-up report,
+each with several sections) was too long. Now:
+
+1. **One message a day**, posted by `tracker-followup` STEP 5 after its tracker write. The
+   digest no longer posts; its STEP 4 builds the 🆕 *New today* section and hands it on. If
+   the follow-up pass does not reach its Slack step, the digest posts its section alone with
+   a line saying the rest is missing.
+2. **The message is only Helen's forward list**: 🆕 new leads to forward and ⏳ older Tier 1
+   leads still not forwarded. Each bullet has the lead name, a one-line summary, the thread
+   link, days waiting (older ones), and a "before you send" line only when there is something
+   to know (forward to Scott or a previous host instead of Jordan, call-pushback, failed
+   draft, a fact from the lead). 🟢 handovers, 🎁 bonus claims, 🟡/🟢 Jordan progress, draft
+   counts and verification chatter moved to the run report. Real failures still get their
+   own notice.
+3. **No draft text in Slack at all**, including the thread. A failed Gmail draft now points
+   Helen to tracker column L instead of posting the text in a thread.
+4. **The one thread reply is a Jordan test summary**, cumulative since 2026-09-23 and computed
+   from the verified tracker: forwarded to Jordan, calls set up, setter calls held (names),
+   set to a closer, and the names not set to a closer, each marked with whether Jordan has
+   posted his call notes in the channel.
+
+**Accepted trade-off:** bonus claims are no longer in Slack; the Gmail draft on the thread is
+the only prompt for Helen to send a missed member their bonuses.
 
 ## 0. Changes on 2026-09-24
 

@@ -1,6 +1,6 @@
 ---
 name: helen-email-digest
-description: Daily Slack digest of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, with Helen's reply created as a Gmail draft on each lead's thread cc'ing whoever the lead is forwarded to (Jordan for new buyers, Scott for existing clients, the previous closer/setter for anyone who has had a call), and one row per lead in the Google Sheets tracker; disqualified leads are dropped with no row
+description: Daily triage of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, feeding the "new leads to forward" section of the daily Slack post, with Helen's reply created as a Gmail draft on each lead's thread cc'ing whoever the lead is forwarded to (Jordan for new buyers, Scott for existing clients, the previous closer/setter for anyone who has had a call), and one row per lead in the Google Sheets tracker; disqualified leads are dropped with no row
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
@@ -28,8 +28,8 @@ forwarded to someone: Jordan, Scott, or the closer/setter the lead already knows
 **One non-lead exception: bonus claims.** A bare "Yes" reply from someone who has just
 joined is normally answered by Helen's canned-response automation within seconds. When the
 "Yes" lands on the wrong email the automation never fires and a new member silently gets no
-bonuses. Those are surfaced in the digest, and their reply is drafted in Gmail like any
-other — but **without Jordan cc'd**. They are not buyer leads: no tracker row, no Jordan, no
+bonuses. Their reply is drafted in Gmail like any other, but **without Jordan cc'd**, and
+they are listed in the run report (not in the Slack post, since 2026-09-29). They are not buyer leads: no tracker row, no Jordan, no
 Recommended Action. See *Bonus claims* in STEP 2.
 
 ---
@@ -143,7 +143,7 @@ Existing tracker rows from the 8/29 run use a third form,
 from Sheila's delegated view of Helen's mailbox — the same delegation that later lapsed, so
 those links may now be dead. Do not reproduce that format for new rows.
 
-**Verify one link by hand on the first run** and report in Slack whether it resolved. If
+**Verify one link by hand on the first run** and say in the run report whether it resolved. If
 `authuser=` does not work for the people reading the channel, fall back to plain
 `https://mail.google.com/mail/u/0/#inbox/<threadId>` and note the change here.
 
@@ -197,8 +197,9 @@ So, for every reply whose own text is a bare affirmative — `Yes`, `YES`, `yes`
    anchor, so a Gmail text search for the URL does not find it.
 3. **Automation already replied → drop the email.** Handled, nothing to surface. This is the
    common case and it is why bare "Yes" replies are not simply digested.
-4. **No canned response in the thread → this is a bonus claim.** Surface it in the 🎁
-   section of the digest with the bonus reply draft (see *The bonus reply* below).
+4. **No canned response in the thread → this is a bonus claim.** Draft the bonus reply in
+   Gmail (see *The bonus reply* below) and list it in the run report. Since 2026-09-29 bonus
+   claims are not in the Slack post (STEP 4).
 
 The automation answers within about fifteen seconds, so on a 24-hour window its absence is
 settled, not pending.
@@ -440,7 +441,7 @@ The related judgement call, recorded because it recurs and has no clean answer: 
 great things i am interested to talk to you we own few businesses in albany ny area"*
 (narinder Singh, same day). An explicit ask to talk, so Ready Now is defensible — but someone
 who already owns businesses may be an operator or a future seller rather than a buyer.
-Classify on the ask, flag it in the digest for a human eye, and do not drop it.
+Classify on the ask, flag it on the lead's Slack bullet for a human eye, and do not drop it.
 
 #### Price Wall: asking the price vs. not having the money
 
@@ -1005,9 +1006,9 @@ the strength of that phrasing.
 Every draft written in STEP 2 is also created as a **real Gmail draft in Helen's mailbox**,
 sitting on the lead's own thread with the person in column D cc'd. Helen opens the thread, finds the reply
 already written in the box, edits it if she wants, and hits send. **She never pastes
-anything** — which is why the drafts no longer go in a Slack thread (STEP 4).
+anything** — which is why the drafts never go to Slack (STEP 4).
 
-This step runs **before** the Slack digest so the digest reports what actually landed, and
+This step runs **before** STEP 4 so the Slack post reports what actually landed, and
 before the tracker write so column L records text that is known to exist in Gmail.
 
 ### Which messages get a draft
@@ -1041,7 +1042,7 @@ the lead's `threadId` and look for a message carrying the `DRAFT` label. If ther
   It is either a draft this routine wrote on an earlier run, or something Helen started
   herself — and overwriting either is worse than skipping.
 - Count the lead as "draft already present" in the run report, and treat it as done for
-  STEP 4's purposes: no ⚠️ in the digest.
+  STEP 4's purposes: no ⚠️ on its bullet.
 
 This is what makes the step safe to re-run. The same thread can surface on two consecutive
 days — a lead who writes twice, or a rerun after a partial failure — and the 24-hour window
@@ -1126,84 +1127,93 @@ makes to email.
 
 If a draft cannot be created or does not verify — the Gmail call errors, the thread id is
 rejected, the cc comes back wrong — that lead has lost its safety net, because the Slack
-thread that used to carry the text is gone. So put the text back:
+thread that used to carry the text is gone. So keep the text where Helen can find it:
 
-1. Mark that lead with `⚠️ draft not created` in the Slack digest (STEP 4).
-2. Post the affected drafts as **one threaded reply** under the digest, in the old format —
-   one labelled code block per lead — so Helen can still paste. This is the **only** case in
-   which this task posts a thread reply.
-3. Say in the same reply what failed and for which leads, in the words the tool actually
+1. Still write the draft text to tracker column L in STEP 5. That is where it survives.
+2. Mark that lead's bullet in the Slack post with the "No Gmail draft" line (STEP 4), which
+   points Helen to column L.
+3. Say in the run report what failed and for which leads, in the words the tool actually
    returned.
+
+**Never post draft text to Slack**, in the message or in a thread under it (Sheila,
+2026-09-29). The only thread reply under the daily post is the tracker summary that
+`tracker-followup` writes.
 
 Everything else still runs. A Gmail failure on two leads does not stop the digest, the
 tracker write, or the drafts that did land.
 
 ---
 
-## STEP 4 — Post ONE Slack digest
+## STEP 4 — Hand the "new today" list to the combined Slack post
 
-Post to channel ID `C0BTCGZSF9R` (#helen-email-digest):
+**This task no longer posts its own Slack message.** Since 2026-09-29 the Routine posts
+**one** message a day to `C0BTCGZSF9R` (#helen-email-digest), and `tracker-followup` posts
+it, because half of it (the older leads Helen still has not forwarded) only that pass can
+know. What this step produces is the message's first section, built here and carried
+forward in the session for `tracker-followup` STEP 5 to post. See that step for the full
+message layout, including the thread reply with the tracker summary.
 
-- **Header:** date + total count of leads found (the post-drop count, not raw inbox volume).
-  Leads removed by the STEP 2 drop rules are not counted and get no bullet anywhere in the
-  digest; they are listed in the run report only.
-- **🔴 Tier 1** — bold header, categories as sub-bullets in this exact format:
-  `*Category* — Sender: "subject line" — snippet`
-  with the subject line as the Gmail thread link. Do NOT include the recommended-action
-  field in the visible digest text, even when it's set internally. The one exception is the
-  `↪️` marker on a `Forward to …` lead (see below), which tells Helen who to forward to.
-- **🟢 Tracking Handover Progress** — same bullet format, with owner inserted right after
-  the category:
-  `*Category* — Owner: Name — Sender: "subject line" — snippet`
-- **🎁 Bonus link not sent** — bare "Yes" replies whose thread has no canned response, one
-  bullet each: `Sender — replied "Yes" to "subject line"`, the subject as the Gmail thread
-  link. Keep it last and keep it short: it is a chore list, not a lead list. Say in the
-  header line that the automation missed these because the reply landed on the wrong email.
-- These are the only three sections. Skip any of them entirely if it has zero entries.
-- If there were zero tracked leads and zero bonus claims in the last 24h, post a short "No
-  new buyer leads in Helen's inbox today" message instead.
-- Use Slack mrkdwn formatting (bold, bullets). Do NOT use `@channel` or `@here`.
+Sheila's ask, 2026-09-29: the old pair of posts (a lead digest and a separate follow-up
+report, each with several sections) was too long. The post is now a **to-do list for
+Helen**: what to forward, to whom, and anything she must know first. Nothing else.
 
-### The drafts are not in this message, and not in a thread under it
+### What goes in the section
 
-**Do not post the reply drafts to Slack.** As of 2026-09-11 they are waiting in Helen's
-Gmail, on each lead's own thread with the right person already cc'd (STEP 3) — she opens the thread and
-sends, so there is nothing to paste and nothing to copy out of Slack. Posting them again here
-would give her two copies to reconcile, and the one in Slack would be the stale one the
-moment she edits the real draft.
+**Only the leads Helen has to forward**: every Tier 1 lead that got a tracker row today, one
+bullet each. That is all. Specifically **not** in the Slack post:
 
-The **only** thread reply this task ever posts is the failure fallback in STEP 3: the drafts
-that could not be created in Gmail, so they are not lost. If every draft landed, post no
-thread reply at all.
+- 🟢 **Tracking Handover Progress** leads. Helen has already forwarded them; they get their
+  tracker row as before, and nothing in Slack.
+- 🎁 **Bonus claims.** Their reply is still drafted in Gmail (STEP 3), no Jordan cc, and they
+  still get no tracker row. List them in the run report. (The trade-off, stated plainly: with
+  no Slack bullet, the Gmail draft is the only prompt Helen gets for that member's bonuses.)
+- Dropped leads, "already tracked" skips, verification results, draft counts, and the
+  "drafts are waiting in Gmail" banner. All of that goes in the run report.
+- Any draft text, Helen's or Jordan's.
 
-Jordan's day-1 reply is not posted to Slack either. It lives in tracker column N, which is
-where it went before and where `tracker-followup` picks it up; posting it here was only ever
-a preview. Do not tag or DM him from this task — the `tracker-followup` pass is what
-surfaces a row once it is actually his.
+### Bullet format
 
-### Say, once, where the drafts are
+Each bullet carries the four things Helen needs to act without opening anything else:
 
-Under the 🔴 Tier 1 header, one line:
+```
+• *<Lead name>* — <Category> — <one-line summary of what they asked> — <link|subject>
+    ↳ <Before you send: ...>        (only when there is something to say)
+```
 
-> ✍️ _Drafts are waiting in Helen's Gmail. Open the thread, review, send. Jordan is cc'd unless a lead says otherwise._
+- **Lead name** — the sender name, as it goes in tracker column I. Never guess a first name
+  from an email address.
+- **Summary** — one plain line, the same substance as tracker column K. What they want, not
+  a quote of the whole email.
+- **Link** — the Gmail thread link from STEP 1 (`authuser=` form), with the subject as the
+  link text.
+- **Before you send** — a second line, only for the cases below. A bullet with no second line
+  means: open the thread, the draft is there with Jordan cc'd, review, send.
 
-Then mark only the exceptions, inline on the lead's own bullet. The default case needs no
-marker; a bullet with nothing after it means a normal draft is sitting in Gmail ready to go.
-
-| Case | Marker on that lead's bullet |
+| Case | "Before you send" line |
 |---|---|
-| **Price Wall call-pushback** draft | `⚠️ Needs your review before sending — long, specific email, and this reply deliberately answers none of it. Jordan is not cc'd; the forward follows their reply.` |
-| Draft **could not be created** (STEP 3 failure) | `⚠️ Draft not created — text is in the thread below.` |
-| `Forward to …` row: an **existing client** (the existing-relationship rule in STEP 2) | `↪️ Existing client, forward to Scott. Scott is cc'd, not Jordan.` Same marker on a 🟢 handover bullet, minus the cc sentence. |
-| `Forward to …` row: has **had or booked a call** with someone still on the team | `↪️ Had a call with <First name> on <date of the most recent meeting>, forward to <First name>. <First name> is cc'd, not Jordan.` (for an upcoming call: `Has a call booked with <First name> on <date>, …`). Same on a 🟢 handover bullet, minus the cc sentence. |
+| `Forward to …` row, existing client | `↳ Existing client: forward to Scott, not Jordan. Scott is cc'd on the draft.` |
+| `Forward to …` row, had or booked a call | `↳ Had a call with <First name> on <date>: forward to <First name>, not Jordan. <First name> is cc'd on the draft.` (upcoming: `Has a call booked with <First name> on <date>: …`) |
+| Price Wall **call-pushback** draft | `↳ Don't forward yet. Read the draft first (long, specific email; the reply deliberately answers none of it). Jordan is not cc'd; forward after they reply.` |
+| Draft **could not be created** (STEP 3 failure) | `↳ ⚠️ No Gmail draft (it failed). The reply text is in tracker column L.` |
+| The lead said something Jordan must hear before he calls (a booked call Close could not confirm, a stated deadline, "email only, don't call me") | `↳ <that fact, one line>` |
 
-The 🎁 section takes its own one-liner in the header rather than per-bullet markers: say the
-reply is drafted in Gmail, that it is the same text the automation would have sent, and that
-Jordan is not cc'd on these.
+Keep the last row to facts the lead actually wrote. It is not a place for commentary on the
+lead's quality or for restating the summary.
 
-Every other draft is open-and-send. The call-pushback one is a starting point for Helen, and
-it is the one that must not go out unread — it is the only lead draft in the set that states
-a position rather than making an offer.
+### When there are no new leads
+
+If no Tier 1 lead got a row today, the section is the single line `No new leads to forward
+today.` Say that, and let `tracker-followup` carry on with the rest of the message.
+
+### When `tracker-followup` will not post
+
+The Routine runs this task first and `tracker-followup` second, in the same session. If the
+follow-up pass does not reach its Slack step (its spec could not be read, a connector it
+needs is down, or it fails before posting), the new leads must still reach Helen: post this
+section yourself, as the whole message, under the header
+`*Helen's forward list — <Month D, YYYY>*`, followed by the line
+`_Older un-forwarded leads and the tracker summary are missing today: the follow-up pass
+did not run (<reason>)._` Never skip the post because the other half is missing.
 
 ---
 
@@ -1217,14 +1227,16 @@ Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and 
 Handover Progress rows. Nothing else gets a row. What was dropped in STEP 1–2 is not
 logged.
 
-**🎁 Bonus claims get no row**, even though they appear in the digest. They are the one thing
-this task surfaces that is not a lead: nothing to chase, no stages to move through, no owner
+**🎁 Bonus claims get no row.** They are the one thing this task handles that is not a
+lead: nothing to chase, no stages to move through, no owner
 to flip. A row for one would sit permanently due and would either nag Helen forever or be
-skipped forever. The digest bullet and the Gmail draft are the whole record.
+skipped forever. The Gmail draft (and the run report line) is the whole record.
 
 **The cost of that, stated plainly:** STEP 1 reads `newer_than:1d`, so a bonus claim is
-surfaced on the day it arrives and never again. If nobody acts on that thread reply, that
-member does not get their bonuses and nothing will raise it a second time. This is the
+found on the day it arrives and never again. If nobody sends that Gmail draft, that
+member does not get their bonuses and nothing will raise it a second time. Since
+2026-09-29 there is no Slack bullet either, so the draft sitting on the thread is the only
+prompt. This is the
 accepted trade for keeping a customer chore out of a buyer-lead pipeline. If it turns out to
 be missed in practice, the fix is a tracker row or a separate list — not a wider digest
 window.
@@ -1330,7 +1342,8 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
 
 1. `GOOGLESHEETS_GET_SHEET_NAMES` to confirm a tab named exactly `Tracker (JordanK)`
    exists. If it does not, **write nothing** — do not fall back to `Tracker (Yobani)` or any
-   other tab — and report it in Slack as a tracker failure, naming the tabs you did find.
+   other tab — and report it in Slack as a tracker failure (a separate failure notice, per
+   *Failure reporting*), naming the tabs you did find.
 2. `GOOGLESHEETS_VALUES_GET` on `'Tracker (JordanK)'!A:W` to read existing rows and find the
    true last data row (row 1 alone means the tab is empty and the first new row is 2).
    Compute your target range explicitly rather than relying on the append API's table
@@ -1399,10 +1412,10 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
 - **Last Check-in Date** — the last date anyone at SMB Deal Hunter actually replied to this
   sender. If there's no reply yet (true for most brand-new Tier 1 leads), use today's
   digest date.
-- **Email Sender** — same sender name used in the Slack digest
+- **Email Sender** — same lead name used in the Slack bullet (STEP 4)
 - **Email Title / Link** — `=HYPERLINK("<gmail thread link>","<subject>")` so it renders as
   a clickable link like the existing rows
-- **Message Summary** — same quoted snippet used in the Slack digest
+- **Message Summary** — a short summary of what the lead asked; the Slack bullet's one-liner is drawn from it
 - **Suggested Helen Email Draft (L)** — the draft from STEP 2, byte-identical to the Gmail
   draft created for that lead in STEP 3. Write it as plain text with real line breaks, not a
   formula and not wrapped in quotes, and without the trailing blank lines the Gmail draft
@@ -1417,7 +1430,7 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
   literal placeholder. Same format rule as L: plain text with real line breaks, no formula,
   no surrounding quotes. **Only on `Send to Jordan` Tier 1 rows**: empty on `Forward to …`
   rows and on Tracking Handover Progress rows. A `Send to Jordan` row gets both drafts; L
-  populated with N blank on one is a bug worth reporting in Slack. N is not posted to Slack and not drafted in Gmail — this column is
+  populated with N blank on one is a bug worth reporting in the run report. N is not posted to Slack and not drafted in Gmail — this column is
   where Jordan reads it. This is the *first* of three touches; the next-day (P) and 5-day follow-ups
   are tracked as dates and status only, and **no draft is written for them** — there is no
   column for one and this task does not generate one.
@@ -1439,7 +1452,8 @@ columns, or change header styling.
 ## Scope limits
 
 Do not take any action beyond reading emails, **creating the reply drafts in STEP 3**,
-reading Close CRM, posting the Slack digest, and logging rows to this tracker.
+reading Close CRM, handing the new-leads section to the daily Slack post (or posting it
+itself when the follow-up pass does not run), and logging rows to this tracker.
 
 Specifically: do **not** send any email — not a draft, not a reply, not a forward — and do
 **not** label, archive, delete, or mark anything in Helen's mailbox. Do **not** update or
