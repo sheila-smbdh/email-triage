@@ -307,15 +307,30 @@ Drop the lead when any of these holds:
    time with no intention of becoming a client. Drop **everything** from them, whatever it
    says: no tracker row, no draft, no digest bullet, no bonus-claim bullet, no handover row.
    Match on the sender's name (display name or sign-off), since their address may vary.
-   Sheila's call, 2026-09-26.
+   Check this **first**, before classifying, before the bonus-claim check and before the
+   handover and dedup checks: what the email says does not matter, and a "Yes", a real
+   question or a "please help me" from one of them is still dropped. Do **not** list them in
+   the run report's dropped-leads list either; they are a standing rule, not a judgement call.
+   Sheila's call, 2026-09-26 (Hani) and 2026-09-29 (Ryan).
    - **Hani Sammour**
+   - **Ryan Hogan**
+
+   `tracker-followup` skips any tracker row from these senders too (its scope filter), so they
+   never reach Slack from either task. If one of them ever turns up with a row on
+   `Tracker (JordanK)`, do not add another; say so in the run report so Sheila can delete it.
+
+   Why Ryan was added: rule 9 (below) dropped his sarcastic replies, but on 2026-09-28 he sent
+   *"No, I am still interested, please help me"* on the same thread, which is not a retort, and
+   it went back into the digest. A rule that judges the words cannot keep someone out; the name
+   list can. Adding a name here is how Sheila says "never show me this person again".
 
 9. **A retort, not a request.** A short reply to a newsletter or campaign that vents at it
    or dares Helen to hand them something, instead of asking for anything real: *"help me
    finance one then"*, *"just give me one then"*, *"must be nice"*, *"you don't help, scam"*.
    There is nothing in it about the sender (no criteria, no budget, no phone number, no
    question about a deal or about how SMB Deal Hunter works), and the tone is sarcastic or
-   bitter. Helen does not answer these. Sheila's call, 2026-09-26. Real case: Ryan Hogan,
+   bitter. Helen does not answer these. Sheila's call, 2026-09-26. Real case: Ryan Hogan (now
+   on the never-track list in rule 8 as well),
    replying to the 9/24 New Deals newsletter with *"Help me finance one then"* → drop. His
    9/26 reply to the Plumbing newsletter, *"Yes but you don't help scam nofo"*, is the same
    kind of email → drop.
