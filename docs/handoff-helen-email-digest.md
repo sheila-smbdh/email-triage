@@ -4,9 +4,50 @@
 |---|---|
 | **Supersedes** | `2026-09-10 helen email digest gmail blocked.md` — the blocked-state handoff. That document is now historical, and two of its factual claims were wrong (see §6). |
 | **Status** | Live. Access restored, scope narrowed, cloud Routine enabled and verified end-to-end on 2026-09-10. |
-| **Last updated** | 2026-09-29 — **One short Slack post a day** (Helen's forward list, with a Jordan-test tracker summary in the thread; no drafts in Slack). See §0a. Before that: 2026-09-26 — **Dedup is now one row per person across the whole tab.** The 9/26 run appended rows 32-42 of `Tracker (JordanK)` as new `In Progress` rows for eleven leads already logged on rows 12-25: the new message in their threads was Jordan's outreach or the lead's reply to him, so they read as fresh 🟢 handovers, and the old same-sender/subject/**date** dedup key missed them. A sender or Gmail thread already on the tab now gets no new row and no 🟢 bullet. The same run wrote G as a bare serial (`46291`), so G/H showed numbers; A and G must be written as date strings. Also 2026-09-26 — **New drop rule 9, a retort rather than a request** (Ryan Hogan, *"Help me finance one then"*): sarcastic or venting replies to a newsletter that ask for nothing actionable are dropped. Also 2026-09-26 — **Helen's Price Wall draft gained a third variant, for a lead asking what a business sells for** (Anjubala Jacob); see *A third Price Wall opening* below. Before that: 2026-09-24 — **Routing, drop filters and templates reworked; see §0.** Before that: 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
+| **Last updated** | 2026-10-01 — **Two "Helen replies herself" (✋) cases, from Sheila's review of mail Helen answered without forwarding**: an experienced operator asking for advice, and a listing link request whose link is verified against Airtable before drafting. Neither goes to Jordan or gets a tracker row. See §0b. Before that: 2026-09-29 — **One short Slack post a day** (Helen's forward list, with a Jordan-test tracker summary in the thread; no drafts in Slack). See §0a. Before that: 2026-09-26 — **Dedup is now one row per person across the whole tab.** The 9/26 run appended rows 32-42 of `Tracker (JordanK)` as new `In Progress` rows for eleven leads already logged on rows 12-25: the new message in their threads was Jordan's outreach or the lead's reply to him, so they read as fresh 🟢 handovers, and the old same-sender/subject/**date** dedup key missed them. A sender or Gmail thread already on the tab now gets no new row and no 🟢 bullet. The same run wrote G as a bare serial (`46291`), so G/H showed numbers; A and G must be written as date strings. Also 2026-09-26 — **New drop rule 9, a retort rather than a request** (Ryan Hogan, *"Help me finance one then"*): sarcastic or venting replies to a newsletter that ask for nothing actionable are dropped. Also 2026-09-26 — **Helen's Price Wall draft gained a third variant, for a lead asking what a business sells for** (Anjubala Jacob); see *A third Price Wall opening* below. Before that: 2026-09-24 — **Routing, drop filters and templates reworked; see §0.** Before that: 2026-09-23 — **Setter changed from Yobani to Jordan Kempster (`jkempster@smbdealhunter.xyz`), and the tracker moved to a new tab, `Tracker (JordanK)`** (sheet id `1722038405`). Helen's Gmail drafts now cc Jordan and say `@Jordan`; Recommended Action is `Send to Jordan`; column F on the new tab is `=if(E="No","Helen","Jordan")` instead of the `Responsibility` lookup. The old tab was renamed `Tracker (Yobani)` and is frozen as history. Before that: 2026-09-11 — **Helen's reply is now created as a Gmail draft on the lead's thread with Yobani cc'd, and the Slack digest no longer carries a thread of draft text** (§4); the task is no longer read-only on email. Also that day: Yobani's draft moved forward into this task and then rewritten to the day-1 rules; Helen's Ready Now and Price Wall drafts each gained a second variant; bonus claims added as the one non-lead the digest surfaces (§4). Sheet re-mapped to **A–W** over two edits — the Yobani draft is now column **N**, `Action Taken?` is now `Forwarded to Yobani?`, and **drafts in L and N are never deleted**; see the sheet-layout section. |
 
 ---
+
+## 0b. Changes on 2026-10-01: emails Helen answers herself (✋)
+
+Sheila reviewed emails Helen answered **without forwarding**. Two of them would have been
+drafted as Ready Now ("looping in Jordan") and Helen instead just answered. Both are now a
+✋ case in `skills/helen-email-digest/SKILL.md` STEP 2: **a Gmail draft, no cc, no tracker
+row, no Jordan draft.**
+
+1. **An experienced operator asking for advice** (Kevin B.: acquired his own B2B services
+   business, now runs $25M EBITDA in a home services rollup, asks where to focus). The
+   threshold is "has bought or run a business, in their own words" plus an ask for advice
+   or fit, not deals. The draft is Helen's own reply turned into a template, with a literal
+   `[HELEN: your take on where they should focus]` gap she fills, and the CEO in Residence /
+   Operating Partner link always included (she deletes it if it doesn't fit). It is the one
+   ✋ case in Slack, with a "Before you send" line pointing at the gap. STEP 1's "Operators"
+   discard got a carve-out for these.
+2. **A listing link request** (Jennifer Hill: "the view listing link on this one takes you
+   to the wrong place"). The draft is Helen's reply word for word: the link, then
+   "Here you go!". **The link is verified before drafting**, at Sheila's request: every
+   candidate `recordId` from the newsletter is looked up in Airtable `Business Sellers`
+   (`appDBhzdZfjoIFh2J` / `tblgsQZpDrD9obp7u`, the table the Softr deal exchange reads), and
+   it is used only if name, state, profit, revenue and start year all match the deal the
+   reader quoted and `Status` is `Active`. Nothing verified → no draft, run report only.
+   Broken newsletter links are reported. A request for **more details** with no link
+   problem stays a normal Ready Now specific-deal handoff to Jordan.
+
+**What was found while building it:** in the 9/23 *New Off-Market Businesses For Sale*
+issue, deal #2's "In Today's Issue" link points to the preschool
+(`rec4mMoDQVlWdCsdE`), but its **View Listing button points to `recM8VF10JbfYCYNs`, a lumber
+and equipment rental company in North Adams, MA.** That is the link Jennifer clicked.
+
+**Why not open the listing page to verify:** `smbdealexchange.com` is blocked by the cloud
+environment's network policy, and from a host that can reach it (Composio's sandbox) every
+`recordId` returns the same ~305 KB Softr app shell, because the listing loads client-side.
+Fetching the page proves nothing; the Airtable record is the real check.
+
+**Connectors this needs on the Routine** (it currently carries Composio, Slack, GitHub and
+Close): **Airtable** (first-party connector or Composio's `airtable` toolkit), and
+**Beehiiv** in Composio as the backup source for newsletter links (Sheila is adding it).
+Without Airtable, link requests get no draft and the run report says so; nothing else in the
+run is affected.
 
 ## 0a. Changes on 2026-09-29: one short Slack post a day
 
