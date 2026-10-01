@@ -1,6 +1,6 @@
 ---
 name: helen-email-digest
-description: Daily triage of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, feeding the "new leads to forward" section of the daily Slack post, with Helen's reply created as a Gmail draft on each lead's thread cc'ing whoever the lead is forwarded to (Jordan for new buyers, Scott for existing clients, the previous closer/setter for anyone who has had a call), and one row per lead in the Google Sheets tracker; disqualified leads are dropped with no row
+description: Daily triage of new buyer leads in Helen Guo's inbox (Buy Box, Ready Now, Price Wall) plus bonus claims the welcome automation missed, feeding the "new leads to forward" section of the daily Slack post, with Helen's reply created as a Gmail draft on each lead's thread cc'ing whoever the lead is forwarded to (Jordan for new buyers, Scott for existing clients, the previous closer/setter for anyone who has had a call), and one row per lead in the Google Sheets tracker; disqualified leads are dropped with no row; experienced operators asking for advice and readers asking for a featured listing's link get a Helen-only draft (no cc, no row), with the link verified against the listing's Airtable record
 ---
 
 You are running the daily "Helen email digest" task for SMB Deal Hunter.
@@ -31,6 +31,13 @@ joined is normally answered by Helen's canned-response automation within seconds
 bonuses. Their reply is drafted in Gmail like any other, but **without Jordan cc'd**, and
 they are listed in the run report (not in the Slack post, since 2026-09-29). They are not buyer leads: no tracker row, no Jordan, no
 Recommended Action. See *Bonus claims* in STEP 2.
+
+**Two more non-lead exceptions, where Helen replies herself (✋).** Since 2026-10-01, from
+Sheila's review of mail Helen answered without forwarding: an **experienced operator asking
+for advice** (someone who has already bought or run a business), and a **listing link
+request** (a reader asking for a featured deal's link, or saying it is broken). Neither goes
+to Jordan: no cc, no tracker row, no Recommended Action. Both get a Gmail draft. See
+*Helen replies herself* in STEP 2.
 
 ---
 
@@ -64,6 +71,19 @@ previous call and whether they are still on the team. It is read-only. If the
 Close connector is missing, that is not a reason to abort the run — the check simply fails
 to confirm and every affected lead keeps the default "Send to Jordan" (see STEP 2). Say so
 in the run report.
+
+Two more read-only lookups serve the **listing link request** in STEP 2 (added 2026-10-01):
+
+| Purpose | Where | What |
+|---|---|---|
+| Verify a listing link | **Airtable**, base `appDBhzdZfjoIFh2J` (*SMB Deal Hunter*), table **`Business Sellers`** (`tblgsQZpDrD9obp7u`) | The deal exchange (`smbdealexchange.com`, a Softr app) reads its listings from this table, and the `recordId=` in a listing link is the Airtable record id. Use the first-party Airtable connector (`mcp__Airtable__list_records_for_table` with `recordIds`) or Composio's `airtable` toolkit, whichever is attached. |
+| Find the newsletter's link for a deal, when the Gmail thread does not have it | Composio `beehiiv` toolkit, publication **SMB Deal Hunter** (`pub_0669fa4c-9ddd-4490-a4f0-8f9db721a021`) | The post's content (HTML) carries every listing link in the issue. Backup only: the newsletter quoted in the lead's own Gmail thread comes first. |
+
+Neither is a reason to abort the run. If Airtable is unreachable, no listing link can be
+verified, so no link request gets a draft (see STEP 2) and the run report says why. Do not
+try to open `smbdealexchange.com` itself to check a link: it is blocked from the cloud
+environment, and where it is reachable it returns the same app shell for every record id, so
+it proves nothing.
 
 Before doing anything else, confirm both toolkits report an ACTIVE connection. If either is
 not active, do NOT run a partial digest. Post this to Slack channel `C0BTCGZSF9R` and stop:
@@ -120,7 +140,10 @@ Discard, without logging: anything whose only Gmail category is `CATEGORY_PROMOT
 `CATEGORY_SOCIAL`; bulk newsletters; transactional receipts and automated notifications;
 and — new in this version — everything that would previously have been Tier 2 or Tier 3
 (Bleeding, Sellside, Investor, Operators, Pitches, Engaged Reader). Those categories are no
-longer tracked anywhere.
+longer tracked anywhere. **One carve-out from "Operators", since 2026-10-01:** someone who has
+already bought or run a business **writing to ask Helen for advice or a conversation** is not
+discarded. It is the ✋ *operator asking for advice* case in STEP 2. An operator pitching a
+service, or chatting about their own business with no ask, is still discarded.
 
 **One thing not to discard on sight: a one-word "Yes" reply.** It looks like noise and is
 usually already handled, but the cases where it is not are new members missing their
@@ -152,7 +175,8 @@ those links may now be dead. Do not reproduce that format for new rows.
 ## STEP 2 — Classify
 
 Every email that survives Step 1 is one of the three tracked categories, a handover of one
-of them, a bonus claim, or dropped. There is no other outcome.
+of them, a bonus claim, one of the two ✋ *Helen replies herself* cases, or dropped. There is
+no other outcome.
 
 ### TIER 1 — the only tracked tier
 
@@ -227,6 +251,124 @@ question the newsletter itself asked, rather than claiming bonuses. There is no 
 the two apart from the word "Yes". Sending the welcome-bonus link to someone who was
 answering something else costs nothing; leaving a paying member without their bonuses costs
 a lot. So the routine surfaces it. Do not build a cleverer test for this.
+
+### HELEN REPLIES HERSELF (✋): not a Jordan handoff
+
+Added 2026-10-01 from Sheila's review of emails Helen answered **without forwarding**. Each
+of these would have been read as Ready Now and drafted as "looping in Jordan", and in each
+Helen just answered. A 15-minute call with the setter was the wrong reply.
+
+Both cases share one shape: **a Gmail draft, no cc, no tracker row, no Recommended Action,
+no Jordan draft.** They are not leads in the tracker's sense: nothing for Jordan to book and
+nothing for `tracker-followup` to chase. A sender who already has a row on `Tracker
+(JordanK)` is still caught by the dedup rule below and gets nothing new.
+
+The never-track list and the drop rules (below) are checked first, as for any email.
+
+#### ✋ An experienced operator asking for advice
+
+**Trigger: the sender has already bought or run a business, and is asking Helen for advice,
+a view on where they fit, or a conversation**, rather than for deals. Both halves must hold:
+
+- *Has bought or run a business* is the whole threshold (Sheila, 2026-10-01). Size does not
+  matter. It must be **in their own words**: "I searched and acquired my own B2B services
+  business", "I run a $25M EBITDA rollup", "I've owned a restaurant for 12 years". Do not
+  infer it from a job title or a signature.
+- *Asking for advice or fit*: "where should I focus my efforts", "can we discuss where I may
+  be a good fit", "what would you do in my shoes". An operator who asks for **deals** ("do
+  you have HVAC businesses in Ohio?") is a normal Buy Box / Ready Now lead and goes to
+  Jordan as usual. *"I'm a business owner"* in passing does not move a deal ask here either
+  (Damian Olive, narinder Singh: see *Deal talk is not buyer intent*).
+
+Real case, 2026-10-01 review. Kevin B. wrote: *"What's your calendar like next week? Can we
+discuss where I may be a good fit. This is my background: 40 yo. I've done consulting and
+banking. 4 years at a hedge fund. Searched and acquired my own B2B services business. Now in
+a home services rollup where I run $25m of EBITDA and $120m of revenue. … from your POV, I'd
+like to understand where I should focus my efforts. … Do I go buy a $5m EBITDA business? Do
+I go run $1m EBITDA?"* The calendar ask reads as Ready Now. Helen answered it herself, with a
+view on independent sponsor deals and the CEO in Residence / Operating Partner opening.
+
+What it gets:
+
+- **A starting-point draft**: the *operator* template (see *The templates*). Helen writes the
+  advice; the routine never does. It leaves a marked gap for her.
+- **A Slack bullet** with a "Before you send" line telling Helen the draft needs her advice
+  added (STEP 4). This is the one ✋ case in Slack: its draft cannot be sent as it stands.
+- No cc, no tracker row.
+
+#### ✋ A listing link request
+
+**Trigger: a reader asks for the link to a deal Helen featured, or says the link does not
+work** (*"the view listing link on this one takes you to the wrong place"*, *"the link is
+broken"*, *"can you send me the listing?"*). A general *"can you please provide more
+details?"* in the same email does not change it, as long as the link is the problem.
+
+**Not this case**: a reader asking for **more details about a deal, with no link problem**
+(*"tell me more about the laundromat"*, *"is this still available?"*), or asking questions
+the listing would not answer, or asking for a call. That is **Ready Now**, specific-deal
+template, Send to Jordan, the usual handoff (Sheila, 2026-10-01).
+
+Real case, 2026-10-01 review. Jennifer Hill replied to the 9/23 *"New Off-Market Businesses
+For Sale"* issue: *"The view listing link on this one takes you to the wrong place. Can you
+please provide more details?"*, quoting deal #2 (Multi-Location Preschool and Private School
+Education Provider, Florida, EBITDA $2,000,000, Revenue $11,000,000, established 2015).
+Helen replied with the correct listing link and *"Here you go!"*. She was right that it was
+broken: in that issue the deal's **"In Today's Issue" link** points to
+`recordId=rec4mMoDQVlWdCsdE` (the preschool), but its **View Listing button** points to
+`recordId=recM8VF10JbfYCYNs`, which is a lumber and equipment rental company in North Adams,
+MA.
+
+**Find and verify the link. Every time, before drafting.** A wrong link in reply to someone
+complaining about a wrong link is worse than no reply.
+
+1. **Identify the deal** from the reader's email: the title, and the 📍 location, 💼 EBITDA,
+   📊 revenue and 📅 established lines they quoted. If they did not quote it, use the
+   newsletter they replied to and the deal number or name they mention. If you cannot tell
+   which deal they mean, stop: no draft (step 6).
+2. **Collect the candidate links** for that deal from the newsletter: every
+   `smbdealexchange.com/listing-details?recordId=…` link attached to it, both the "In Today's
+   Issue" list at the top and the View Listing button under the deal write-up. Read them
+   from the newsletter in the lead's own Gmail thread first (hydrate with `format: "full"`).
+   If the thread does not carry the links (quoted text often loses them), fetch the issue
+   from Beehiiv (STEP 0): match it by subject and send date, read its HTML content, and take
+   the links next to that deal.
+3. **Look up each candidate `recordId` in Airtable** (`Business Sellers`, STEP 0) and compare
+   the record with the deal the reader asked about:
+
+   | Airtable field | Must match |
+   |---|---|
+   | `Business Name [PUBLIC]` | the deal's title (the record may append "in <State>") |
+   | `Business Location - State` | 📍 Location |
+   | `Annual Profit/SDE:` | 💼 EBITDA |
+   | `Annual Revenue:` | 📊 Revenue |
+   | `📅 Start Year` | 📅 Established |
+
+   **Every row must match.** The right record is the one that matches; a near miss is a
+   different business. Real case: the 9/23 button's record has a "$2M" in it too, but as
+   revenue, and it is a lumber yard in Massachusetts.
+4. **If no candidate matches**, search the table by name (`mcp__Airtable__search_records` on
+   `Business Name [PUBLIC]`) and verify any hit the same way.
+5. **Check `Status` is `Active`.** If the matching record is anything else, write no draft
+   (step 6). Do not tell the reader the deal is gone: this task does not know why it changed,
+   and that is Helen's call.
+6. **Use the verified record's `Listing Details URL` field** as the link in the draft. It is
+   the clean form, `https://www.smbdealexchange.com/listing-details?recordId=<id>`, with no
+   newsletter tracking on it.
+7. **If nothing verifies** (the deal cannot be identified, no record matches, the record is
+   not Active, or Airtable is unreachable): **no draft.** It is not sent to Jordan instead.
+   List it in the run report with the reason, so Helen can answer it by hand.
+
+**Report every broken newsletter link you find**, whether or not a draft was written: the
+issue (subject and date), the deal, the link that was wrong, and what that link actually
+opens (the wrong record's `Business Name [PUBLIC]` and state). Every reader who clicked that
+link hit the same problem, and only Helen can fix the issue on Beehiiv.
+
+**Copy nothing from the Airtable record into the draft except the link.** The record holds
+the seller's name, email, phone number and private notes. None of it goes in a draft, the
+run report or Slack.
+
+What it gets: the *listing link* template (see *The templates*), no cc, no tracker row, and
+no Slack bullet (it is open-and-send, like a bonus claim). It goes in the run report.
 
 ### TRACKING HANDOVER PROGRESS (🟢)
 
@@ -597,6 +739,8 @@ wording, copied exactly, and stays.) Before creating a draft, check its text for
 
 🎁 **Bonus claims also get a draft**, and they are the one kind that is not a lead: no
 tracker row, no Recommended Action, no cc. Their template is *The bonus reply*, below.
+The two ✋ *Helen replies herself* cases are the same shape: a draft, and nothing else. Their
+templates are *The operator reply* and *The listing link reply*.
 
 The draft is a **reply in Helen's voice**, cc'ing the person in column D: Jordan Kempster
 (`jkempster@smbdealhunter.xyz`, the setter) on a `Send to Jordan` row, or the person named in
@@ -608,9 +752,10 @@ draft cc's `yobani@smbdealhunter.xyz` or names Yobani in its body. The one excep
 `Forward to Yobani Mendoza (…)` row: a lead whose most recent call was with him goes back to
 him (STEP 2), and that draft names and cc's him.
 
-**Two drafts cc nobody**: the Price Wall call-pushback variant, which asks the lead's
-permission to loop someone in rather than doing it, and the bonus reply, which has nothing
-to do with a setter. Both say so where they are defined. Every other draft cc's the person in
+**Four drafts cc nobody**: the Price Wall call-pushback variant, which asks the lead's
+permission to loop someone in rather than doing it; the bonus reply, which has nothing
+to do with a setter; and the two ✋ drafts (operator, listing link), which are Helen
+answering herself. Each says so where it is defined. Every other draft cc's the person in
 column D.
 
 The cc is now real, not an instruction to Helen: STEP 3 puts that address on the Cc line of
@@ -711,6 +856,42 @@ the URL has to be visible, and either form is fine to send as long as the link i
 first name, no personalisation, nothing added — it opens "Hey -" exactly as the automation
 does. Jordan is not cc'd on this one.
 
+**The operator reply** (✋, for an experienced operator asking for advice only). Built on
+Helen's own reply to Kevin B. Unlike every other template it opens with "Hi" and signs
+"Helen", because that is how she wrote it. No cc.
+
+```
+Hi [First Name],
+
+Thanks for the context, and great background!
+
+[HELEN: your take on where they should focus]
+
+We're bringing on a couple CEOs in Residence/Operating Partners if that's of interest: https://www.linkedin.com/jobs/view/4445190173/
+
+Helen
+```
+
+- **The bracketed line stays in the draft, exactly as written.** It is the gap for Helen's
+  advice. Never fill it, summarise their background into it, or delete it: an advice reply
+  the routine wrote would be advice nobody gave. The Slack bullet tells her it is there.
+- **The CEO in Residence line is always included** (Sheila, 2026-10-01). Helen deletes it
+  when it does not fit.
+
+**The listing link reply** (✋, for a listing link request only). Word for word Helen's reply
+to Jennifer Hill. No first name, no greeting, no cc:
+
+```
+[Listing Details URL]
+
+Here you go!
+```
+
+`[Listing Details URL]` is the **verified** record's `Listing Details URL` from Airtable
+(see *A listing link request* in STEP 2), and nothing else: never a link that has not been
+through that check, and never one copied from the newsletter without it. Nothing about the
+deal goes in: no figures, no availability, no description.
+
 #### Filling them in
 
 **First name.** In order of preference: the name the sender signs off with in the email
@@ -743,6 +924,10 @@ differently:
   outreach: *"is that wellness center in Virginia still available?"*, *"is the laundromat
   still for sale?"*, *"tell me more about the $280K/yr biz"*. → the **specific deal**
   template.
+- **Only the listing's link**, or a report that the link is broken (Jennifer Hill,
+  2026-10-01 review). → not Ready Now at all: the ✋ *listing link request* in STEP 2, which
+  Helen answers with the verified link and no Jordan. A request for more details with no link
+  problem stays here, on the specific-deal template.
 
 Real case, 2026-09-10. Damian Olive wrote *"I'm a business owner based in Arlington,
 Virginia. Question: is that wellness center in Virginia that you mentioned on X still
@@ -832,7 +1017,8 @@ call handle it.
 **Nothing else goes in.** A finished lead draft should be the template plus a first name
 and, for Buy Box, their ask (or, for the forwarding template, the forward target's name and
 the right `who you …` line) — and nothing more. The bonus reply takes no substitutions at
-all. If a draft says something the template does not, take that back out.
+all. The operator reply takes only the first name (its bracketed line stays as it is), and
+the listing link reply takes only the verified link. If a draft says something the template does not, take that back out.
 
 ### Suggested Jordan response
 
@@ -1014,7 +1200,7 @@ before the tracker write so column L records text that is known to exist in Gmai
 ### Which messages get a draft
 
 Exactly the ones that got a draft in STEP 2, and nothing else. The cc follows the same rule
-stated there — every lead draft cc's the person in column D, except the two that cc nobody:
+stated there — every lead draft cc's the person in column D, except the four that cc nobody:
 
 | | Gmail draft | Cc |
 |---|---|---|
@@ -1022,6 +1208,9 @@ stated there — every lead draft cc's the person in column D, except the two th
 | Tier 1, Recommended Action `Forward to <First Last> (<email>)` | Yes | **the `<email>` in column D**: Scott for a client, the previous closer/setter otherwise |
 | Tier 1, Price Wall **call-pushback** variant (on a `Send to Jordan` row) | Yes | **None** — it asks the lead's permission to loop someone in |
 | 🎁 Bonus claim | Yes | **None** — nothing to do with a setter |
+| ✋ Operator asking for advice | Yes | **None** — Helen answers herself |
+| ✋ Listing link request, link verified | Yes | **None** — Helen answers herself |
+| ✋ Listing link request, nothing verified | No | — |
 | 🟢 Tracking Handover Progress | No | — |
 | Dropped lead (STEP 2 drop rules) | No | — |
 
@@ -1055,7 +1244,7 @@ GMAIL_CREATE_EMAIL_DRAFT
   account:          gmail_kath-tiou
   thread_id:        <the lead's threadId>
   recipient_email:  <the lead's own email address>
-  cc:               ["<the address from column D>"]     # omit entirely for the two no-cc rows above
+  cc:               ["<the address from column D>"]     # omit entirely for the no-cc rows above
   body:             <the STEP 2 draft, verbatim, then three blank lines>
   is_html:          false
   subject:          (omit — see below)
@@ -1073,7 +1262,7 @@ and no `bcc`.
 
 **`cc` is one person, and only that person**: `jkempster@smbdealhunter.xyz` on a `Send to
 Jordan` row, or the address inside the parentheses of a `Forward to …` row
-(`scott@smbdealhunter.xyz` for a client). For the two no-cc cases, omit the field rather than
+(`scott@smbdealhunter.xyz` for a client). For the no-cc cases, omit the field rather than
 passing an empty list with a placeholder in it.
 
 **`body` is the STEP 2 draft, character for character, followed by three blank lines** (the
@@ -1099,8 +1288,8 @@ the draft id from the create call) and confirm four things:
 1. It is **on the lead's thread** — the draft's `threadId` matches the one you passed.
 2. The **To** is the lead's address, and nobody else is on the To line.
 3. The **Cc** is exactly the address from column D (`jkempster@smbdealhunter.xyz` on a
-   `Send to Jordan` row) — or, for the call-pushback and bonus drafts, that there is **no Cc
-   at all**. A bonus claim or a pushback reply that goes out with Jordan on it, or a client's
+   `Send to Jordan` row) — or, for the call-pushback, bonus and ✋ drafts, that there is **no
+   Cc at all**. A bonus claim or a pushback reply that goes out with Jordan on it, or a client's
    reply cc'ing Jordan instead of Scott, is a wrong send, not a cosmetic slip.
 4. The **body** matches the STEP 2 draft, contains no `—` or `–`, and ends with the blank
    lines. If Gmail has trimmed the trailing blank lines but the text is otherwise right, the
@@ -1160,13 +1349,17 @@ Helen**: what to forward, to whom, and anything she must know first. Nothing els
 ### What goes in the section
 
 **Only the leads Helen has to forward**: every Tier 1 lead that got a tracker row today, one
-bullet each. That is all. Specifically **not** in the Slack post:
+bullet each. The one addition is a ✋ **operator asking for advice**, whose draft has a gap
+only Helen can fill (category `Operator`, and the "Before you send" line below). That is
+all. Specifically **not** in the Slack post:
 
 - 🟢 **Tracking Handover Progress** leads. Helen has already forwarded them; they get their
   tracker row as before, and nothing in Slack.
 - 🎁 **Bonus claims.** Their reply is still drafted in Gmail (STEP 3), no Jordan cc, and they
   still get no tracker row. List them in the run report. (The trade-off, stated plainly: with
   no Slack bullet, the Gmail draft is the only prompt Helen gets for that member's bonuses.)
+- ✋ **Listing link requests**, drafted or not. List them in the run report with the verified
+  link (or why nothing verified), and any broken newsletter link found.
 - Dropped leads, "already tracked" skips, verification results, draft counts, and the
   "drafts are waiting in Gmail" banner. All of that goes in the run report.
 - Any draft text, Helen's or Jordan's.
@@ -1194,6 +1387,7 @@ Each bullet carries the four things Helen needs to act without opening anything 
 | `Forward to …` row, existing client | `↳ Existing client: forward to Scott, not Jordan. Scott is cc'd on the draft.` |
 | `Forward to …` row, had or booked a call | `↳ Had a call with <First name> on <date>: forward to <First name>, not Jordan. <First name> is cc'd on the draft.` (upcoming: `Has a call booked with <First name> on <date>: …`) |
 | Price Wall **call-pushback** draft | `↳ Don't forward yet. Read the draft first (long, specific email; the reply deliberately answers none of it). Jordan is not cc'd; forward after they reply.` |
+| ✋ **Operator** asking for advice | `↳ Answer yourself, don't forward. Add your take where the draft says [HELEN: …]; the CEO in Residence line is in, delete it if it doesn't fit. Nobody is cc'd.` |
 | Draft **could not be created** (STEP 3 failure) | `↳ ⚠️ No Gmail draft (it failed). The reply text is in tracker column L.` |
 | The lead said something Jordan must hear before he calls (a booked call Close could not confirm, a stated deadline, "email only, don't call me") | `↳ <that fact, one line>` |
 
@@ -1226,6 +1420,11 @@ Tab: **`Tracker (JordanK)`** (sheet id `1722038405`)
 Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and Tracking
 Handover Progress rows. Nothing else gets a row. What was dropped in STEP 1–2 is not
 logged.
+
+**✋ Helen-replies-herself emails get no row either** (Sheila, 2026-10-01): an operator
+asking for advice and a listing link request are not Jordan handoffs, so there is nothing
+for `tracker-followup` to chase. The operator still appears in the Slack post, without a
+row.
 
 **🎁 Bonus claims get no row.** They are the one thing this task handles that is not a
 lead: nothing to chase, no stages to move through, no owner
@@ -1452,8 +1651,11 @@ columns, or change header styling.
 ## Scope limits
 
 Do not take any action beyond reading emails, **creating the reply drafts in STEP 3**,
-reading Close CRM, handing the new-leads section to the daily Slack post (or posting it
-itself when the follow-up pass does not run), and logging rows to this tracker.
+reading Close CRM, reading listing records in Airtable and newsletter posts in Beehiiv (for
+listing link requests), handing the new-leads section to the daily Slack post (or posting it
+itself when the follow-up pass does not run), and logging rows to this tracker. Airtable and
+Beehiiv are **read-only**: never create, update or delete a record, and never edit a
+newsletter post, even to fix a broken link you found. Report it instead.
 
 Specifically: do **not** send any email — not a draft, not a reply, not a forward — and do
 **not** label, archive, delete, or mark anything in Helen's mailbox. Do **not** update or
