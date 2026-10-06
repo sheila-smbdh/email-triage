@@ -54,6 +54,7 @@ every Gmail call**. Pin it explicitly:
 |---|---|---|---|
 | Read Helen's mail | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
 | Create Helen's reply drafts (STEP 3) | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
+| Check whether Sheila already answered a lead (STEP 2, drop rule 10). Read only, one search per run | `gmail` | `gmail_uncast-hoop` | `sheila@smbdealhunter.xyz` |
 | Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
 
 Omitting `account` on a Gmail call lets it default to whichever account is marked default,
@@ -487,6 +488,57 @@ Drop the lead when any of these holds:
    - **Short is not the test.** *"Interested, call me"* and *"is this still available?"* are
      short and real. Drop only when the email is hostile or a dare **and** asks for nothing
      the team could act on.
+
+10. **Helen (or Sheila) has already answered the lead without cc'ing Jordan.** If Helen has
+    replied to the lead herself and left Jordan off, she has decided the lead does not need
+    Jordan, and it is her conversation now. Sheila's call, 2026-10-06: *"If Helen already
+    replied to a lead, but she didn't cc Jordan, that means Jordan doesn't need to be
+    involved in the conversation."* The same holds when **Sheila** replied: *"if I reply,
+    you can just remove from the list."* Drop it: no tracker row, no draft (Helen has
+    already written her reply), and no Slack bullet. This includes the ✋ cases: an operator
+    or a link request Helen has already answered needs nothing more.
+
+    How to tell, for every email that would otherwise be Tier 1, 🟢 or ✋:
+
+    - **Fetch the thread** (`GMAIL_FETCH_MESSAGE_BY_THREAD_ID`, `gmail_kath-tiou`) and look
+      for a message **from `helen@smbdealhunter.xyz` or `sheila@smbdealhunter.xyz`**, dated
+      **after the lead's first message in the thread**, with the lead's address in To or Cc.
+      The newsletter or campaign the lead replied to does not count (it predates the lead's
+      message, and it is not addressed to them), and neither does
+      `helen+canned.response@smbdealhunter.xyz` (the bonus automation).
+    - **Check Sheila's mailbox too.** Sheila may reply from her own account without Helen on
+      it, and then Helen's thread never shows it. Run **one** `GMAIL_FETCH_EMAILS` on
+      Sheila's account (`gmail_uncast-hoop`, read only) per run, over every candidate
+      lead's address: `from:sheila@smbdealhunter.xyz {to:<lead1> cc:<lead1> to:<lead2>
+      cc:<lead2> …} newer_than:30d`, `verbose: false`, paged to the end. A result dated after
+      the lead's message counts. Match on the lead's address, never on subject alone (many
+      leads reply to the same newsletter) and never on thread ID (IDs differ between
+      mailboxes). Sheila's mailbox is read for this check only; nothing else in this task
+      touches it.
+    - **That reply must leave Jordan off.** If `jkempster@smbdealhunter.xyz` is in its To, Cc
+      or Bcc, it is a forward, not this rule: the thread is a 🟢 handover as before. A reply
+      that cc's whoever else the lead belongs with (Scott, a previous closer/setter) is a
+      forward to them too, and is a 🟢 handover, not this rule.
+    - **A later message from the lead does not reopen it.** Once Helen or Sheila has
+      answered without Jordan, the lead's follow-ups on that thread are part of the same
+      conversation and are dropped too. Only a new thread from the lead is classified
+      afresh.
+
+    The one exception is the reply this routine drafted to **wait on the lead**: the Price
+    Wall **call-pushback** draft, which asks the lead's permission before looping anyone in.
+    When Helen has sent that and the lead has a row, the row is waiting on the lead's answer;
+    it is not this rule, and the dedup check below already keeps the thread off the digest.
+
+    Real cases, all from Sheila's 2026-10-06 review of the ⏳ *Still not forwarded* list,
+    where each one sat for days although Helen had already answered:
+    - **Matt Kenny**, Buy Box, asking how many businesses with positive cash flow will
+      self-finance (*Re: New Deals: Two-site express car wash with real estate…*).
+    - **Jennifer Hill**, asking for details on the Multi-Location Preschool listing (FL)
+      after the View Listing link broke (*Re: New Off-Market Businesses For Sale*).
+    - **Kevin B.**, the operator asking where he fits. Helen and Sheila both replied.
+
+    List each one in the run report as "answered by Helen/Sheila without Jordan", with the
+    date of the reply.
 
 A drop rule **wins over everything below**, including the Close checks: a client asking
 about a Sydney business is still dropped. Where a rule needs a judgement (is this a real
@@ -1420,6 +1472,10 @@ Tab: **`Tracker (JordanK)`** (sheet id `1722038405`)
 Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and Tracking
 Handover Progress rows. Nothing else gets a row. What was dropped in STEP 1–2 is not
 logged.
+
+**A lead Helen or Sheila has already answered without cc'ing Jordan gets no row** (drop
+rule 10, Sheila, 2026-10-06), and no Slack bullet. Jordan is not in that conversation, so
+there is nothing for `tracker-followup` to chase.
 
 **✋ Helen-replies-herself emails get no row either** (Sheila, 2026-10-01): an operator
 asking for advice and a listing link request are not Jordan handoffs, so there is nothing

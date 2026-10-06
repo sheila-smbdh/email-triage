@@ -63,6 +63,7 @@ Identical to `helen-email-digest`. All email and tracker access goes through the
 |---|---|---|---|
 | Read Helen's mail | `gmail` | `gmail_kath-tiou` | `helen@smbdealhunter.xyz` |
 | Read Jordan's mail (STEP 3A) | `gmail` | `gmail_dah-ceyx` | `jkempster@smbdealhunter.xyz` |
+| Check whether Sheila already answered a lead (STEP 2). Read only, one search per pass | `gmail` | `gmail_uncast-hoop` | `sheila@smbdealhunter.xyz` |
 | Tracker read/write | `googlesheets` | `googlesheets_gyte-urlar` (alias `helen-tracker`) | — |
 
 **Account selection is required on every Gmail call.** Four mailboxes are connected
@@ -294,6 +295,53 @@ On a `Forward to …` row, **stop there.** F flips the owner to that person's fi
 the row is done; it drops out of scope from the next pass (STEP 1, rule 3). No STEP 3, no
 STEP 3A, no draft. M is still written (it records when Helen handed the lead over), but O,
 Q and S stay blank: they track Jordan's chase, and Jordan is not on this lead.
+
+**Not forwarded, but Helen or Sheila already answered the lead** → Helen handled it
+herself, and Jordan (or whoever D names) is not needed. Sheila's call, 2026-10-06: *"If Helen
+already replied to a lead, but she didn't cc Jordan, that means Jordan doesn't need to be
+involved in the conversation"*, and *"if I reply, you can just remove from the list."* Run
+this check on every due Tier 1 row the forward check found **not forwarded**, before
+listing it anywhere. A row counts as answered when either holds:
+
+- **Get the lead's address first.** Fetch the row's thread on `gmail_kath-tiou`
+  (`GMAIL_FETCH_MESSAGE_BY_THREAD_ID`, one call per not-forwarded row; there are only a
+  handful) and take the lead's address from their message. Many leads reply to the same
+  newsletter, so a subject like `Re: New Deals: …` alone never identifies one lead.
+- **Helen's mailbox.** In that same thread, look for a message **from
+  `helen@smbdealhunter.xyz` or `sheila@smbdealhunter.xyz`**, dated **after the lead's
+  first message** and with the lead's address in To or Cc. The newsletter the lead replied
+  to is older and not addressed to them, so it never counts; neither does
+  `helen+canned.response@smbdealhunter.xyz`.
+- **Sheila's mailbox.** Sheila may reply from her own account without Helen on it, and then
+  Helen's thread never shows it. Run **one** `GMAIL_FETCH_EMAILS` on `gmail_uncast-hoop` per
+  pass: `from:sheila@smbdealhunter.xyz {to:<lead1> cc:<lead1> to:<lead2> cc:<lead2> …}
+  after:<YYYY/MM/DD>` over the not-forwarded rows' lead addresses, same `after:` as the
+  Jordan query, `verbose: false`, paged to the end. A result dated after the lead's message
+  counts. Thread IDs differ between mailboxes, so never match on thread ID here. Read only;
+  nothing else in this task touches Sheila's mailbox. If the connection is not ACTIVE, skip
+  this half, run the rest, and say so in the run report.
+
+The forward check has already ruled out a reply with the forward target on it (that would
+have matched as forwarded), so a match here is an answer that left them off.
+
+**The one exception is the Price Wall call-pushback row** (Helen's draft in L asks whether
+they want someone looped in). Helen's reply there is the routine's own question to the lead,
+and the row is waiting on their answer: treat it as **not forwarded** below, as before.
+
+An answered row is **out of the forward list for good**:
+
+- **No writes at all**: B, E, G, M and every other column stay as they are. Do not touch G.
+- **Not in the Slack post**: not in ⏳, not in the summary counts, nowhere.
+- **In the run report**, under "Answered by Helen/Sheila without Jordan — delete these rows",
+  with the row number, lead name, who replied and the reply's date. The digest no longer
+  logs these leads (`helen-email-digest` drop rule 10), so a row like this predates the rule;
+  Sheila deletes it by hand, as with the never-track rows.
+
+Real cases, from Sheila's 2026-10-06 review of the ⏳ list, each listed for days although
+Helen had already answered: **Matt Kenny** (Buy Box, asked how many businesses with positive
+cash flow will self-finance), **Jennifer Hill** (asked for details on the Multi-Location
+Preschool listing in FL; the View Listing link was broken), and **Kevin B.** (Helen and
+Sheila both replied).
 
 **Not forwarded** → nothing has happened. Write:
 
@@ -624,7 +672,7 @@ or failed before building it, put the one line `_Today's new-lead scan did not r
 `No new leads to forward today.`
 
 **⏳ Still not forwarded** is every Tier 1 row STEP 2 found **not forwarded**, oldest first.
-Nothing else goes here: forwarded rows, Jordan's progress, rows STEP 3 could not resolve, and
+Nothing else goes here: rows Helen or Sheila already answered without Jordan (STEP 2), forwarded rows, Jordan's progress, rows STEP 3 could not resolve, and
 drafts all stay out of the message. When there are none, the line is `None. Every older lead
 has been forwarded.`
 
