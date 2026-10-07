@@ -780,7 +780,7 @@ when she has thirty seconds — but in whole words.
 **Buy Box** (changed 2026-10-07: pitches the Pro Program instead of asking for 15 minutes)
 
 ```
-Hey [First Name], we can help with finding custom deals like [their criteria] in [their area]. We find custom deals for you through our Pro Program, where we help you find, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call if you're interested in learning more.
+Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our Pro Program is built for. We help you source, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.
 ```
 
 There is no `@Jordan` in this one: "I've cc'd Jordan" does that job. Jordan is still cc'd
