@@ -375,7 +375,8 @@ no Slack bullet (it is open-and-send, like a bonus claim). It goes in the run re
 Threads **in one of the three categories above** where Helen has already made the intro and
 handed off to someone else at SMB Deal Hunter. Signals: a teammate (e.g. Kyle Hopkins,
 Jordan) is now an active participant replying in the thread, or Helen has explicitly
-forwarded/looped a teammate in.
+forwarded/looped a teammate in. Only **sent** mail counts: a message labelled `DRAFT` is
+never a handover, including the cc'd draft this routine left on the thread on an earlier day.
 
 When this is the case the email goes here **instead of** Tier 1 — do not double-list it.
 For each entry also record:
@@ -504,7 +505,9 @@ Drop the lead when any of these holds:
 
     - **Fetch the thread** (`GMAIL_FETCH_MESSAGE_BY_THREAD_ID`, `gmail_kath-tiou`) and look
       for a message **from `helen@smbdealhunter.xyz`**, dated **after the lead's first
-      message in the thread**, with the lead's address in To or Cc. The newsletter or
+      message in the thread**, with the lead's address in To or Cc, and **not** labelled
+      `DRAFT` (an unsent draft, including one this routine wrote on an earlier day, is not
+      an answer). The newsletter or
       campaign the lead replied to does not count (it predates the lead's message, and it is
       not addressed to them), and neither does `helen+canned.response@smbdealhunter.xyz`
       (the bonus automation).

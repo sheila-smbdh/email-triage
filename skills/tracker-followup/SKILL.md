@@ -235,10 +235,25 @@ question a single search answers. Jordan is `jkempster@smbdealhunter.xyz`. Run o
 address swapped, for each other distinct address in a due row's `Forward to …` action:
 
 ```
-query: {to:jkempster@smbdealhunter.xyz cc:jkempster@smbdealhunter.xyz bcc:jkempster@smbdealhunter.xyz from:jkempster@smbdealhunter.xyz} after:<YYYY/MM/DD>
+query: {to:jkempster@smbdealhunter.xyz cc:jkempster@smbdealhunter.xyz bcc:jkempster@smbdealhunter.xyz from:jkempster@smbdealhunter.xyz} -in:drafts after:<YYYY/MM/DD>
 max_results: 100
 verbose: false
 ```
+
+**`-in:drafts` is not optional, and drafts never count as a forward.** The digest writes
+Helen's reply into her mailbox as a Gmail draft that cc's the forward target, so every
+Tier 1 thread already holds an unsent message with Jordan (or Scott, or the previous
+closer/setter) on it. Without `-in:drafts` that draft matches this query on the row's own
+thread ID, and the row reads as forwarded the day after it is logged, before Helen has
+touched it. As a second guard, discard any result whose `labelIds` contains `DRAFT` before
+matching. Only a message Helen actually **sent** (or one the forward target sent) is
+evidence of a forward.
+
+This rule exists because of the passes of 2026-10-03 to 2026-10-06, which flipped rows 64,
+65, 71, 72 and 73 (Jim Schmidt, Al Williamson, Josh Grahlman, Shahram Novel, standon) to
+`In Progress` with M set to the day of the routine's own draft. None had been forwarded.
+They dropped out of ⏳ *Still not forwarded*, so Helen was never reminded, and STEP 3 started
+chasing Jordan for leads he had never received.
 
 Braces are Gmail's OR syntax. Set `after:` a day before the oldest due row's Date so the
 window covers every lead in play, and page through `nextPageToken` until it is absent or
@@ -307,7 +322,9 @@ due Tier 1 row the forward check found **not forwarded**, before listing it anyw
   call per not-forwarded row; there are only a handful) and take the lead's address from
   their message.
 - **Look for a message from `helen@smbdealhunter.xyz`** in that thread, dated **after the
-  lead's first message** and with the lead's address in To or Cc. The newsletter the lead
+  lead's first message** and with the lead's address in To or Cc, and **not** labelled
+  `DRAFT`. The routine's own unsent draft sits on this thread and is from Helen to the lead;
+  it is not an answer. The newsletter the lead
   replied to is older and not addressed to them, so it never counts; neither does
   `helen+canned.response@smbdealhunter.xyz`. Many leads reply to the same newsletter, so
   never match on a subject like `Re: New Deals: …` alone.
