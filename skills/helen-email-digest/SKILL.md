@@ -869,14 +869,14 @@ its template has it.
   or re-dated figure. Add no detail about it (which deals, how many members, what kind of
   businesses), **even if the lead asks**. The call handles that.
 - **The figure is fixed text in this file, not something the routine works out.** It is a
-  trailing 12-month number, so it goes stale. It was set on **2026-10-07**, and the owner of
-  updating it is **not yet assigned**. When the owner gives a new figure, change it in all
-  four places (both templates above, both HTML bodies in STEP 3) in one edit, and update the
-  date here. The routine never edits, rounds or recomputes it on its own.
-- **Stale-figure reminder.** If a run is more than 90 days after the date above, add one
-  line to the run report: *"The $175M social proof line in Helen's Buy Box and specific-deal
-  drafts was set on 2026-10-07; please confirm it is still current."* Keep using the figure
-  as written; do not drop it or change it.
+  trailing 12-month number, so it goes stale. It was set on **2026-10-07**, and **Sheila owns
+  updating it** (Sheila, 2026-10-07). When she gives a new figure, change it in all four
+  places (both templates above, both HTML bodies in STEP 3) in one edit, and update the date
+  here. The routine never edits, rounds or recomputes it on its own.
+- **Stale-figure reminder: tag Sheila in Slack.** On any run more than 90 days after the
+  date above, the "new today" section of the Slack post ends with a line tagging Sheila
+  (see *The $175M reminder* in STEP 4). It repeats on every run until the date here is
+  updated. Keep using the figure as written in the meantime; do not drop it or change it.
 
 **Price Wall**
 
@@ -1528,6 +1528,22 @@ Each bullet carries the four things Helen needs to act without opening anything 
 
 Keep the last row to facts the lead actually wrote. It is not a place for commentary on the
 lead's quality or for restating the summary.
+
+### The $175M reminder
+
+When today is more than 90 days after the date the $175M figure was set (see *The $175M
+line* in STEP 2), end the section with this line, after the bullets (or after `No new leads
+to forward today.`), filling in the date and the day count:
+
+```
+🔔 <@U0BM6J8KM32> The $175M line in Helen's Buy Box and specific-deal drafts was set on <Month D, YYYY> (<N> days ago). Please confirm it is still current or send a new figure.
+```
+
+`<@U0BM6J8KM32>` is Sheila's Slack user id, written in that form so she is notified. This is
+the one line in the section that is not a lead, and the one mention besides Helen's in the
+post (Sheila's call, 2026-10-07: she owns the figure and wants the tag). It goes in on every
+run past the 90 days, so it keeps appearing until the date in STEP 2 is updated. Before 90
+days, leave it out entirely.
 
 ### When there are no new leads
 
