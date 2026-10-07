@@ -820,7 +820,7 @@ when she has thirty seconds — but in whole words.
 **Buy Box**
 
 ```
-Hey [First Name], [their ask] is something we can help with. @Jordan on our team can grab 15 minutes with you to better understand what you're looking for.
+Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our Pro Program is built for. We help you source, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.
 ```
 
 **Ready Now**
@@ -944,11 +944,21 @@ the first three words is worse than not using it.
 Never infer a lead's gender from their name; where a third-person reference is
 unavoidable, use they/them unless the sender's own signature makes it explicit.
 
-**Their ask (Buy Box).** `[their ask]` is the concrete thing they asked for, phrased as a
-gerund and in their own words: "finding deals in Central FL", "finding hotels in
-California", "finding absentee businesses". If their ask is too vague to name in three or
-four words, use "that" — *"Hey Scott, that is something we can help with."* Never inflate
-a vague ask into a specific one.
+**Their criteria and area (Buy Box).** `[their criteria]` and `[their area]` are the kind
+of business and the location they asked about, in their own words. Drop whichever piece they
+did not give:
+
+- Both given → "finding custom deals like HVAC businesses in NYC"
+- Criteria only → drop " in [their area]": "finding custom deals like absentee laundromats"
+- Area only → drop " like [their criteria]": "finding custom deals in Central FL"
+- Neither, or too vague to name → "finding custom deals like that"
+
+Never inflate a vague ask into a specific one, and never add a criterion or place they did
+not mention.
+
+**The 6 to 12 months line lives in the Buy Box template only** (Sheila, 2026-10-07). It is
+the one timeline a lead draft may carry; do not copy it into any other template or elaborate
+on it.
 
 Ready Now and Price Wall take no personalisation beyond the first name. The forwarding
 template takes the lead's first name, the forward target's first name, and one of its three
@@ -1048,14 +1058,15 @@ a Jordan draft in column N. Only Helen's opening move changes.
 **Never invent commercial terms.** The 1% figure appears in the plain Price Wall template
 and nowhere else — not in the call-pushback variant, which deliberately withholds it, and
 not in the what-a-business-sells-for variant, which is answering a different question. The guarantee is named, without terms, in the plain and
-call-pushback Price Wall templates, and nowhere else. Do not quote a price, a fee, a range, a guarantee, a timeline, or a deal specific
+call-pushback Price Wall templates, and nowhere else. The 6 to 12 months timeline appears in
+the Buy Box template and nowhere else. Do not quote a price, a fee, a range, a guarantee, a timeline, or a deal specific
 in any other draft, do not elaborate on the 1% beyond the sentence given, and do not state
 what the guarantee actually promises — even if the lead asked a direct question about either.
 If a lead asks something the template does not answer, send the template as-is and let the
 call handle it.
 
 **Nothing else goes in.** A finished lead draft should be the template plus a first name
-and, for Buy Box, their ask (or, for the forwarding template, the forward target's name and
+and, for Buy Box, their criteria and area (or, for the forwarding template, the forward target's name and
 the right `who you …` line) — and nothing more. The bonus reply takes no substitutions at
 all. The operator reply takes only the first name (its bracketed line stays as it is), and
 the listing link reply takes only the verified link. If a draft says something the template does not, take that back out.
@@ -1191,8 +1202,8 @@ the sender's own signature makes it explicit.
 
 **`[buy box criteria]`** (Buy Box) is what they asked for, in their own words, phrased to
 follow "interested in": `hotels in California`, `businesses in Central FL`, `absentee
-businesses`. Note this reads differently from Helen's `[their ask]`, which is a gerund
-("finding deals in Central FL"); do not paste one into the other. **Never inflate a vague ask
+businesses`. Note this reads differently from Helen's `[their criteria]` / `[their area]`,
+which follow "finding custom deals like … in …"; do not paste one into the other. **Never inflate a vague ask
 into a specific one.** If the ask is too vague to name in a few words, write `what we've got`.
 
 #### What day 1 never does
