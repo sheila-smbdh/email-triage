@@ -178,8 +178,10 @@ open lead comes due on effectively every pass.
 ### Scope filter — apply in this order
 
 0. **The sender (column I) is on the never-track list → out of scope.** The list lives in
-   `helen-email-digest` STEP 2, drop rule 8, and is currently **Hani Sammour** and **Ryan
-   Hogan**. Match on the name, ignoring case. Skip the row entirely: no checks, no draft, no
+   `helen-email-digest` STEP 2, drop rule 8, and is currently **Hani Sammour**, **Ryan
+   Hogan** and **Scott Boyette** (`boyettecs@gmail.com`). Match on the name, ignoring case
+   (for Scott Boyette, the full name or that address, never a bare "Scott", which would
+   catch Scott Moorhouse). Skip the row entirely: no checks, no draft, no
    writes to any column, and **never mention them in the Slack post**, not in 🆕, ⏳, the summary or
    anywhere else, and not in a count. The digest writes no new rows for them, so a row like
    this is left over from before the sender was added; Sheila deletes those by hand. Say in
