@@ -827,12 +827,12 @@ when she has thirty seconds — but in whole words.
 **Buy Box**
 
 ```
-Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our Pro Program is built for. We help you source, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.
+Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our Pro Program is built for. We help you source, finance, and acquire a business in 6 to 12 months, and in the past year alone we've helped our members close over $175M in deals. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.
 ```
 
 **"Pro Program" is a link to https://pro.smbdealhunter.xyz/** (Sheila, 2026-10-07). The words themselves are
 hyperlinked, with no URL shown, so this one draft is created as HTML in STEP 3 (see *The
-Buy Box draft is HTML* there). Wherever the draft is written as plain text (tracker column
+Buy Box and specific-deal drafts are HTML* there). Wherever the draft is written as plain text (tracker column
 L, Slack), put the URL in brackets after "built for": `is exactly what our Pro Program is
 built for (https://pro.smbdealhunter.xyz/).` Use this URL exactly; do not swap in another page.
 
@@ -846,7 +846,7 @@ Hey [First Name], we can definitely help. Looping in Jordan from our team. @Jord
 about a deal Helen featured, rather than signalling readiness in general)
 
 ```
-Hey [First Name], deals like this tend to go quickly. Our Pro Program helps buyers move fast and make competitive offers so they don't miss out. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?
+Hey [First Name], deals like this tend to go quickly. Our Pro Program helps buyers move fast and make competitive offers so they don't miss out. In the past 12 months, we've helped our members close over $175M in deals. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?
 ```
 
 **"Pro Program" is a link to https://pro.smbdealhunter.xyz/ here too** (Sheila, 2026-10-07),
@@ -855,6 +855,28 @@ draft is also created as HTML in STEP 3 (see *The Buy Box and specific-deal draf
 there). Wherever it is written as plain text (tracker column L, Slack), put the URL in
 brackets after "Pro Program": `Our Pro Program (https://pro.smbdealhunter.xyz/) helps buyers
 move fast...` Use this URL exactly.
+
+**The $175M line: social proof, in these two drafts only** (Sheila, 2026-10-07). The Buy Box
+draft says *"and in the past year alone we've helped our members close over $175M in deals"*;
+the specific-deal Ready Now draft says *"In the past 12 months, we've helped our members
+close over $175M in deals."* The two are worded differently on purpose; keep each exactly as
+its template has it.
+
+- **Only these two drafts carry it.** Never put it in the plain Ready Now, any Price Wall
+  variant, the forwarding template, the bonus reply, the operator reply, or the listing link
+  reply (*"Here you go!"*), and never in a Jordan draft.
+- **Exact wording, every time.** `$175M`, not "$175 million", "$175m", "175M" or a rounded
+  or re-dated figure. Add no detail about it (which deals, how many members, what kind of
+  businesses), **even if the lead asks**. The call handles that.
+- **The figure is fixed text in this file, not something the routine works out.** It is a
+  trailing 12-month number, so it goes stale. It was set on **2026-10-07**, and the owner of
+  updating it is **not yet assigned**. When the owner gives a new figure, change it in all
+  four places (both templates above, both HTML bodies in STEP 3) in one edit, and update the
+  date here. The routine never edits, rounds or recomputes it on its own.
+- **Stale-figure reminder.** If a run is more than 90 days after the date above, add one
+  line to the run report: *"The $175M social proof line in Helen's Buy Box and specific-deal
+  drafts was set on 2026-10-07; please confirm it is still current."* Keep using the figure
+  as written; do not drop it or change it.
 
 **Price Wall**
 
@@ -1017,6 +1039,7 @@ itself.
 **The Pro Program sentence lives in this template only.** *"Our Pro Program helps buyers move
 fast and make competitive offers so they don't miss out"* is the whole of what it says; do
 not elaborate on it, and do not copy it into the plain Ready Now template, which is unchanged.
+The same goes for the $175M line that follows it (see *The $175M line* above).
 
 **Do not answer the availability question.** The template says nothing about whether the
 deal is still on the market, and neither should you: this task does not know, and a wrong
@@ -1091,7 +1114,8 @@ a Jordan draft in column N. Only Helen's opening move changes.
 and nowhere else — not in the call-pushback variant, which deliberately withholds it, and
 not in the what-a-business-sells-for variant, which is answering a different question. The guarantee is named, without terms, in the plain and
 call-pushback Price Wall templates, and nowhere else. The 6 to 12 months timeline appears in
-the Buy Box template and nowhere else. Do not quote a price, a fee, a range, a guarantee, a timeline, or a deal specific
+the Buy Box template and nowhere else. The $175M figure appears in the Buy Box and
+specific-deal Ready Now templates and nowhere else, worded exactly as given. Do not quote a price, a fee, a range, a guarantee, a timeline, a results figure, or a deal specific
 in any other draft, do not elaborate on the 1% beyond the sentence given, and do not state
 what the guarantee actually promises — even if the lead asked a direct question about either.
 If a lead asks something the template does not answer, send the template as-is and let the
@@ -1373,13 +1397,13 @@ hyperlink, so they take `is_html: true`, and the body is the filled-in draft wit
 Program" wrapped in a link and the line breaks written as tags. Buy Box:
 
 ```
-Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our <a href="https://pro.smbdealhunter.xyz/">Pro Program</a> is built for. We help you source, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.<br><br><br><br>
+Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our <a href="https://pro.smbdealhunter.xyz/">Pro Program</a> is built for. We help you source, finance, and acquire a business in 6 to 12 months, and in the past year alone we've helped our members close over $175M in deals. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.<br><br><br><br>
 ```
 
 Ready Now, asking about a specific deal (on a `Send to Jordan` row):
 
 ```
-Hey [First Name], deals like this tend to go quickly. Our <a href="https://pro.smbdealhunter.xyz/">Pro Program</a> helps buyers move fast and make competitive offers so they don't miss out. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?<br><br><br><br>
+Hey [First Name], deals like this tend to go quickly. Our <a href="https://pro.smbdealhunter.xyz/">Pro Program</a> helps buyers move fast and make competitive offers so they don't miss out. In the past 12 months, we've helped our members close over $175M in deals. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?<br><br><br><br>
 ```
 
 The four `<br>` are the three blank lines. Escape `&`, `<` and `>` in anything taken from
