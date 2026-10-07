@@ -281,7 +281,8 @@ in the task file. Three constraints on them are deliberate and should survive fu
 edits:
 
 - **The 1% pricing line lives in the Price Wall template and nowhere else.** No other
-  draft may quote a price, fee, range, guarantee or timeline, and the 1% sentence is not
+  draft may quote a price, fee, range, guarantee or timeline (the one exception, since
+  2026-10-07, is the Buy Box template's "6 to 12 months" for the Pro Program), and the 1% sentence is not
   to be elaborated on — even when a lead asks directly. Unanswered questions are what the
   call is for. This is the one place where a plausible-sounding invention would reach a
   customer as a commercial commitment.
