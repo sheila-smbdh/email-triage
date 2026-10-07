@@ -454,9 +454,13 @@ Drop the lead when any of these holds:
    handover and dedup checks: what the email says does not matter, and a "Yes", a real
    question or a "please help me" from one of them is still dropped. Do **not** list them in
    the run report's dropped-leads list either; they are a standing rule, not a judgement call.
-   Sheila's call, 2026-09-26 (Hani) and 2026-09-29 (Ryan).
+   Sheila's call, 2026-09-26 (Hani), 2026-09-29 (Ryan) and 2026-10-07 (Scott Boyette).
    - **Hani Sammour**
    - **Ryan Hogan**
+   - **Scott Boyette** (`boyettecs@gmail.com`). Match on the full name or that address:
+     he is not Scott Moorhouse, the team's client contact, so a bare "Scott" is not enough.
+     He emails Helen constantly; she has already forwarded him to both Yobani and Jordan,
+     and he never showed real interest or booked a call.
 
    `tracker-followup` skips any tracker row from these senders too (its scope filter), so they
    never reach Slack from either task. If one of them ever turns up with a row on
