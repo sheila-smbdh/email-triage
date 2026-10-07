@@ -670,7 +670,9 @@ test for Sheila. Nothing else goes in either.
     ↳ <Before you send: ...>        (only when there is something to say)
 ```
 
-Mention Helen once, in the header line. No `@channel` or `@here`.
+Mention Helen once, in the header line. No `@channel` or `@here`. The one other mention is
+Sheila's, on the 🔔 *$175M reminder* line that `helen-email-digest` adds at the end of its
+section once that figure is over 90 days old; post it as built.
 
 **🆕 New today** is the section `helen-email-digest` handed over from its STEP 4 earlier in
 this session. Post it as built; do not re-derive it or add to it. If the digest did not run
