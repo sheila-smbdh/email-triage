@@ -178,8 +178,10 @@ open lead comes due on effectively every pass.
 ### Scope filter — apply in this order
 
 0. **The sender (column I) is on the never-track list → out of scope.** The list lives in
-   `helen-email-digest` STEP 2, drop rule 8, and is currently **Hani Sammour** and **Ryan
-   Hogan**. Match on the name, ignoring case. Skip the row entirely: no checks, no draft, no
+   `helen-email-digest` STEP 2, drop rule 8, and is currently **Hani Sammour**, **Ryan
+   Hogan** and **Scott Boyette** (`boyettecs@gmail.com`). Match on the name, ignoring case
+   (for Scott Boyette, the full name or that address, never a bare "Scott", which would
+   catch Scott Moorhouse). Skip the row entirely: no checks, no draft, no
    writes to any column, and **never mention them in the Slack post**, not in 🆕, ⏳, the summary or
    anywhere else, and not in a count. The digest writes no new rows for them, so a row like
    this is left over from before the sender was added; Sheila deletes those by hand. Say in
@@ -233,10 +235,25 @@ question a single search answers. Jordan is `jkempster@smbdealhunter.xyz`. Run o
 address swapped, for each other distinct address in a due row's `Forward to …` action:
 
 ```
-query: {to:jkempster@smbdealhunter.xyz cc:jkempster@smbdealhunter.xyz bcc:jkempster@smbdealhunter.xyz from:jkempster@smbdealhunter.xyz} after:<YYYY/MM/DD>
+query: {to:jkempster@smbdealhunter.xyz cc:jkempster@smbdealhunter.xyz bcc:jkempster@smbdealhunter.xyz from:jkempster@smbdealhunter.xyz} -in:drafts after:<YYYY/MM/DD>
 max_results: 100
 verbose: false
 ```
+
+**`-in:drafts` is not optional, and drafts never count as a forward.** The digest writes
+Helen's reply into her mailbox as a Gmail draft that cc's the forward target, so every
+Tier 1 thread already holds an unsent message with Jordan (or Scott, or the previous
+closer/setter) on it. Without `-in:drafts` that draft matches this query on the row's own
+thread ID, and the row reads as forwarded the day after it is logged, before Helen has
+touched it. As a second guard, discard any result whose `labelIds` contains `DRAFT` before
+matching. Only a message Helen actually **sent** (or one the forward target sent) is
+evidence of a forward.
+
+This rule exists because of the passes of 2026-10-03 to 2026-10-06, which flipped rows 64,
+65, 71, 72 and 73 (Jim Schmidt, Al Williamson, Josh Grahlman, Shahram Novel, standon) to
+`In Progress` with M set to the day of the routine's own draft. None had been forwarded.
+They dropped out of ⏳ *Still not forwarded*, so Helen was never reminded, and STEP 3 started
+chasing Jordan for leads he had never received.
 
 Braces are Gmail's OR syntax. Set `after:` a day before the oldest due row's Date so the
 window covers every lead in play, and page through `nextPageToken` until it is absent or
@@ -294,6 +311,44 @@ On a `Forward to …` row, **stop there.** F flips the owner to that person's fi
 the row is done; it drops out of scope from the next pass (STEP 1, rule 3). No STEP 3, no
 STEP 3A, no draft. M is still written (it records when Helen handed the lead over), but O,
 Q and S stay blank: they track Jordan's chase, and Jordan is not on this lead.
+
+**Not forwarded, but Helen already answered the lead** → Helen handled it herself, and
+Jordan (or whoever D names) is not needed. Only Helen replies to leads and forwards them.
+Sheila's call, 2026-10-06: *"If Helen already replied to a lead, but she didn't cc Jordan,
+that means Jordan doesn't need to be involved in the conversation."* Run this check on every
+due Tier 1 row the forward check found **not forwarded**, before listing it anywhere:
+
+- **Fetch the row's thread** on `gmail_kath-tiou` (`GMAIL_FETCH_MESSAGE_BY_THREAD_ID`, one
+  call per not-forwarded row; there are only a handful) and take the lead's address from
+  their message.
+- **Look for a message from `helen@smbdealhunter.xyz`** in that thread, dated **after the
+  lead's first message** and with the lead's address in To or Cc, and **not** labelled
+  `DRAFT`. The routine's own unsent draft sits on this thread and is from Helen to the lead;
+  it is not an answer. The newsletter the lead
+  replied to is older and not addressed to them, so it never counts; neither does
+  `helen+canned.response@smbdealhunter.xyz`. Many leads reply to the same newsletter, so
+  never match on a subject like `Re: New Deals: …` alone.
+
+The forward check has already ruled out a reply with the forward target on it (that would
+have matched as forwarded), so a match here is an answer that left them off.
+
+**The one exception is the Price Wall call-pushback row** (Helen's draft in L asks whether
+they want someone looped in). Helen's reply there is the routine's own question to the lead,
+and the row is waiting on their answer: treat it as **not forwarded** below, as before.
+
+An answered row is **out of the forward list for good**:
+
+- **No writes at all**: B, E, G, M and every other column stay as they are. Do not touch G.
+- **Not in the Slack post**: not in ⏳, not in the summary counts, nowhere.
+- **In the run report**, under "Answered by Helen without Jordan — delete these rows", with
+  the row number, lead name and the date of Helen's reply. The digest no longer logs these
+  leads (`helen-email-digest` drop rule 10), so a row like this predates the rule; Sheila
+  deletes it by hand, as with the never-track rows.
+
+Real cases, from Sheila's 2026-10-06 review of the ⏳ list, each listed for days although
+Helen had already answered: **Matt Kenny** (Buy Box, asked how many businesses with positive
+cash flow will self-finance), **Jennifer Hill** (asked for details on the Multi-Location
+Preschool listing in FL; the View Listing link was broken), and **Kevin B.**
 
 **Not forwarded** → nothing has happened. Write:
 
@@ -624,7 +679,7 @@ or failed before building it, put the one line `_Today's new-lead scan did not r
 `No new leads to forward today.`
 
 **⏳ Still not forwarded** is every Tier 1 row STEP 2 found **not forwarded**, oldest first.
-Nothing else goes here: forwarded rows, Jordan's progress, rows STEP 3 could not resolve, and
+Nothing else goes here: rows Helen already answered without Jordan (STEP 2), forwarded rows, Jordan's progress, rows STEP 3 could not resolve, and
 drafts all stay out of the message. When there are none, the line is `None. Every older lead
 has been forwarded.`
 

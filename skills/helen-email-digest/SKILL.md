@@ -375,7 +375,8 @@ no Slack bullet (it is open-and-send, like a bonus claim). It goes in the run re
 Threads **in one of the three categories above** where Helen has already made the intro and
 handed off to someone else at SMB Deal Hunter. Signals: a teammate (e.g. Kyle Hopkins,
 Jordan) is now an active participant replying in the thread, or Helen has explicitly
-forwarded/looped a teammate in.
+forwarded/looped a teammate in. Only **sent** mail counts: a message labelled `DRAFT` is
+never a handover, including the cc'd draft this routine left on the thread on an earlier day.
 
 When this is the case the email goes here **instead of** Tier 1 — do not double-list it.
 For each entry also record:
@@ -454,9 +455,13 @@ Drop the lead when any of these holds:
    handover and dedup checks: what the email says does not matter, and a "Yes", a real
    question or a "please help me" from one of them is still dropped. Do **not** list them in
    the run report's dropped-leads list either; they are a standing rule, not a judgement call.
-   Sheila's call, 2026-09-26 (Hani) and 2026-09-29 (Ryan).
+   Sheila's call, 2026-09-26 (Hani), 2026-09-29 (Ryan) and 2026-10-07 (Scott Boyette).
    - **Hani Sammour**
    - **Ryan Hogan**
+   - **Scott Boyette** (`boyettecs@gmail.com`). Match on the full name or that address:
+     he is not Scott Moorhouse, the team's client contact, so a bare "Scott" is not enough.
+     He emails Helen constantly; she has already forwarded him to both Yobani and Jordan,
+     and he never showed real interest or booked a call.
 
    `tracker-followup` skips any tracker row from these senders too (its scope filter), so they
    never reach Slack from either task. If one of them ever turns up with a row on
@@ -487,6 +492,48 @@ Drop the lead when any of these holds:
    - **Short is not the test.** *"Interested, call me"* and *"is this still available?"* are
      short and real. Drop only when the email is hostile or a dare **and** asks for nothing
      the team could act on.
+
+10. **Helen has already answered the lead without cc'ing Jordan.** Only Helen replies to
+    leads and forwards them. If she has replied to a lead herself and left Jordan off, she
+    has decided the lead does not need Jordan, and it is her conversation now. Sheila's call,
+    2026-10-06: *"If Helen already replied to a lead, but she didn't cc Jordan, that means
+    Jordan doesn't need to be involved in the conversation."* Drop it: no tracker row, no
+    draft (Helen has already written her reply), and no Slack bullet. This includes the ✋
+    cases: an operator or a link request Helen has already answered needs nothing more.
+
+    How to tell, for every email that would otherwise be Tier 1, 🟢 or ✋:
+
+    - **Fetch the thread** (`GMAIL_FETCH_MESSAGE_BY_THREAD_ID`, `gmail_kath-tiou`) and look
+      for a message **from `helen@smbdealhunter.xyz`**, dated **after the lead's first
+      message in the thread**, with the lead's address in To or Cc, and **not** labelled
+      `DRAFT` (an unsent draft, including one this routine wrote on an earlier day, is not
+      an answer). The newsletter or
+      campaign the lead replied to does not count (it predates the lead's message, and it is
+      not addressed to them), and neither does `helen+canned.response@smbdealhunter.xyz`
+      (the bonus automation).
+    - **That reply must leave Jordan off.** If `jkempster@smbdealhunter.xyz` is in its To, Cc
+      or Bcc, it is a forward, not this rule: the thread is a 🟢 handover as before. A reply
+      that cc's whoever else the lead belongs with (Scott, a previous closer/setter) is a
+      forward to them too, and is a 🟢 handover, not this rule.
+    - **A later message from the lead does not reopen it.** Once Helen has answered without
+      Jordan, the lead's follow-ups on that thread are part of the same conversation and are
+      dropped too. Only a new thread from the lead is classified afresh.
+
+    The one exception is the reply this routine drafted to **wait on the lead**: the Price
+    Wall **call-pushback** draft, which asks the lead's permission before looping anyone in.
+    When Helen has sent that and the lead has a row, the row is waiting on the lead's answer;
+    it is not this rule, and the dedup check below already keeps the thread off the digest.
+
+    Real cases, all from Sheila's 2026-10-06 review of the ⏳ *Still not forwarded* list,
+    where each one sat for days although Helen had already answered:
+    - **Matt Kenny**, Buy Box, asking how many businesses with positive cash flow will
+      self-finance (*Re: New Deals: Two-site express car wash with real estate…*).
+    - **Jennifer Hill**, asking for details on the Multi-Location Preschool listing (FL)
+      after the View Listing link broke (*Re: New Off-Market Businesses For Sale*).
+    - **Kevin B.**, the operator asking where he fits.
+
+    List each one in the run report as "answered by Helen without Jordan", with the date of
+    her reply.
 
 A drop rule **wins over everything below**, including the Close checks: a client asking
 about a Sydney business is still dropped. Where a rule needs a judgement (is this a real
@@ -799,7 +846,7 @@ Hey [First Name], we can definitely help. Looping in Jordan from our team. @Jord
 about a deal Helen featured, rather than signalling readiness in general)
 
 ```
-Hey [First Name], deals like these go pretty quickly, but we can help you move fast. Looping in Jordan from our team. @Jordan, do you mind finding 15 minutes to give [First Name] a call?
+Hey [First Name], deals like this tend to go quickly. Our Pro Program helps buyers move fast and make competitive offers so they don't miss out. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?
 ```
 
 **Price Wall**
@@ -952,9 +999,21 @@ morning. Sheila's call is that a lead asking about one specific listing should h
 scarcity first — it is true, and it is what moves someone who has already picked a deal out
 of the newsletter.
 
+**Why the specific-deal template names the Pro Program** (Sheila, 2026-10-07). The draft
+primes the lead on the Pro Program before Jordan ever speaks to them, so he can open the call
+on *"so you're interested in the Pro Program..."* rather than on the listing. It is also a
+filter: *"in case you'd like to learn more"* leaves the next step to the lead, so someone who
+only wanted the listing's details and does not want to talk drops out by not booking. Keep
+"chat with", not "give [First Name] a call", and do not add anything about the listing
+itself.
+
+**The Pro Program sentence lives in this template only.** *"Our Pro Program helps buyers move
+fast and make competitive offers so they don't miss out"* is the whole of what it says; do
+not elaborate on it, and do not copy it into the plain Ready Now template, which is unchanged.
+
 **Do not answer the availability question.** The template says nothing about whether the
 deal is still on the market, and neither should you: this task does not know, and a wrong
-answer in either direction costs the lead. *"Deals like these go pretty quickly"* is the
+answer in either direction costs the lead. *"Deals like this tend to go quickly"* is the
 whole of what gets said about it, and the call handles the rest — the same bar as every
 other draft, no price, no deal specific, no timeline the template does not carry.
 
@@ -1060,6 +1119,12 @@ they get no Jordan draft at all.
 
 **Jordan's draft is not created in Gmail.** STEP 3 drafts Helen's reply only. Jordan sends
 his from his own mailbox after she forwards, and column N is where he reads it from.
+
+**Column N also feeds Jordan's Day 1 task in Close.** The hourly "Helen → Jordan lead intake"
+Routine (prompt copy: [`docs/routine-jordan-lead-intake.md`](../../docs/routine-jordan-lead-intake.md))
+creates his Day 1 / Day 2 / Day 5 tasks once Helen loops him in, and copies this row's N into
+the Day 1 task verbatim (from 2026-10-07). It finds the row by the column J thread id in Helen's
+mailbox, so keep J's `#all/<threadId>` link intact. Whatever N says is what Jordan sees in Close.
 
 **The draft is provisional, and writing it resolves nothing.** At digest time the lead has
 not been forwarded yet and no setter-call check has run for them. `tracker-followup` still
@@ -1451,6 +1516,10 @@ Tab: **`Tracker (JordanK)`** (sheet id `1722038405`)
 Add ONE new row per email that appeared in the Slack digest — Tier 1 rows and Tracking
 Handover Progress rows. Nothing else gets a row. What was dropped in STEP 1–2 is not
 logged.
+
+**A lead Helen has already answered without cc'ing Jordan gets no row** (drop
+rule 10, Sheila, 2026-10-06), and no Slack bullet. Jordan is not in that conversation, so
+there is nothing for `tracker-followup` to chase.
 
 **✋ Helen-replies-herself emails get no row either** (Sheila, 2026-10-01): an operator
 asking for advice and a listing link request are not Jordan handoffs, so there is nothing
