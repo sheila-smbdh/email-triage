@@ -1675,7 +1675,10 @@ Write column J as `=HYPERLINK("<gmail thread link>","<subject>")`.
 
 - **Date** — today's digest date
 - **Tier** — `1` for Tier 1 rows, `In Progress` for Tracking Handover Progress rows. These
-  are the only two values this routine writes.
+  are the only two values this routine writes. Sheila may also set `Closed` by hand on a
+  lead that needs no further follow-up (`tracker-followup` skips it); never write it, and
+  never change it. A `Closed` sender is still on the tab, so *Dedup* keeps them from getting
+  a new row.
 - **Category** — `Buy Box`, `Ready Now`, or `Price Wall`. No other value.
 - **Recommended Action** — `Send to Jordan` or `Forward to <First Last> (<email>)`, decided
   in STEP 2. Not a fixed lookup from the category: the existing-relationship rule in STEP 2

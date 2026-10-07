@@ -199,7 +199,17 @@ open lead comes due on effectively every pass.
    forwarded it to the person who already knows the lead, and that is the end of this
    task's involvement. Skip it like an `Ignore` row, and do not touch G.
 4. **`Tier` (B) is `In Progress` and D is `Send to Jordan` → run STEP 3** (the Jordan check).
-5. Any other tier value is historical. Leave it alone.
+5. **`Tier` (B) is `Closed` → out of scope.** Sheila sets this by hand on a lead that needs
+   no further follow-up, typically one Helen answered herself without cc'ing Jordan (see
+   *Not forwarded, but Helen already answered the lead* in STEP 2). Skip it like an
+   `Ignore` row: no checks, no writes to any column (G included), and nothing about it in
+   the Slack post, not in ⏳, the summary counts or anywhere else. This task never writes
+   `Closed` itself, and never changes a `Closed` row back.
+
+   Added 2026-10-07 for **Matt Kenny** (row 70): Helen answered him without Jordan, but
+   his row sat at `In Progress` / `Send to Jordan`, so every pass ran the Jordan check on a
+   closed case.
+6. Any other tier value is historical. Leave it alone.
 
 ---
 
@@ -343,7 +353,8 @@ An answered row is **out of the forward list for good**:
 - **In the run report**, under "Answered by Helen without Jordan — delete these rows", with
   the row number, lead name and the date of Helen's reply. The digest no longer logs these
   leads (`helen-email-digest` drop rule 10), so a row like this predates the rule; Sheila
-  deletes it by hand, as with the never-track rows.
+  either deletes it by hand, as with the never-track rows, or sets its Tier to `Closed`
+  (STEP 1, rule 5) to keep it as a record.
 
 Real cases, from Sheila's 2026-10-06 review of the ⏳ list, each listed for days although
 Helen had already answered: **Matt Kenny** (Buy Box, asked how many businesses with positive
