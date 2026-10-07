@@ -535,6 +535,16 @@ Drop the lead when any of these holds:
     List each one in the run report as "answered by Helen without Jordan", with the date of
     her reply.
 
+11. **The email is not in English.** Helen does not answer leads written in another
+    language, whatever they say: a Spanish (or any other non-English) email with a budget,
+    a phone number or a call request is still dropped. No tracker row, no Helen draft, no
+    Jordan draft, no Slack bullet, and no ✋ reply either. Judge by **the sender's own
+    words** above any quoted newsletter: an English email with a foreign name, a Spanish
+    sign-off or a stray word stays in; an email written mostly in another language is
+    dropped. Sheila's call, 2026-10-07. Real case: **Julio Galindo Hernandez**, wrote in
+    Spanish → drop (his tracker row was deleted by hand, and he must not appear in any
+    Slack post).
+
 A drop rule **wins over everything below**, including the Close checks: a client asking
 about a Sydney business is still dropped. Where a rule needs a judgement (is this a real
 estate play? is this figure their whole budget?), apply the same 70% bar as *On borderline
