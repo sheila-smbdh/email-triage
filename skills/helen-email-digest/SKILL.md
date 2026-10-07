@@ -1020,8 +1020,9 @@ and nowhere else — not in the call-pushback variant, which deliberately withho
 not in the what-a-business-sells-for variant, which is answering a different question. The guarantee is named, without terms, in the plain and
 call-pushback Price Wall templates, and nowhere else. Do not quote a price, a fee, a range, a guarantee, a timeline, or a deal specific
 in any other draft, do not elaborate on the 1% beyond the sentence given, and do not state
-what the guarantee actually promises. The one timeline any draft carries is the Buy Box
-template's "6 to 12 months", word for word; do not repeat it elsewhere or change the range — even if the lead asked a direct question about either.
+what the guarantee actually promises — even if the lead asked a direct question about either.
+The one timeline any draft carries is the Buy Box template's "6 to 12 months", word for
+word; do not repeat it elsewhere or change the range.
 If a lead asks something the template does not answer, send the template as-is and let the
 call handle it.
 
