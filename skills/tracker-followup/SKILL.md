@@ -190,6 +190,13 @@ open lead comes due on effectively every pass.
    This rule exists because the 2026-09-28 follow-up post listed Hani Sammour twice and Ryan
    Hogan once under 🔴 *Needs Helen*: their rows were logged before the digest started
    dropping them, and this filter had no idea the list existed.
+0a. **The lead wrote in a language other than English → out of scope.** The digest drops
+   these (`helen-email-digest` drop rule 11, Sheila's call 2026-10-07): Helen does not answer
+   them. Judge by column K and, if it is unclear, the lead's own words in the thread. Treat
+   the row exactly like rule 0: no checks, no draft, no writes, **never in the Slack post**
+   (not in ⏳, the summary or any count), and list it in the run report as "Not in English —
+   delete this row" so Sheila can remove it. Real case: Julio Galindo Hernandez (Spanish);
+   his row is already deleted.
 1. **`Recommended Action` (D) is `Ignore` → out of scope.** Skip the row entirely: no
    checks, no draft, and **do not touch column G**. The digest stopped writing `Ignore` on
    2026-09-24 (those leads are now dropped with no row), so only older rows carry it. They
