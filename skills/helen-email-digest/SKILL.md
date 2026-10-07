@@ -830,6 +830,12 @@ when she has thirty seconds — but in whole words.
 Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our Pro Program is built for. We help you source, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.
 ```
 
+**"Pro Program" is a link to https://pro.smbdealhunter.xyz/** (Sheila, 2026-10-07). The words themselves are
+hyperlinked, with no URL shown, so this one draft is created as HTML in STEP 3 (see *The
+Buy Box draft is HTML* there). Wherever the draft is written as plain text (tracker column
+L, Slack), put the URL in brackets after "built for": `is exactly what our Pro Program is
+built for (https://pro.smbdealhunter.xyz/).` Use this URL exactly; do not swap in another page.
+
 **Ready Now**
 
 ```
@@ -1348,10 +1354,23 @@ message so Helen does not have to add it by hand before she hits send. Add nothi
 greeting, signature, subject line or sign-off that the template does not have. Helen is
 replying inside a thread she is already part of, and the template is the whole message. The
 same draft text goes in tracker column L in STEP 5 **without** the trailing blank lines;
-apart from those, the two must match.
+apart from those, the two must match (for Buy Box, column L carries the plain-text form with
+the URL in brackets; see the note under the Buy Box template).
 
 The call returns both a draft id and a nested message id. **Keep the draft id** — it is what
 `GMAIL_GET_DRAFT` takes, and the message id will not work there.
+
+**The Buy Box draft is HTML.** It is the one lead draft with a hyperlink, so it takes
+`is_html: true`, and the body is the filled-in draft with "Pro Program" wrapped in a link and
+the line breaks written as tags:
+
+```
+Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our <a href="https://pro.smbdealhunter.xyz/">Pro Program</a> is built for. We help you source, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.<br><br><br><br>
+```
+
+The four `<br>` are the three blank lines. Escape `&`, `<` and `>` in anything taken from
+the lead's email (their criteria, area or name) as `&amp;`, `&lt;` and `&gt;`. Every other
+draft stays `is_html: false`.
 
 If drafts are being created in quick succession and a call comes back HTTP 429, back off and
 retry that one draft rather than abandoning it.
@@ -1370,7 +1389,8 @@ the draft id from the create call) and confirm four things:
 4. The **body** matches the STEP 2 draft, contains no `—` or `–`, and ends with the blank
    lines. If Gmail has trimmed the trailing blank lines but the text is otherwise right, the
    draft still counts as created: note it in the run report rather than failing the lead or
-   creating a second draft.
+   creating a second draft. For a Buy Box draft, also confirm "Pro Program" is a link to
+   `https://pro.smbdealhunter.xyz/` and that no raw `<a`, `<br>` or `&amp;` shows up as visible text.
 
 A draft that fails verification is reported as a failure (below). Do not quietly fix it by
 creating a second one.
