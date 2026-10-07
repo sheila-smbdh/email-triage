@@ -849,6 +849,13 @@ about a deal Helen featured, rather than signalling readiness in general)
 Hey [First Name], deals like this tend to go quickly. Our Pro Program helps buyers move fast and make competitive offers so they don't miss out. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?
 ```
 
+**"Pro Program" is a link to https://pro.smbdealhunter.xyz/ here too** (Sheila, 2026-10-07),
+the same way as in the Buy Box draft: the words are hyperlinked with no URL shown, so this
+draft is also created as HTML in STEP 3 (see *The Buy Box and specific-deal drafts are HTML*
+there). Wherever it is written as plain text (tracker column L, Slack), put the URL in
+brackets after "Pro Program": `Our Pro Program (https://pro.smbdealhunter.xyz/) helps buyers
+move fast...` Use this URL exactly.
+
 **Price Wall**
 
 ```
@@ -1354,23 +1361,31 @@ message so Helen does not have to add it by hand before she hits send. Add nothi
 greeting, signature, subject line or sign-off that the template does not have. Helen is
 replying inside a thread she is already part of, and the template is the whole message. The
 same draft text goes in tracker column L in STEP 5 **without** the trailing blank lines;
-apart from those, the two must match (for Buy Box, column L carries the plain-text form with
-the URL in brackets; see the note under the Buy Box template).
+apart from those, the two must match (for Buy Box and the specific-deal Ready Now draft,
+column L carries the plain-text form with the URL in brackets; see the notes under those
+templates).
 
 The call returns both a draft id and a nested message id. **Keep the draft id** — it is what
 `GMAIL_GET_DRAFT` takes, and the message id will not work there.
 
-**The Buy Box draft is HTML.** It is the one lead draft with a hyperlink, so it takes
-`is_html: true`, and the body is the filled-in draft with "Pro Program" wrapped in a link and
-the line breaks written as tags:
+**The Buy Box and specific-deal drafts are HTML.** They are the two lead drafts with a
+hyperlink, so they take `is_html: true`, and the body is the filled-in draft with "Pro
+Program" wrapped in a link and the line breaks written as tags. Buy Box:
 
 ```
 Hey [First Name], finding custom deals like [their criteria] in [their area] is exactly what our <a href="https://pro.smbdealhunter.xyz/">Pro Program</a> is built for. We help you source, finance, and acquire a business in 6 to 12 months. I've cc'd Jordan to give you a call or set up a time to chat if you'd like to learn more.<br><br><br><br>
 ```
 
+Ready Now, asking about a specific deal (on a `Send to Jordan` row):
+
+```
+Hey [First Name], deals like this tend to go quickly. Our <a href="https://pro.smbdealhunter.xyz/">Pro Program</a> helps buyers move fast and make competitive offers so they don't miss out. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?<br><br><br><br>
+```
+
 The four `<br>` are the three blank lines. Escape `&`, `<` and `>` in anything taken from
 the lead's email (their criteria, area or name) as `&amp;`, `&lt;` and `&gt;`. Every other
-draft stays `is_html: false`.
+draft, including the plain Ready Now draft and every `Forward to …` draft, stays
+`is_html: false`.
 
 If drafts are being created in quick succession and a call comes back HTTP 429, back off and
 retry that one draft rather than abandoning it.
@@ -1389,7 +1404,7 @@ the draft id from the create call) and confirm four things:
 4. The **body** matches the STEP 2 draft, contains no `—` or `–`, and ends with the blank
    lines. If Gmail has trimmed the trailing blank lines but the text is otherwise right, the
    draft still counts as created: note it in the run report rather than failing the lead or
-   creating a second draft. For a Buy Box draft, also confirm "Pro Program" is a link to
+   creating a second draft. For a Buy Box or specific-deal Ready Now draft, also confirm "Pro Program" is a link to
    `https://pro.smbdealhunter.xyz/` and that no raw `<a`, `<br>` or `&amp;` shows up as visible text.
 
 A draft that fails verification is reported as a failure (below). Do not quietly fix it by
