@@ -1107,6 +1107,12 @@ they get no Jordan draft at all.
 **Jordan's draft is not created in Gmail.** STEP 3 drafts Helen's reply only. Jordan sends
 his from his own mailbox after she forwards, and column N is where he reads it from.
 
+**Column N also feeds Jordan's Day 1 task in Close.** The hourly "Helen → Jordan lead intake"
+Routine (prompt copy: [`docs/routine-jordan-lead-intake.md`](../../docs/routine-jordan-lead-intake.md))
+creates his Day 1 / Day 2 / Day 5 tasks once Helen loops him in, and copies this row's N into
+the Day 1 task verbatim (from 2026-10-07). It finds the row by the column J thread id in Helen's
+mailbox, so keep J's `#all/<threadId>` link intact. Whatever N says is what Jordan sees in Close.
+
 **The draft is provisional, and writing it resolves nothing.** At digest time the lead has
 not been forwarded yet and no setter-call check has run for them. `tracker-followup` still
 runs that check on a later pass and remains the authority on where the lead stands. Writing
