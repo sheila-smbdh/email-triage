@@ -833,7 +833,7 @@ Hey [First Name], we can definitely help. Looping in Jordan from our team. @Jord
 about a deal Helen featured, rather than signalling readiness in general)
 
 ```
-Hey [First Name], deals like these go pretty quickly, but we can help you move fast. Looping in Jordan from our team. @Jordan, do you mind finding 15 minutes to give [First Name] a call?
+Hey [First Name], deals like this tend to go quickly. Our Pro Program helps buyers move fast and make competitive offers so they don't miss out. I've looped in Jordan from our team in case you'd like to learn more. @Jordan, do you mind finding 15 minutes to chat with [First Name]?
 ```
 
 **Price Wall**
@@ -986,9 +986,21 @@ morning. Sheila's call is that a lead asking about one specific listing should h
 scarcity first — it is true, and it is what moves someone who has already picked a deal out
 of the newsletter.
 
+**Why the specific-deal template names the Pro Program** (Sheila, 2026-10-07). The draft
+primes the lead on the Pro Program before Jordan ever speaks to them, so he can open the call
+on *"so you're interested in the Pro Program..."* rather than on the listing. It is also a
+filter: *"in case you'd like to learn more"* leaves the next step to the lead, so someone who
+only wanted the listing's details and does not want to talk drops out by not booking. Keep
+"chat with", not "give [First Name] a call", and do not add anything about the listing
+itself.
+
+**The Pro Program sentence lives in this template only.** *"Our Pro Program helps buyers move
+fast and make competitive offers so they don't miss out"* is the whole of what it says; do
+not elaborate on it, and do not copy it into the plain Ready Now template, which is unchanged.
+
 **Do not answer the availability question.** The template says nothing about whether the
 deal is still on the market, and neither should you: this task does not know, and a wrong
-answer in either direction costs the lead. *"Deals like these go pretty quickly"* is the
+answer in either direction costs the lead. *"Deals like this tend to go quickly"* is the
 whole of what gets said about it, and the call handles the rest — the same bar as every
 other draft, no price, no deal specific, no timeline the template does not carry.
 
