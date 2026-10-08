@@ -1,6 +1,6 @@
 ---
 name: tracker-followup
-description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs (to Jordan, Scott, or a lead's previous closer/setter), check Jordan's booking progress in Close, record the forward date and Jordan's 1st/3-day/5-day touches (M, O, Q, S), keep column N's Jordan draft current (write it where the digest did not, and never delete one), and post the single daily Slack message: Helen's forward list (new leads from the digest plus older ones still not forwarded) with a Jordan-test tracker summary in the thread
+description: Daily follow-up pass over leads already in the Google Sheets tracker — chase Helen's un-forwarded handoffs (to Jordan, Scott, or a lead's previous closer/setter), check Jordan's booking progress in Close, record the forward date and Jordan's 1st/3-day/5-day touches (M, O, Q, S), keep column N's Jordan draft current (write it where the digest did not, and never delete one), and post the single daily Slack message: Helen's forward list (new leads from the digest plus older ones still not forwarded) with a Jordan-test tracker summary and per-call coaching notes for Jordan in the thread
 ---
 
 You are running the daily **tracker follow-up** pass for SMB Deal Hunter.
@@ -402,7 +402,8 @@ column U (`Setter Progress`), and list it in the run report.
    `activity_types: ["activity.meeting", "activity.call", "activity.email"]`. Batch the lead
    IDs into one call rather than one call per lead.
 3. Read each result's `title`, `starts_at` / `activity_at`, and `note`. The emails are for
-   STEP 3A: keep each one's direction, sender, recipients and date.
+   STEP 3A: keep each one's direction, sender, recipients and date. Keep each meeting's and
+   call's activity id (`acti_…`) too: STEP 5's coaching notes fetch the transcript by it.
 
 ### Sort each meeting into setter or closer
 
@@ -739,7 +740,8 @@ summary still apply. Capture the returned `ts` for the thread reply.
 ### The thread reply: Jordan test summary
 
 Post **one** reply under the message (`thread_ts` = its `ts`). It answers five questions
-about the test of Helen forwarding leads to Jordan, which started **2026-09-23**, the day the
+about the test of Helen forwarding leads to Jordan, then carries a coaching note on each
+call Jordan held (below). The test started **2026-09-23**, the day the
 `Tracker (JordanK)` tab opened. It is cumulative from that date, not a daily delta.
 
 **Compute it from the verified STEP 6 re-read of `'Tracker (JordanK)'`**, across every data
@@ -772,6 +774,84 @@ channel's history since 2026-09-23 for a top-level message from Jordan Kempster
 (`U0B0UQE7DSM`) that names the lead, and mark it `(Jordan's notes posted)` or `(no notes
 yet)`. That is the whole check: do not summarise his notes here.
 
+**Coaching notes for Jordan's calls.** Sheila's ask, 2026-10-08: the counts say *what*
+happened, not what Jordan should do about it. So the reply also carries one coaching note per
+lead **Jordan himself held a setter call with** (a Close setter meeting titled `<Lead> and
+Jordan Kempster`, held per the rule above: T before today, not cancelled, not a no-show).
+Calls held by another setter (David Martin, Jose Rodriguez, ...) count in the numbers above
+but get no coaching note: the notes are for Jordan. Each note answers three questions:
+
+1. **Next step.** What Jordan should do now for this lead, specific enough to act on today.
+2. **Could he have set it?** Only for a lead *not* set to a closer: was the lead someone
+   Jordan could have put on a closer call?
+3. **Did he book it on the call?** For a lead set to a closer, or one Jordan tried to set:
+   did he lock the closer call in while the lead was on the line, or send a calendar link
+   afterwards?
+
+*Where the evidence comes from* (all read-only):
+
+- **The call transcript, first.** STEP 3's `activity_search` returns the setter meeting's
+  activity id (`acti_…`). Call `mcp__Close__fetch_meeting_transcript` with it: Close's
+  Notetaker records Jordan's Zoom intro calls, and the result carries a summary and the full
+  speaker-labelled text. If the call was a phone call instead (an `activity.call` from Jordan
+  to the lead on the call date), `mcp__Close__fetch_call` returns its transcript when there
+  is one. A transcript can be `status` other than `completed`, or missing: then say so in
+  the note and work from the other two sources only.
+- **Jordan's mail after the call.** The STEP 3A query of his mailbox already holds his
+  messages to the lead. A message from Jordan to the lead dated after the setter call that
+  carries a `calendly.com` link or asks them to pick a time is a **link sent after the
+  call**.
+- **Close.** The closer call itself (V/W, or Close for a `Forward to … jkempster` row) and,
+  for a lead who deferred, any open task on the lead (`mcp__Close__find_tasks` with the
+  lead id) that matches a follow-up Jordan promised on the call.
+- **Jordan's own notes in the channel** (the check above). Use them as context; a fact the
+  transcript contradicts loses to the transcript.
+
+*How to answer each question:*
+
+- **Could he have set it?** `Yes, could have set` when the transcript shows the lead
+  qualified and the call ended without an ask or after an objection Jordan did not work:
+  a stated buy box or target size, an intent to buy (financing or capital in mind, a
+  timeline), interest in what Jordan showed, and no hard stop. Quote the lead's own words
+  for the signal, short (*"I like the structure of how you guys function"*), and name the
+  missed moment (*never asked for the longer call*, *took "not right now" without asking
+  what would change it*). `Right call` when there is a hard stop the lead stated in plain
+  words (no capital or financing, not buying for a year or more, only wanted one listing,
+  not a fit for the program) and say which. `Can't tell` when there is no transcript and
+  nothing in his notes or mail settles it. Never judge from a hunch: no transcript line, no
+  verdict.
+- **Did he book it on the call?** `Booked live` when the transcript shows Jordan and the
+  lead agreeing a closer-call day and time, or Jordan booking or sending the invite while
+  they were still on (*"I just sent the invite, do you see it?"*). `Link sent after` when
+  the transcript has him saying he will send a link or his calendar, or his mail shows a
+  calendar link to the lead after the call. For `Link sent after`, coach it plainly:
+  *book the closer call before you hang up next time*, and say whether the lead has booked
+  from the link yet. `Can't tell` when neither source shows it.
+- **Next step.** One action, drawn from where the lead stands now:
+
+  | Where the lead stands | Next step |
+  |---|---|
+  | Closer call upcoming | `Confirm with <First> the day before the <M/D> closer call` |
+  | Closer call cancelled or a no-show | `Rebook the closer call with <First>: call, don't email` |
+  | Link sent after the call, no closer call booked | `Call <First> today and book the closer call live; the <M/D> link has not been used` |
+  | Could have set, nothing booked | `Go back to <First>: <the objection, one phrase> was not worked; call to reopen it` |
+  | Lead deferred to a date Jordan agreed on the call | `Follow up <date as agreed>` plus `(task in Close)` if one exists or `(no task in Close yet: add one)` if not |
+  | Right call, nothing to chase | `None: <reason, one phrase>` |
+
+  Use the lead's first name. A date in the next step is one the transcript, mail or Close
+  actually shows; never invent one.
+
+*Context and objections go in.* Helen wants the lead's situation and what held them back,
+so each note carries a `Context:` line from the transcript: where the lead is in their
+search (buy box, size, financing), and every objection they raised in their own terms,
+including personal and financial ones (Sheila, 2026-10-08: *"It's ok to keep the private
+stuff in Slack, like Stephen said he'd paid elsewhere. Helen wants the context and
+objections"*). A real example: *Context: 200-deal pipeline in home services, $500K+ SDE,
+plans to finance. Objection: just paid a similar upfront fee to another community and
+needs to rebuild first; asked to talk again in Q1 2027.* Stick to what the lead or Jordan
+actually said; never add colour the transcript does not have. Draft text still never goes
+in. Keep each note to three lines: the verdict line, the context line, the next step.
+
 Format:
 
 ```
@@ -781,7 +861,24 @@ Format:
 • Setter calls held: <n>: <Name>, <Name>, <Name> (held by Jose Rodriguez), ...
 • Set to a closer: <n> of <held>: <Name>, <Name>
 • Not set to a closer: <Name> (Jordan's notes posted), <Name> (no notes yet), ...
+
+🎯 *Coaching on Jordan's calls*
+• *<Name>* (<call M/D>) — Set to closer <M/D>, booked live.
+    Context: <situation>. Objections: <objections, or none raised>
+    Next: <next step>
+• *<Name>* (<call M/D>) — Set to closer <M/D>, link sent after: book it before you hang up. Next: <next step>
+• *<Name>* (<call M/D>) — Not set. Could have set: <signal, quoted>; <missed moment>.
+    Context: <situation>. Objections: <objections in the lead's terms>
+    Next: <next step>
+• *<Name>* (<call M/D>) — Not set. Right call: <hard stop>. Next: <next step>
+• *<Name>* (<call M/D>) — Not set. Can't tell: no transcript in Close. Next: <next step>
 ```
+
+Every bullet carries the `Context:` and `Next:` lines; the shorter shapes above leave them
+out only to save space here. List the coaching bullets newest call first. When Jordan has held no setter call yet, the
+section is the line `No calls held by Jordan yet.` If a transcript fetch errors, the note
+says `transcript fetch failed` in place of the verdict it needed and the rest of the reply
+still posts; say in the run report which leads and what the tool returned.
 
 Write `0` rather than dropping a line, and `none` for an empty name list. Names are column
 I as written. If STEP 6's verify failed, do not compute from a tracker you know is wrong:
