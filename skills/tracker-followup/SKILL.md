@@ -841,11 +841,16 @@ but get no coaching note: the notes are for Jordan. Each note answers three ques
   Use the lead's first name. A date in the next step is one the transcript, mail or Close
   actually shows; never invent one.
 
-*What a note never contains:* any price, fee, figure or term quoted on the call, any
-personal or financial detail the lead shared (who they paid, what they lost, a partner's
-name), and draft text. Coaching is about the call's mechanics and the next move, not the
-lead's private situation, and the channel is not private to Sheila. Keep each note to two
-lines.
+*Context and objections go in.* Helen wants the lead's situation and what held them back,
+so each note carries a `Context:` line from the transcript: where the lead is in their
+search (buy box, size, financing), and every objection they raised in their own terms,
+including personal and financial ones (Sheila, 2026-10-08: *"It's ok to keep the private
+stuff in Slack, like Stephen said he'd paid elsewhere. Helen wants the context and
+objections"*). A real example: *Context: 200-deal pipeline in home services, $500K+ SDE,
+plans to finance. Objection: just paid a similar upfront fee to another community and
+needs to rebuild first; asked to talk again in Q1 2027.* Stick to what the lead or Jordan
+actually said; never add colour the transcript does not have. Draft text still never goes
+in. Keep each note to three lines: the verdict line, the context line, the next step.
 
 Format:
 
@@ -858,14 +863,19 @@ Format:
 • Not set to a closer: <Name> (Jordan's notes posted), <Name> (no notes yet), ...
 
 🎯 *Coaching on Jordan's calls*
-• *<Name>* (<call M/D>) — Set to closer <M/D>, booked live. Next: <next step>
+• *<Name>* (<call M/D>) — Set to closer <M/D>, booked live.
+    Context: <situation>. Objections: <objections, or none raised>
+    Next: <next step>
 • *<Name>* (<call M/D>) — Set to closer <M/D>, link sent after: book it before you hang up. Next: <next step>
-• *<Name>* (<call M/D>) — Not set. Could have set: <signal, quoted>; <missed moment>. Next: <next step>
+• *<Name>* (<call M/D>) — Not set. Could have set: <signal, quoted>; <missed moment>.
+    Context: <situation>. Objections: <objections in the lead's terms>
+    Next: <next step>
 • *<Name>* (<call M/D>) — Not set. Right call: <hard stop>. Next: <next step>
 • *<Name>* (<call M/D>) — Not set. Can't tell: no transcript in Close. Next: <next step>
 ```
 
-List the coaching bullets newest call first. When Jordan has held no setter call yet, the
+Every bullet carries the `Context:` and `Next:` lines; the shorter shapes above leave them
+out only to save space here. List the coaching bullets newest call first. When Jordan has held no setter call yet, the
 section is the line `No calls held by Jordan yet.` If a transcript fetch errors, the note
 says `transcript fetch failed` in place of the verdict it needed and the rest of the reply
 still posts; say in the run report which leads and what the tool returned.
