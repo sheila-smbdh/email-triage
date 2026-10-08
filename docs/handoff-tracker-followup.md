@@ -5,9 +5,37 @@
 | **Status** | Live. Built, run end-to-end, and wired into the cloud Routine on 2026-09-10 — but pinned to an unmerged branch, see open item 1. |
 | **Task definition** | [`skills/tracker-followup/SKILL.md`](../skills/tracker-followup/SKILL.md) — the single source of truth. |
 | **Companion** | [`handoff-helen-email-digest.md`](handoff-helen-email-digest.md) — the forward-looking half of the routine. |
-| **Last updated** | 2026-09-29 — **One short Slack post a day** (Helen's forward list, with a Jordan-test tracker summary in the thread; no drafts in Slack). See §0. Before that: 2026-09-25 — **the pass now writes M, O, Q and S** (forward date and Jordan's 1st, 3-day and 5-day touches, from Helen's mailbox and Close; Q/S blank until due) and repairs a broken F formula instead of never checking it. See §3. Before that: 2026-09-24 — **`Forward to <First Last> (<email>)` rows** (clients → Scott, returning leads → their previous closer/setter) are checked for a forward to *that* person and then drop out of scope, with no Jordan check and no draft. Jordan's templates were replaced with Sheila's new wording and his real Calendly link; older N drafts are replaced on the next pass. No em dashes in drafts. The digest no longer writes `Ignore` rows; old ones are still skipped. See §0 of the digest handoff. Before that: 2026-09-23 — **the pass now works only the new `Tracker (JordanK)` tab and checks for forwards to Jordan Kempster (`jkempster@smbdealhunter.xyz`) instead of Yobani.** The old tab, renamed `Tracker (Yobani)`, is frozen: its open leads are no longer chased (Sheila's call). Before that: 2026-09-22 — the **🔴 Needs Helen** section of the Slack digest now links each bullet's subject into the thread in Helen's mailbox, so she can forward to Yobani in one click (§4). Before that: 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
+| **Last updated** | 2026-10-08 — **The Jordan-test thread reply now carries a coaching note on every setter call Jordan held**: the next step for the lead, whether he could have set a lead he did not, and whether he booked the closer call live or sent a calendar link after. Built from Close Notetaker transcripts, his post-call mail and Close tasks; no prices or personal details in Slack. See §0a. Before that: 2026-09-29 — **One short Slack post a day** (Helen's forward list, with a Jordan-test tracker summary in the thread; no drafts in Slack). See §0. Before that: 2026-09-25 — **the pass now writes M, O, Q and S** (forward date and Jordan's 1st, 3-day and 5-day touches, from Helen's mailbox and Close; Q/S blank until due) and repairs a broken F formula instead of never checking it. See §3. Before that: 2026-09-24 — **`Forward to <First Last> (<email>)` rows** (clients → Scott, returning leads → their previous closer/setter) are checked for a forward to *that* person and then drop out of scope, with no Jordan check and no draft. Jordan's templates were replaced with Sheila's new wording and his real Calendly link; older N drafts are replaced on the next pass. No em dashes in drafts. The digest no longer writes `Ignore` rows; old ones are still skipped. See §0 of the digest handoff. Before that: 2026-09-23 — **the pass now works only the new `Tracker (JordanK)` tab and checks for forwards to Jordan Kempster (`jkempster@smbdealhunter.xyz`) instead of Yobani.** The old tab, renamed `Tracker (Yobani)`, is frozen: its open leads are no longer chased (Sheila's call). Before that: 2026-09-22 — the **🔴 Needs Helen** section of the Slack digest now links each bullet's subject into the thread in Helen's mailbox, so she can forward to Yobani in one click (§4). Before that: 2026-09-11 — the sheet grew to **A–W** over two edits: `Helen Forward Date`, `Yobani 1st Response Done?` and a 3-day/5-day chase cadence were added, `Action Taken?` was renamed `Forwarded to Yobani?`, and the setter/closer block moved N–Q → T–W. **Drafts in L and N are now never deleted** — the clear-on-resolve rule is gone (§3). Docs only; the routine does not write the new columns yet. |
 
 ---
+
+## 0a. Changes on 2026-10-08: coaching notes on Jordan's calls
+
+Sheila's ask: the tracker summary counted Jordan's calls but said nothing about what he should
+do with each lead. The thread reply (STEP 5) now ends with a 🎯 *Coaching on Jordan's calls*
+section, one bullet per setter call **Jordan himself** held since 2026-09-23, newest first.
+Each bullet gives:
+
+- **The outcome**: set to a closer (and when), or not set.
+- **Could he have set it?** (not-set leads only): `Could have set` with the lead's own
+  qualifying words and the missed moment, `Right call` with the hard stop the lead stated, or
+  `Can't tell`.
+- **Did he book it on the call?** `Booked live`, or `Link sent after` with the coaching to
+  book the closer call before hanging up, and whether the lead has used the link.
+- **Next step**: one concrete action (confirm, rebook, call and book live, reopen an
+  objection, follow up on the date he agreed and whether a Close task exists).
+
+Evidence is read-only: Close's Notetaker transcript of the call
+(`fetch_meeting_transcript` on the setter meeting's activity id, or `fetch_call` for a phone
+call), Jordan's mail to the lead after the call (already fetched in STEP 3A), the closer call
+and Close tasks, and his own notes in the channel. No transcript line, no verdict: without
+evidence the note says `Can't tell`. Notes never repeat prices or terms from the call or the
+lead's personal or financial details, since the channel is not private to Sheila. Calls held
+by other setters still count in the numbers but get no note.
+
+Checked against a real call before writing the rule: Stephen Sampson's 2026-10-07 intro
+call has a completed Notetaker transcript in Close, which is what the verdicts are drawn
+from.
 
 ## 0. Changes on 2026-09-29: one short Slack post a day
 
