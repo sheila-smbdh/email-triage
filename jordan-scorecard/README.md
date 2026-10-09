@@ -15,6 +15,10 @@ to Close, the tracker or anyone's mailbox.
 
 ## Daily run
 
+0. **Start the screenshot tool first.** At the very start of the run, start
+   `pip install -q playwright` in the background (it can take over 2 minutes). The browser is
+   already at `/opt/pw-browsers/chromium`; never run `playwright install`. At build time, use
+   whichever of `python3` or `/usr/bin/python3` can `import playwright`.
 1. **Dates.** `today` = the run date in America/New_York. `D` = the previous weekday
    (Monday uses Friday). The window is leads whose Helen Forward Date is between `D - 13 days`
    and `D`, inclusive. `measured_on` = today, `window_start` / `window_end` = the window.
@@ -31,14 +35,12 @@ to Close, the tracker or anyone's mailbox.
    `fetch_call` for call duration and direction. A lead with no Close record keeps its tracker
    data and counts as "no reply" and "no call" unless the tracker says otherwise.
 4. **Count the KPIs** (definitions below) into the metrics JSON.
-5. **Build.** `pip install -q playwright` if needed (the browser is already at
-   `/opt/pw-browsers/chromium`; never run `playwright install`), then
-   `python3 build.py metrics.json out`.
+5. **Build.** `<python> build.py metrics.json out`, with the python from step 0.
 6. **Publish.** Artifact `read` on the artifact URL above, then publish
    `out/jordan-scorecard.html` with `url` set to that link. Do not pass `icon`.
 7. **Check and send.** Read the PNG once to check it rendered (6 tiles, wins and fixes filled).
    Send it with `SendUserFile` (status `proactive`, display `attach`) and the caption
-   `Jordan scorecard for <Weekday, Mon DD>: reply in 2h <X>%, same-day call <Y>%, held <Z>%, booked before hanging up <W>%. Fix: <top fix, short>.`
+   `Jordan scorecard for <today, e.g. Friday, Oct 9>: reply in 2h <X>%, same-day call <Y>%, held <Z>%, booked before hanging up <W>%. Fix: <top fix, short>.`
 
 If a step fails, send Sheila one or two lines saying which step and what you saw. If Composio
 returns an auth or "API key revoked" error, say the Composio connector needs reconnecting in
@@ -67,6 +69,9 @@ Claude's settings, and stop. No em dashes in anything you write.
 
 Business hours are 9am to 5pm, Monday to Friday, America/Denver (Jordan's time).
 
+- **Tracker dates.** The tracker's forward date (column M) is sometimes the lead's own email
+  date, not Helen's forward. Always use the Close forward time below; the tracker only decides
+  which leads are in the window.
 - **Forward time.** The Close lead's `Creation Date` custom field
   (`cf_RdUwNTlCpEBzzWDbmzUcPUwPMmQPmO6EZJLsH6olFhM`, set by the lead intake Routine to Helen's
   reply time). If it is empty, use the earliest email on the lead from helen@smbdealhunter.xyz
@@ -87,7 +92,8 @@ Business hours are 9am to 5pm, Monday to Friday, America/Denver (Jordan's time).
   connected Jordan call of 5+ minutes. Denominator = all leads in the window.
 - **booked_live (target 80%).** Of held setter calls, the share where a meeting on the lead
   (with a closer, or a callback with Jordan) was created in Close between the call's start and
-  30 minutes after it ended. Leave out calls that ended in a clear "not a fit" (Close outcome
+  30 minutes after it ended. The Close connector does not show when a meeting was created, so
+  use the time of the Calendly "New Event" notification email on the lead as the creation time. Leave out calls that ended in a clear "not a fit" (Close outcome
   Disqualified or Not a Fit, or Jordan's note says so) and report how many in
   `excluded_not_fit`.
 - **set_closer (tracked, no target).** Held setter calls followed by a meeting with a closer
