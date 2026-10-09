@@ -1,0 +1,16 @@
+{
+  "measured_on": "2026-10-07",
+  "window_start": "2026-09-23",
+  "window_end": "2026-10-05",
+  "kpis": {
+    "reply2h": {"num": 2, "den": 18, "median_hours": 4},
+    "sameday_call": {"num": 4, "den": 8},
+    "held": {"num": 13, "den": 53},
+    "booked_live": {"num": 2, "den": 11, "excluded_not_fit": 2},
+    "set_closer": {"num": 1, "den": 13, "names": ["Nick"]},
+    "closer_show": {"num": 0, "den": 0, "upcoming": "Nick with Omar, Oct 9"}
+  },
+  "wins": ["13 setter calls held from 53 leads, close to the 30% target.", "Nick set with Omar for Oct 9.", "Pre-call confirmations sent every time."],
+  "fixes": ["Book the closer before hanging up. Call Rhett, PK, Theo and Mai to book theirs.", "When a lead gives a number, call the same day. Start with Moe and Clyde.", "Reply within 2 business hours of Helen's forward."],
+  "notes": []
+}
