@@ -17,15 +17,15 @@ HERE = pathlib.Path(__file__).resolve().parent
 
 # key: (tile name, target % or None for a tracked tile)
 KPIS = {
-    "reply2h": ("Reply within 2 business hours", 80),
-    "sameday_call": ("Same-day call when a number is given", 80),
+    "reply2h": ("Reply within 2 business hours", None),
+    "sameday_call": ("Same-day call when a number is given", 70),
     "held": ("Leads to held setter call", 30),
-    "booked_live": ("Next call booked before hanging up", 80),
+    "booked_live": ("Next call booked before hanging up", 50),
     "set_closer": ("Set to a closer", None),
     "closer_show": ("Closer show rate", None),
 }
 ROWS = [
-    ("Speed to lead and booking", ["reply2h", "sameday_call", "held"]),
+    ("Booking and speed to lead", ["sameday_call", "held", "reply2h"]),
     ("On the call", ["booked_live", "set_closer", "closer_show"]),
 ]
 PILL = {"hit": "Hit", "close": "Close", "miss": "Missed", "track": "Tracking"}
