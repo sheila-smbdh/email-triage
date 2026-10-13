@@ -50,7 +50,7 @@ section.grp{margin-top:28px}
 .gh p{margin:0;color:var(--muted);font-size:13px;flex-basis:100%}
 .rows{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .row{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,2fr) minmax(0,1.5fr);gap:12px 20px;padding:12px 14px;background:color-mix(in srgb,var(--c) 7%,var(--panel));border:1px solid color-mix(in srgb,var(--c) 28%,var(--line));border-left:5px solid var(--c);border-radius:6px}
-.grp.breakup .row{color:var(--muted)}
+.grp.breakup .row,.grp.deprioritized .row{color:var(--muted)}
 .lead a.name{font:600 16px/1.3 var(--display);color:var(--fg);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--c) 60%,transparent)}
 .lead a.name:hover{border-bottom-color:var(--fg)}
 .lead .nolink{font:600 16px/1.3 var(--display)}
@@ -121,6 +121,11 @@ const ROSTER = [["Graham Shaw","9/23/2026"],["Shivam Chadha","9/23/2026"],["Mai 
 const LEAD_IDS = {
 "graham shaw":"lead_bXNfGd9pL6FeQvWMk2u1OyG8loWgmWey5jHj5EeosTj","shivam chadha":"lead_oYLh5c06JQbUvLJrjTITEGXTaBcNB0o76Pe9Hs2RRK0","mai habib":"lead_rZyc2R54vMTXDsQtpK9xgEgWUEgBQTFWzsKvg666Qvq","randy palumbo":"lead_nEwUF8nOBG9N4FPCwCKPzISTpkfPmJnVu2E5d2j2xTa","blake griffis":"lead_i93kHme74XX08ZTOTpSORM8WqIgb8u56yEU5MCWEqfU","mark chappell":"lead_NekzBGAKe2RNfkjzAq3KAHjkEm9yzNWomIHtTAAADvl","the beeee":null,"arshad khan":"lead_2qug4RNDzNaoNgxkRFC2S6qEnqVQMd8k5Wx2e9zQLKW","mick petrucci":"lead_LzoGZN6hDnpcQtp05hKRQG8NMTEZWkqcNNhBDyGyYG9","angelo buscemi":"lead_1pAcfkwWghl3EmKNS2xJmpY13SEhERY9tNAmcWW15po","david pack":"lead_DvaN0jHyIp863qsOQqNcPUYzwbzX69DY20mmQFTVC8H","tracey radillo":"lead_0FI8WiisMfVMZy7ndq6K0O2cUnVvjUHVvw6JKv85aLj","rhett townsend":"lead_2OgSNn59tyJihxgw37qElB3prGNAKtvfY9C661mtn4N","pk kumar":"lead_ACsp1eqWNcr1Vgkge5964InDqD41pUzPz8Dkg3LWWcr","dan lessen":"lead_0TkvASV9jy4SVaJQ952DRtpQyttO0JuH2voAQnBivVW","alvino zau":"lead_P3QCNjTiL1HLD4QLNMXPAaw44eyytwM7zaqyjLTnVfZ","thomas causey":"lead_IKLOWcVH5bzSFrug7yfPHz9N2iyrqzJZnK9zdVRXI19","anjubala jacob":"lead_kaXuCXq0mXgdIIxmbtKIfOWRuI2vb2p0p78jkMhRxuO","butch gentry":"lead_MuRUv0BVx1HR6TuyL9D5ElgXGgMJD5YDaXPyeGK2Xyb","gene simeona":"lead_QVb4awezVHGJmJSx2M1fkDw5QslZyjGnWoCW6pRln9S","pat o'connor":"lead_Nd0zfkxUoBNnWm7pKpb0DNegKxY47QzmoF8hpo4zkUk","bart george":"lead_2NtBN6qGBWjDOUIxPv69nf8ZQEacyVTV95jG6NO76pb","scott":null,"robert murphy":"lead_CFisJjfcCcSMES7YmD71ZWMAFRePCdRqSRUeaazvMsq","joshua mumford":"lead_mCa2HtueVl8EMAu2moFNRx6UOTWGWiLFtaz7f30cptH","theo mccloe":"lead_2xJIgbHO0Cf5gZuP0qW5W1s7GTW2h2irutK4LprdamX","dirk welsh":"lead_QWat4nZQYKY2sjVnx15w1cQi5AC6QXyVcVU68drt09O","amit jain":"lead_O2ynYUZEjO8bAxp2oYtXBnbbjDwhXyCvAdpR9qWrQAm","libin babu":"lead_64yXi3PslSakRmV674sAJZZq5uYSbMI1z4y7rnujtIG","md.nasir uddin":"lead_Mt2WTDwrIzG25cvFpD3LKa4MLSlFzK8cuwKcW1Hy2hM","moe shabasy":"lead_BYdggDCof4WWuzEL3zyXjmNbHgh4rsBQuS2KvKI2LaG","cornell covert":"lead_dS9d8eu0jWPQgP01wxnzMtVMSGScsg0ldA22Pyo0iYD","bud gillin":"lead_xBChmidQX5TPXSEBY4TgAkhWN4GKaistivT9x3M7Uqc","john dusek":"lead_rVvUN3OVKFtMZ9QsCFJO0YpQmkzAwXjDzeXkkvvEV9I","krystle doty":"lead_6gJCAkj0vYf16f9fn32FVp0M9mF6NySkuC4bdouxSO3","nick":"lead_DS7WTJzfD43jE4OiIErgo4MkFRdjdUyAmmZrgiHmmxS","abdi russi":"lead_uFclAOkXEvHBu3LscP5j2DFvEOyHR3ZV3rK9SZMbQ91","christopher terry":"lead_NKgqWf4MPfxZrAYh2qhAalxFkHfRVmqnBZZBGPyleJM","jacob jones":"lead_vZ7gTb4ErCLPAkeeB3X4znbnLdw7RkvHM0h2AlPUXsT","james wood":"lead_lHN26PDGSu56rIPyqUY706WUc284H9XAYZzPS18BQBS","kumar d":"lead_RGaUDzYREzbtlobNwaSXKILTunagxAyCP1pueo7eeuk","intuit111":null,"son phan":"lead_j2oycwol25uTvzwjKytinXLvIvF1ss6Yyg6aupeNkQA","clyde harris":"lead_lBiz1NvpoXT3QMYM8CaKbrDMNYgnDv5PPmUXDmQRX6y","patrick mathews":"lead_nsRp9jlnngIvaA43JLSbNeLf8DbZJewFAmseiCvemOk","ben r":"lead_n1EW4JpYA9PaodTd3jA0ALQvOcGXmutYmIhHy2xgbLv","b e":"lead_4hI15ms4cf8QcQWxbJy3wuXZEmFDaEeb2qTKK5eyI8M","s m":"lead_XyUDPimfN0FXChx3XXcIrAbQjvScXyXxQ2qS2uB2dru","steve tuzeneu":"lead_IVoolFCBPEXnAE99sryOKdNlprHn8jcayEnAJCub5vL","george niceley":"lead_Idh9qVo15sAsyaqxrjjdIwNusGMbbuoiBBjfEU09geU","chad miller":"lead_ets7UoAUmqRXpO0jU2zb57TFbzRohlu3mO81sE3yYlb","amir b":"lead_q5bwj0ygqWVAZRPK5ReG0is8SZj22xhp61OTmKhWLz0","junior":"lead_uceVh1oT2M2eJlw8yJUhzoJwvkK38NWIQvYgfGygLMw","bruce grout":"lead_WPsdq2ZdEy8gZuURyKjO6kb1lDzcbZM5W25gx8WSTvh"};
 
+// Leads Sheila has set aside: shown in grey at the bottom with her reason, never chased.
+const DEPRIORITIZED = {
+  "scott": "Deprioritized by Sheila (10/13): not really interested per his latest email (scottstuart1212@gmail.com). No Close profile needed.",
+};
+
 const STAGES = [
   {key:"closer_booked", label:"Closer call booked", c:"--s-closer", desc:"Set to a closer; the call has not happened yet."},
   {key:"setter_booked", label:"Setter call booked", c:"--s-setter", desc:"Intro call with Jordan on the calendar."},
@@ -134,6 +139,7 @@ const STAGES = [
   {key:"no_close", label:"No Close record", c:"--s-none", desc:"On the tracker, but there is no Close lead to read."},
   {key:"error", label:"Could not load", c:"--s-none", desc:"Close did not answer for these leads. Refresh to try again."},
   {key:"breakup", label:"Breakup sent: low priority", c:"--s-breakup", desc:"Jordan sent the breakup. Kept here unless the lead replies or books."},
+  {key:"deprioritized", label:"Deprioritized", c:"--s-breakup", desc:"Set aside by Sheila. No follow-up needed."},
 ];
 
 const $ = id => document.getElementById(id);
@@ -475,7 +481,11 @@ async function refresh() {
   async function worker() {
     while (queue.length) {
       const r = queue.shift();
-      if (!r.id) {
+      const parked = DEPRIORITIZED[norm(r.name)];
+      if (parked) {
+        models.push({stage: "deprioritized", name: r.name, id: r.id || null, fwdDay: r.fwd, tl: [{k: r.fwd || dayKey(new Date()), t: "Helen forwarded to Jordan"}],
+          action: "None. Low priority.", due: null, note: parked, sortKey: r.name.toLowerCase()});
+      } else if (!r.id) {
         models.push({stage: "no_close", name: r.name, id: null, fwdDay: r.fwd, tl: [{k: r.fwd || dayKey(new Date()), t: "Helen forwarded to Jordan"}],
           action: "Create the lead in Close (or find it by email) so Jordan's follow-up is tracked.", due: null, note: r.note, sortKey: r.name.toLowerCase()});
       } else {
