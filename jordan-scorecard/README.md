@@ -38,7 +38,7 @@ to Close, the tracker or anyone's mailbox.
    `out/jordan-scorecard.html` with `url` set to that link. Do not pass `icon`.
 7. **Check and send.** Read the PNG once to check it rendered (6 tiles, wins and fixes filled).
    Send it with `SendUserFile` (status `proactive`, display `attach`) and the caption
-   `Jordan scorecard for <Weekday, Mon DD>: reply in 2h <X>%, same-day call <Y>%, held <Z>%, booked before hanging up <W>%. Fix: <top fix, short>.`
+   `Jordan scorecard for <Weekday, Mon DD>: same-day call <Y>%, held <Z>%, booked before hanging up <W>%, reply in 2h <X>% (tracked). Fix: <top fix, short>.`
 
 If a step fails, send Sheila one or two lines saying which step and what you saw. If Composio
 returns an auth or "API key revoked" error, say the Composio connector needs reconnecting in
@@ -71,12 +71,13 @@ Business hours are 9am to 5pm, Monday to Friday, America/Denver (Jordan's time).
   (`cf_RdUwNTlCpEBzzWDbmzUcPUwPMmQPmO6EZJLsH6olFhM`, set by the lead intake Routine to Helen's
   reply time). If it is empty, use the earliest email on the lead from helen@smbdealhunter.xyz
   that includes jkempster@smbdealhunter.xyz; failing that, 9am MT on the tracker's forward date.
-- **reply2h (target 80%).** Jordan's first outbound email, call or SMS on the lead after the
+- **reply2h (tracked, no target).** Speed to lead. Shown as a blue tracking tile at the
+  right of the first row, not a KPI. Jordan's first outbound email, call or SMS on the lead after the
   forward time. Hit if it came within 2 business hours. A lead with no reply counts as a miss
   once 2 business hours have passed; leads still inside their first 2 business hours are left
   out. `median_hours` = median business hours to first touch over leads that got one, rounded
   to the nearest 0.5.
-- **sameday_call (target 80%).** Leads that had a phone number by the end of the forward's
+- **sameday_call (target 70%).** Leads that had a phone number by the end of the forward's
   business day: on the Close contact, in the lead's email or signature, or in the tracker
   summary. Hit if Jordan placed an outbound call (any outcome) the same business day. A forward
   after 5pm MT or on a weekend uses the next business day. Leave out leads whose day has not
@@ -85,7 +86,7 @@ Business hours are 9am to 5pm, Monday to Friday, America/Denver (Jordan's time).
   Close outcome is not No Show or Reschedule and that has some proof it happened (a connected
   Jordan call of 5+ minutes that day, a call note, or his info package email after), or a
   connected Jordan call of 5+ minutes. Denominator = all leads in the window.
-- **booked_live (target 80%).** Of held setter calls, the share where a meeting on the lead
+- **booked_live (target 50%).** Of held setter calls, the share where a meeting on the lead
   (with a closer, or a callback with Jordan) was created in Close between the call's start and
   30 minutes after it ended. Leave out calls that ended in a clear "not a fit" (Close outcome
   Disqualified or Not a Fit, or Jordan's note says so) and report how many in
