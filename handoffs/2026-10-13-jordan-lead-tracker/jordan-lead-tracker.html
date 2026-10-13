@@ -1,7 +1,7 @@
 <title>Jordan's Lead Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
-<style>
+<style id="pagestyle">
 /* Layout: one column of stage groups, each a colored band; rows read Lead | What happened | Next step. Breakups sink to the bottom in grey. */
 :root{
   --bg:#f6f7f9; --panel:#ffffff; --fg:#1b2129; --muted:#5d6774; --line:#dfe3e8; --accent:#2b5fd9;
@@ -32,6 +32,8 @@ h1{font:700 clamp(26px,4vw,36px)/1.1 var(--display);margin:0;text-wrap:balance;l
 .meta{display:flex;flex-direction:column;gap:6px;align-items:flex-end;font-size:13px;color:var(--muted)}
 .meta .src{font-family:var(--mono);font-size:12px}
 button{font:600 14px var(--body);color:#fff;background:var(--accent);border:0;border-radius:6px;padding:8px 14px;cursor:pointer}
+.btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+button.alt{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
 button:disabled{opacity:.55;cursor:default}
 button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:18px}
@@ -70,14 +72,23 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);max-width:80ch}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style>
 
-<div class="wrap">
+<div id="app"></div>
+<script type="application/json" id="snap">null</script>
+
+<script>
+(() => {
+"use strict";
+// The page republishes itself with the latest snapshot, so it keeps its own source here.
+const SELF = document.currentScript.textContent;
+const STYLE = document.getElementById("pagestyle").textContent;
+const SHELL = `<div class="wrap">
   <header>
     <div>
       <h1>Jordan's Lead Tracker</h1>
-      <p class="sub">Every lead Helen forwarded to Jordan Kempster, grouped by where it stands now. Built live from Helen's tracker and Close each time you refresh.</p>
+      <p class="sub">Every lead Helen forwarded to Jordan Kempster, grouped by where it stands now. Built from Helen's tracker and Close.</p>
     </div>
     <div class="meta">
-      <button id="refresh" type="button">Refresh from Close</button>
+      <div class="btns"><button id="refresh" type="button" hidden>Refresh from Close</button><button id="save" class="alt" type="button" hidden>Save for Jordan</button></div>
       <span id="updated">Not loaded yet</span>
       <span class="src" id="src"></span>
     </div>
@@ -91,18 +102,17 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);max-width:80ch}
     A 15-minute meeting with Jordan, Jose, David or Quinn is the setter call; a meeting with anyone else is the closer call. "Breakup sent" means Jordan texted or emailed a stop-following-up message, or marked his Day 5 breakup task done before the lead ever replied or booked; a reply or a booking afterwards moves the lead back up.
     Due dates follow the Day 1 / Day 2 / Day 5 cadence from the intake Routine, in Jordan's time zone (Mountain).
   </footer>
-</div>
-
-<script>
-(() => {
-"use strict";
+</div>`;
+document.getElementById("app").innerHTML = SHELL;
+let SNAP = null;
+try { SNAP = JSON.parse(document.getElementById("snap").textContent); } catch (_) {}
 const JORDAN = "user_3IrYZLUcCBZrg2mb49wCybrxGBFTCxa5eqTHhE1ApuC";
 const SETTERS = ["jordan kempster","jose rodriguez","david martin","quinn donelan","yobani mendoza"];
 const TZ = "America/Denver";
 const SHEET = "1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ";
 const SHEET_ACCOUNT = "googlesheets_gyte-urlar";
 const TAB = "'Tracker (JordanK)'";
-const CACHE_KEY = "jordan-lead-tracker-v1";
+const FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">';
 const BREAKUP_RE = /stop following up|should i stop|close (out )?(the loop|your file)|last (note|email|message) from me/i;
 
 // Tracker rows forwarded to Jordan (name, Helen forward date) and their Close lead ids, as of 10/13.
@@ -479,23 +489,58 @@ async function refresh() {
   else if (failed) msgs.push(`${failed} lead(s) could not be loaded from Close; they are listed under "Could not load".`);
   render(models);
   const stamp = new Date();
-  $("updated").textContent = `Updated ${stamp.toLocaleString("en-US", {month:"short", day:"numeric", hour:"numeric", minute:"2-digit", timeZone: TZ, timeZoneName:"short"})}`;
-  $("src").textContent = `${models.length} leads · tracker: ${srcTracker} · Close: live`;
+  latest = {at: stamp.toISOString(), models, src: `${models.length} leads · tracker: ${srcTracker}`};
+  showStamp(latest, "Live from Close");
   notice(msgs.join(" "));
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify({at: stamp.toISOString(), models, src: $("src").textContent})); } catch (_) {}
   $("bar").hidden = true; btn.disabled = false; btn.textContent = "Refresh from Close"; running = false;
+  if (art && !readOnly) { $("save").hidden = false; $("save").disabled = false; $("save").textContent = "Save for Jordan"; }
 }
 
-// Show the last refresh straight away, then pull fresh data.
-try {
-  const c = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-  if (c && Array.isArray(c.models)) { render(c.models); $("updated").textContent = `Showing ${new Date(c.at).toLocaleString("en-US", {month:"short", day:"numeric", hour:"numeric", minute:"2-digit", timeZone: TZ, timeZoneName:"short"})}, refreshing…`; $("src").textContent = c.src || ""; }
-} catch (_) {}
+// ---------- saving a snapshot into the page, for viewers without Close ----------
+let art = null, latest = null, readOnly = false;
+const fmtStamp = iso => new Date(iso).toLocaleString("en-US", {month:"short", day:"numeric", hour:"numeric", minute:"2-digit", timeZone: TZ, timeZoneName:"short"});
+function showStamp(snap, label) {
+  $("updated").textContent = `${label} · ${fmtStamp(snap.at)}`;
+  $("src").textContent = snap.src || "";
+}
+function buildPage(snap) {
+  const reset = (document.head.querySelector("style") || {}).textContent || "";
+  const json = JSON.stringify(snap).replace(/</g, "\\u003c");
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + reset +
+    "</style></head><body><title>Jordan's Lead Tracker</title>" + FONTS + '<style id="pagestyle">' + STYLE + '</style>\n<div id="app"></div>\n' +
+    '<script type="application/json" id="snap">' + json + "<\/script>\n<script>" + SELF + "<\/script></body></html>";
+}
+async function save() {
+  if (!art || !latest) return;
+  const b = $("save"); b.disabled = true; b.textContent = "Saving…";
+  try {
+    await art.publish(buildPage(latest));      // every open view, this one included, reloads to the saved version
+    b.textContent = "Saved";
+  } catch (e) {
+    const c = e && e.code;
+    if (c === "conflict") { b.textContent = "Reloading…"; return; }
+    if (c === "not_writer" || c === "not_granted" || c === "consent_required" || c === "capability_disabled" || c === "not_declared") {
+      readOnly = true; b.hidden = true;
+      notice("Saving is only available to the page's owner, signed in to Claude. Jordan sees the last version Sheila saved.");
+      return;
+    }
+    b.disabled = false; b.textContent = "Save for Jordan";
+    notice(c === "too_large" ? "The snapshot is too large to save." : `Could not save: ${(e && e.message) || "try again in a minute"}.`);
+  }
+}
+
+// Show the saved snapshot straight away. Viewers with Close (Sheila) also get live data and can save it.
+if (SNAP && Array.isArray(SNAP.models)) { render(SNAP.models); showStamp(SNAP, "Saved"); }
+else $("list").innerHTML = '<p class="empty">No saved version yet. Sheila saves one from her view of this page.</p>';
 $("refresh").addEventListener("click", refresh);
+$("save").addEventListener("click", save);
 (async () => {
-  mcp = window.claude && window.claude.use ? await window.claude.use("mcp") : null;
-  if (!mcp) { $("refresh").disabled = true; notice("This page reads Close through your claude.ai connectors. Open it in Claude, signed in, to load live data."); if (!$("chips").innerHTML) $("list").innerHTML = `<p class="empty">Open this page in Claude to load Jordan's leads.</p>`; return; }
-  refresh();
+  const [m, a] = await Promise.all([window.claude && window.claude.use ? window.claude.use("mcp") : null, window.claude && window.claude.use ? window.claude.use("artifact") : null]);
+  mcp = m; art = a;
+  if (!mcp) return;                              // read-only viewer: the saved snapshot is the page
+  $("refresh").hidden = false;
+  const age = SNAP && SNAP.at ? Date.now() - new Date(SNAP.at) : Infinity;
+  if (age > 10 * 60 * 1000) refresh();           // a version saved a moment ago needs no reload
 })();
 })();
 </script>

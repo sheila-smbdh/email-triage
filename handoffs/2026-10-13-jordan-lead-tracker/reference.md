@@ -24,11 +24,29 @@ row has three columns:
 - **Next step**: one action with a due tag (overdue, today, or the day).
 
 It is **dynamic**: nothing is stored server-side. Every open (and the Refresh button) re-reads
-the tracker and Close. The last result is kept in the viewer's browser (`localStorage` key
-`jordan-lead-tracker-v1`) only so a reopen shows something at once while it refreshes.
+the tracker and Close. Viewers without Close see the last saved snapshot (§1a).
 
 **It is read-only.** It never writes to Close, the tracker, Gmail or Slack. Keep it that way:
 the manifest declares only read tools.
+
+## 1a. Saved version for viewers without Close (added 2026-10-13)
+
+Jordan opens the page without a Close connector (he has no Claude account in Sheila's team
+space), so he cannot load live data. The page therefore also carries a **saved snapshot**:
+
+- Viewers with the Close connector (Sheila) see the saved version at once, and the page loads
+  live data on its own when the saved one is over 10 minutes old (or on "Refresh from
+  Close"). A **"Save for Jordan"** button then appears.
+- "Save for Jordan" republishes the page with the new results built in (capability
+  `artifact`; the page keeps its own source in `SELF`, `STYLE` and `SHELL` and writes the
+  results into the `<script id="snap">` JSON). Every open view reloads to it.
+- Everyone else, Jordan included, sees the last saved version and its time ("Saved · Oct 13,
+  4:12 PM MDT"), with no buttons. If nothing was ever saved, the page says so.
+- **The saved version only moves when someone with Close opens the page and clicks Save.**
+  Make it part of the daily routine: open, wait for the live load, click "Save for Jordan".
+- When republishing from Claude, pass the full capability set: `mcp` (the tools in §2) **and**
+  `artifact: {}`. Leaving `artifact` out removes the Save button. A publish from Claude
+  replaces the saved snapshot with an empty one until the next Save.
 
 ## 2. Where the data comes from
 

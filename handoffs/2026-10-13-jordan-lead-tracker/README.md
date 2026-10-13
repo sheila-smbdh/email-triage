@@ -21,8 +21,10 @@ bottom in grey.
 
 The page is **dynamic**: it stores no data of its own. Every time it opens, or you press
 "Refresh from Close", it reads Helen's tracker sheet and every lead's history in Close through
-the viewer's claude.ai connectors, then rebuilds the list. "Doing it daily" means opening the
-page each morning; no copy-pasting, no rebuilding. It is **read-only**: it never writes to
+the viewer's claude.ai connectors, then rebuilds the list. Jordan has no Close connector, so he sees
+the last **saved** version instead: whoever has Close opens the page, waits about a minute for
+the live load, and clicks **"Save for Jordan"**. "Doing it daily" means exactly that, once each
+morning; no copy-pasting, no rebuilding. It is **read-only**: it never writes to
 Close, the sheet, Gmail or Slack.
 
 Sheila built and published it on 2026-10-13 at a link only she can open
@@ -67,7 +69,7 @@ folder, after one small edit for your Google Sheets connection (§5).
 1. Read `README.md` and `reference.md` in full, skim `jordan-lead-tracker.html`, and tell the teammate what you loaded and which connectors this chat can reach (Close? Composio?).
 2. Check the two connectors from §5 with the teammate. If either is missing, walk them through adding it before anything else.
 3. In `jordan-lead-tracker.html`, set `SHEET_ACCOUNT` (near the top of the `<script>`) to the teammate's own Composio Google Sheets account id. Find it by asking Composio which Google Sheets accounts are connected; use the one whose email can open the sheet. Change nothing else.
-4. Publish the edited file as a new artifact with the title "Jordan's Lead Tracker". Give it the `mcp` capability with exactly these read tools: **Close**: `fetch_lead`, `fetch_contact`, `activity_search`, `find_tasks`, `search`, `paginate_search`; **Composio**: `COMPOSIO_MULTI_EXECUTE_TOOL`. If the Composio connector has a different display name in this account, use that name in both the manifest and the page's `call("Composio", …)` line.
+4. Publish the edited file as a new artifact with the title "Jordan's Lead Tracker". Give it the `artifact` capability (for the Save button) and the `mcp` capability with exactly these read tools: **Close**: `fetch_lead`, `fetch_contact`, `activity_search`, `find_tasks`, `search`, `paginate_search`; **Composio**: `COMPOSIO_MULTI_EXECUTE_TOOL`. If the Composio connector has a different display name in this account, use that name in both the manifest and the page's `call("Composio", …)` line.
 5. Have the teammate open the page, allow Close and Composio when asked, and wait about a minute for the first load. Then spot-check these against Close:
    - Graham Shaw: setter call held 9/30, not set to a closer
    - Nick Saucier (tracker name "Nick"): closer call with Omar on 10/9, cancelled
@@ -78,7 +80,8 @@ folder, after one small edit for your Google Sheets connection (§5).
 
    Note that some of these will have moved on by the time you read this.
 6. If the yellow notice at the top says the tracker was not read live, go back to move 3; the error text says which connector and what to do.
-7. Daily: open the page each weekday morning, or press Refresh. Read top to bottom: overdue tags (red) first, then today (amber).
+7. Click "Save for Jordan", then share the page with Jordan from its Share menu (he does not need Claude connectors).
+8. Daily: open the page each weekday morning, let it load live (or press Refresh), click "Save for Jordan". Read top to bottom: overdue tags (red) first, then today (amber).
 
 ## 7. Tone
 
@@ -91,5 +94,6 @@ all about it, so he can make this feel like magic. Thank you for using it!"
 
 - The teammate has their own published copy of the page, and it loads all of Jordan's leads with "tracker: live" in the top-right status line.
 - The six spot-checks above match Close, or any mismatch has been written down with what Close showed.
-- The teammate knows the daily routine: open the page, work the overdue and today items.
+- Jordan can open the teammate's copy and sees a "Saved" time from today.
+- The teammate knows the daily routine: open the page, click Save for Jordan, work the overdue and today items.
 - Tell Sheila in one plain sentence that the teammate's copy is live, and send her any mismatches.
