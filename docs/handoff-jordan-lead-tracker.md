@@ -73,8 +73,13 @@ to its Close lead id, resolved by hand on 2026-10-13 (mostly by email address, p
 name-matching trap in the follow-up handoff). A tracker name that is not in the map is matched
 against the Close search "leads where custom field Setter is Jordan Kempster" (the intake
 Routine sets that field) by exact name. No unique match → the row goes to **No Close record**.
-Four names have `null` on purpose because Close has no lead for them: `the beeee`
-(hpohock@gmail.com), `Scott` (scottstuart1212@gmail.com), `Dirk Welsh`, `intuit111`.
+Three names have `null` on purpose because no Close lead was found for them: `the beeee`
+(hpohock@gmail.com), `Scott` (scottstuart1212@gmail.com), `intuit111`. Searching Close by
+email misses a lead whose contact has no email on file, and searching by name misses a lead
+whose lead name is blank: Dirk Welsh (`lead_QWat4nZQ…`) has both problems, and was wrongly
+listed as no record until Sheila pointed it out. Before declaring "no record", also search the
+phone number and the contact name. `Scott` is **not** Scott Boyette (`lead_FjbOspaw…`,
+boyettecs@gmail.com), who is on the never-track list.
 
 Non-obvious mappings: `butch gentry` → Walter Gentry, `B E` → Brent, `Amir B` → Amir
 Behdani, `John Dusek` → John Dusek III, `Christopher Terry` → Dpcbuilds, `Kumar D` → Kumar
