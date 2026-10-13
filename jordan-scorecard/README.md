@@ -1,7 +1,8 @@
 # Jordan's setter scorecard (daily)
 
 A one-card scorecard of Jordan Kempster's setter KPIs on Helen's email leads, sent to
-Sheila as a PNG every weekday at about 8am ET by the Routine "Jordan daily scorecard".
+Sheila as a PNG and posted to Slack #helen-email-digest every weekday at about 8am ET by the
+Routine "Jordan daily scorecard".
 
 | | |
 |---|---|
@@ -10,8 +11,9 @@ Sheila as a PNG every weekday at about 8am ET by the Routine "Jordan daily score
 | Example input | `sample-metrics.json` (the Oct 7 numbers from the setter deep dive) |
 | Layout and targets | `build.py` and `style.css`. A daily run never changes them. |
 
-The scorecard is for Sheila only. Never message Jordan, never post to Slack, and never write
-to Close, the tracker or anyone's mailbox.
+The only Slack post is the finished scorecard in #helen-email-digest (step 8). Never DM
+Jordan, never post anything else to Slack, and never write to Close, the tracker or anyone's
+mailbox.
 
 ## Daily run
 
@@ -39,6 +41,15 @@ to Close, the tracker or anyone's mailbox.
 7. **Check and send.** Read the PNG once to check it rendered (6 tiles, wins and fixes filled).
    Send it with `SendUserFile` (status `proactive`, display `attach`) and the caption
    `Jordan scorecard for <Weekday, Mon DD>: same-day call <Y>%, held <Z>%, booked before hanging up <W>%, reply in 2h <X>% (tracked). Fix: <top fix, short>.`
+8. **Post to Slack.** Only after step 7 passed. Channel `#helen-email-digest`
+   (`C0BTCGZSF9R`). Upload the PNG with the Slack connector: `slack_get_file_upload_url`
+   (filename `jordan-scorecard-<date>.png`, `content_length` = exact byte size, alt text
+   "Jordan's setter scorecard"), POST the bytes to the returned URL with curl (keep the URL in
+   a shell variable, byte for byte), then `slack_complete_file_upload` with `channel_id`
+   `C0BTCGZSF9R`, title `Jordan scorecard <Mon DD>` and the step 7 caption as
+   `initial_comment`. Post once per run. If the upload fails (for example the network blocks
+   files.slack.com), send the caption alone with `slack_send_message` to the same channel and
+   tell Sheila the image could not be uploaded and why.
 
 If a step fails, send Sheila one or two lines saying which step and what you saw. If Composio
 returns an auth or "API key revoked" error, say the Composio connector needs reconnecting in
