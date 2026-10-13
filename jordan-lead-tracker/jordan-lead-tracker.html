@@ -1,0 +1,501 @@
+<title>Jordan's Lead Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column of stage groups, each a colored band; rows read Lead | What happened | Next step. Breakups sink to the bottom in grey. */
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --fg:#1b2129; --muted:#5d6774; --line:#dfe3e8; --accent:#2b5fd9;
+  --late:#c2361f; --soon:#a86a00;
+  --s-closer:#1f8a55; --s-met:#0f6e6a; --s-ccancel:#c4581a; --s-setter:#2b5fd9; --s-held:#7a4fd0;
+  --s-scancel:#b8860b; --s-replied:#0e8aa8; --s-chasing:#8a7a12; --s-cold:#c2361f; --s-none:#6b7380; --s-breakup:#8b929c;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --panel:#1a2029; --fg:#e7ebf0; --muted:#9aa4b1; --line:#2c3441; --accent:#7ea2ff;
+  --late:#ff7a63; --soon:#e0b04a;
+  --s-closer:#4cc488; --s-met:#3cbab3; --s-ccancel:#f08a4b; --s-setter:#7ea2ff; --s-held:#b394ff;
+  --s-scancel:#e2b443; --s-replied:#4cc3e0; --s-chasing:#d2c25a; --s-cold:#ff7a63; --s-none:#9aa4b1; --s-breakup:#6f7782;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --panel:#1a2029; --fg:#e7ebf0; --muted:#9aa4b1; --line:#2c3441; --accent:#7ea2ff;
+  --late:#ff7a63; --soon:#e0b04a;
+  --s-closer:#4cc488; --s-met:#3cbab3; --s-ccancel:#f08a4b; --s-setter:#7ea2ff; --s-held:#b394ff;
+  --s-scancel:#e2b443; --s-replied:#4cc3e0; --s-chasing:#d2c25a; --s-cold:#ff7a63; --s-none:#9aa4b1; --s-breakup:#6f7782;
+  color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between}
+h1{font:700 clamp(26px,4vw,36px)/1.1 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:6px 0 0;max-width:68ch}
+.meta{display:flex;flex-direction:column;gap:6px;align-items:flex-end;font-size:13px;color:var(--muted)}
+.meta .src{font-family:var(--mono);font-size:12px}
+button{font:600 14px var(--body);color:#fff;background:var(--accent);border:0;border-radius:6px;padding:8px 14px;cursor:pointer}
+button:disabled{opacity:.55;cursor:default}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:18px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.notice{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--soon);background:var(--panel);border-radius:6px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg);text-decoration:none;font-size:13px}
+.chip b{font-family:var(--mono);font-weight:500}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+section.grp{margin-top:28px}
+.gh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding-bottom:8px;border-bottom:2px solid var(--c)}
+.gh h2{font:700 19px/1.2 var(--display);margin:0;display:flex;align-items:center;gap:10px}
+.gh .n{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.gh p{margin:0;color:var(--muted);font-size:13px;flex-basis:100%}
+.rows{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.row{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,2fr) minmax(0,1.5fr);gap:12px 20px;padding:12px 14px;background:color-mix(in srgb,var(--c) 7%,var(--panel));border:1px solid color-mix(in srgb,var(--c) 28%,var(--line));border-left:5px solid var(--c);border-radius:6px}
+.grp.breakup .row{color:var(--muted)}
+.lead a.name{font:600 16px/1.3 var(--display);color:var(--fg);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--c) 60%,transparent)}
+.lead a.name:hover{border-bottom-color:var(--fg)}
+.lead .nolink{font:600 16px/1.3 var(--display)}
+.kv{font-size:13px;color:var(--muted);margin-top:4px;display:flex;flex-direction:column;gap:2px}
+.kv span{overflow-wrap:anywhere}
+.mono{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+ol.tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:14px}
+ol.tl li{display:grid;grid-template-columns:4.2em minmax(0,1fr);gap:8px}
+ol.tl .d{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:1px}
+ol.tl .bad{color:var(--late)}
+.lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.next .act{font-weight:600}
+.due{display:inline-block;font-family:var(--mono);font-size:12px;padding:1px 7px;border-radius:4px;margin-right:6px;border:1px solid currentColor}
+.due.late{color:var(--late)} .due.today{color:var(--soon)} .due.later{color:var(--muted)}
+.next .note{font-size:13px;color:var(--muted);margin-top:6px}
+.empty{padding:40px 0;color:var(--muted)}
+footer{margin-top:40px;font-size:13px;color:var(--muted);max-width:80ch}
+@media (max-width:820px){.row{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Jordan's Lead Tracker</h1>
+      <p class="sub">Every lead Helen forwarded to Jordan Kempster, grouped by where it stands now. Built live from Helen's tracker and Close each time you refresh.</p>
+    </div>
+    <div class="meta">
+      <button id="refresh" type="button">Refresh from Close</button>
+      <span id="updated">Not loaded yet</span>
+      <span class="src" id="src"></span>
+    </div>
+  </header>
+  <div class="bar" id="bar" hidden><i id="barfill"></i></div>
+  <div class="notice" id="notice" hidden></div>
+  <nav class="chips" id="chips" aria-label="Stages"></nav>
+  <main id="list"><p class="empty">Loading Jordan's leads from Close. This takes about a minute the first time.</p></main>
+  <footer>
+    How it reads Close: the forward date is the lead's Creation Date field (Helen's reply), or the tracker's Helen Forward Date. A touch is an email, text or call from Jordan after that.
+    A 15-minute meeting with Jordan, Jose, David or Quinn is the setter call; a meeting with anyone else is the closer call. "Breakup sent" means Jordan texted or emailed a stop-following-up message, or marked his Day 5 breakup task done before the lead ever replied or booked; a reply or a booking afterwards moves the lead back up.
+    Due dates follow the Day 1 / Day 2 / Day 5 cadence from the intake Routine, in Jordan's time zone (Mountain).
+  </footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+const JORDAN = "user_3IrYZLUcCBZrg2mb49wCybrxGBFTCxa5eqTHhE1ApuC";
+const SETTERS = ["jordan kempster","jose rodriguez","david martin","quinn donelan","yobani mendoza"];
+const TZ = "America/Denver";
+const SHEET = "1auWB8iQAwTYQrKhgHhb-paUuCH35j35RDiQdSC5uhBQ";
+const SHEET_ACCOUNT = "googlesheets_gyte-urlar";
+const TAB = "'Tracker (JordanK)'";
+const CACHE_KEY = "jordan-lead-tracker-v1";
+const BREAKUP_RE = /stop following up|should i stop|close (out )?(the loop|your file)|last (note|email|message) from me/i;
+
+// Tracker rows forwarded to Jordan (name, Helen forward date) and their Close lead ids, as of 10/13.
+// Used when the tracker cannot be read live; new tracker rows are matched to Close by name.
+const ROSTER = [["Graham Shaw","9/23/2026"],["Shivam Chadha","9/23/2026"],["Mai Habib","9/23/2026"],["Randy Palumbo","9/23/2026"],["Blake Griffis","9/23/2026"],["Mark Chappell","9/23/2026"],["the beeee","9/23/2026"],["Arshad Khan","9/25/2026"],["Mick Petrucci","9/25/2026"],["Angelo Buscemi","9/25/2026"],["David Pack","9/25/2026"],["Tracey Radillo","9/25/2026"],["Rhett Townsend","9/25/2026"],["PK Kumar","9/25/2026"],["Dan Lessen","9/25/2026"],["Alvino Zau","9/25/2026"],["Thomas Causey","9/25/2026"],["anjubala jacob","9/25/2026"],["butch gentry","9/25/2026"],["Gene Simeona","9/25/2026"],["Pat O'Connor","9/28/2026"],["Bart George","9/28/2026"],["Scott","10/1/2026"],["Robert Murphy","9/28/2026"],["Joshua Mumford","9/28/2026"],["Theo McCloe","9/28/2026"],["Dirk Welsh","9/28/2026"],["Amit Jain","9/28/2026"],["Libin Babu","10/1/2026"],["Md.Nasir Uddin","10/1/2026"],["Moe Shabasy","10/1/2026"],["Cornell Covert","10/1/2026"],["Bud Gillin","10/1/2026"],["John Dusek","10/1/2026"],["Krystle Doty","10/5/2026"],["Nick","10/1/2026"],["Abdi Russi","10/1/2026"],["Christopher Terry","10/1/2026"],["Jacob Jones","10/1/2026"],["James Wood","10/1/2026"],["Kumar D","10/1/2026"],["intuit111","10/1/2026"],["Son Phan","10/1/2026"],["Clyde Harris","10/1/2026"],["Patrick Mathews","10/1/2026"],["Ben R","10/1/2026"],["B E","10/2/2026"],["s m","10/2/2026"],["Steve Tuzeneu","10/2/2026"],["George Niceley","10/3/2026"],["Chad Miller","10/3/2026"],["Amir B","10/3/2026"],["JUNIOR","10/7/2026"],["Bruce Grout","10/7/2026"]];
+const LEAD_IDS = {
+"graham shaw":"lead_bXNfGd9pL6FeQvWMk2u1OyG8loWgmWey5jHj5EeosTj","shivam chadha":"lead_oYLh5c06JQbUvLJrjTITEGXTaBcNB0o76Pe9Hs2RRK0","mai habib":"lead_rZyc2R54vMTXDsQtpK9xgEgWUEgBQTFWzsKvg666Qvq","randy palumbo":"lead_nEwUF8nOBG9N4FPCwCKPzISTpkfPmJnVu2E5d2j2xTa","blake griffis":"lead_i93kHme74XX08ZTOTpSORM8WqIgb8u56yEU5MCWEqfU","mark chappell":"lead_NekzBGAKe2RNfkjzAq3KAHjkEm9yzNWomIHtTAAADvl","the beeee":null,"arshad khan":"lead_2qug4RNDzNaoNgxkRFC2S6qEnqVQMd8k5Wx2e9zQLKW","mick petrucci":"lead_LzoGZN6hDnpcQtp05hKRQG8NMTEZWkqcNNhBDyGyYG9","angelo buscemi":"lead_1pAcfkwWghl3EmKNS2xJmpY13SEhERY9tNAmcWW15po","david pack":"lead_DvaN0jHyIp863qsOQqNcPUYzwbzX69DY20mmQFTVC8H","tracey radillo":"lead_0FI8WiisMfVMZy7ndq6K0O2cUnVvjUHVvw6JKv85aLj","rhett townsend":"lead_2OgSNn59tyJihxgw37qElB3prGNAKtvfY9C661mtn4N","pk kumar":"lead_ACsp1eqWNcr1Vgkge5964InDqD41pUzPz8Dkg3LWWcr","dan lessen":"lead_0TkvASV9jy4SVaJQ952DRtpQyttO0JuH2voAQnBivVW","alvino zau":"lead_P3QCNjTiL1HLD4QLNMXPAaw44eyytwM7zaqyjLTnVfZ","thomas causey":"lead_IKLOWcVH5bzSFrug7yfPHz9N2iyrqzJZnK9zdVRXI19","anjubala jacob":"lead_kaXuCXq0mXgdIIxmbtKIfOWRuI2vb2p0p78jkMhRxuO","butch gentry":"lead_MuRUv0BVx1HR6TuyL9D5ElgXGgMJD5YDaXPyeGK2Xyb","gene simeona":"lead_QVb4awezVHGJmJSx2M1fkDw5QslZyjGnWoCW6pRln9S","pat o'connor":"lead_Nd0zfkxUoBNnWm7pKpb0DNegKxY47QzmoF8hpo4zkUk","bart george":"lead_2NtBN6qGBWjDOUIxPv69nf8ZQEacyVTV95jG6NO76pb","scott":null,"robert murphy":"lead_CFisJjfcCcSMES7YmD71ZWMAFRePCdRqSRUeaazvMsq","joshua mumford":"lead_mCa2HtueVl8EMAu2moFNRx6UOTWGWiLFtaz7f30cptH","theo mccloe":"lead_2xJIgbHO0Cf5gZuP0qW5W1s7GTW2h2irutK4LprdamX","dirk welsh":null,"amit jain":"lead_O2ynYUZEjO8bAxp2oYtXBnbbjDwhXyCvAdpR9qWrQAm","libin babu":"lead_64yXi3PslSakRmV674sAJZZq5uYSbMI1z4y7rnujtIG","md.nasir uddin":"lead_Mt2WTDwrIzG25cvFpD3LKa4MLSlFzK8cuwKcW1Hy2hM","moe shabasy":"lead_BYdggDCof4WWuzEL3zyXjmNbHgh4rsBQuS2KvKI2LaG","cornell covert":"lead_dS9d8eu0jWPQgP01wxnzMtVMSGScsg0ldA22Pyo0iYD","bud gillin":"lead_xBChmidQX5TPXSEBY4TgAkhWN4GKaistivT9x3M7Uqc","john dusek":"lead_rVvUN3OVKFtMZ9QsCFJO0YpQmkzAwXjDzeXkkvvEV9I","krystle doty":"lead_6gJCAkj0vYf16f9fn32FVp0M9mF6NySkuC4bdouxSO3","nick":"lead_DS7WTJzfD43jE4OiIErgo4MkFRdjdUyAmmZrgiHmmxS","abdi russi":"lead_uFclAOkXEvHBu3LscP5j2DFvEOyHR3ZV3rK9SZMbQ91","christopher terry":"lead_NKgqWf4MPfxZrAYh2qhAalxFkHfRVmqnBZZBGPyleJM","jacob jones":"lead_vZ7gTb4ErCLPAkeeB3X4znbnLdw7RkvHM0h2AlPUXsT","james wood":"lead_lHN26PDGSu56rIPyqUY706WUc284H9XAYZzPS18BQBS","kumar d":"lead_RGaUDzYREzbtlobNwaSXKILTunagxAyCP1pueo7eeuk","intuit111":null,"son phan":"lead_j2oycwol25uTvzwjKytinXLvIvF1ss6Yyg6aupeNkQA","clyde harris":"lead_lBiz1NvpoXT3QMYM8CaKbrDMNYgnDv5PPmUXDmQRX6y","patrick mathews":"lead_nsRp9jlnngIvaA43JLSbNeLf8DbZJewFAmseiCvemOk","ben r":"lead_n1EW4JpYA9PaodTd3jA0ALQvOcGXmutYmIhHy2xgbLv","b e":"lead_4hI15ms4cf8QcQWxbJy3wuXZEmFDaEeb2qTKK5eyI8M","s m":"lead_XyUDPimfN0FXChx3XXcIrAbQjvScXyXxQ2qS2uB2dru","steve tuzeneu":"lead_IVoolFCBPEXnAE99sryOKdNlprHn8jcayEnAJCub5vL","george niceley":"lead_Idh9qVo15sAsyaqxrjjdIwNusGMbbuoiBBjfEU09geU","chad miller":"lead_ets7UoAUmqRXpO0jU2zb57TFbzRohlu3mO81sE3yYlb","amir b":"lead_q5bwj0ygqWVAZRPK5ReG0is8SZj22xhp61OTmKhWLz0","junior":"lead_uceVh1oT2M2eJlw8yJUhzoJwvkK38NWIQvYgfGygLMw","bruce grout":"lead_WPsdq2ZdEy8gZuURyKjO6kb1lDzcbZM5W25gx8WSTvh"};
+
+const STAGES = [
+  {key:"closer_booked", label:"Closer call booked", c:"--s-closer", desc:"Set to a closer; the call has not happened yet."},
+  {key:"setter_booked", label:"Setter call booked", c:"--s-setter", desc:"Intro call with Jordan on the calendar."},
+  {key:"closer_met", label:"Met with a closer", c:"--s-met", desc:"Ascended: the closer call was held."},
+  {key:"closer_cancelled", label:"Closer call cancelled", c:"--s-ccancel", desc:"Was set to a closer, but that call was cancelled."},
+  {key:"held_not_set", label:"Setter call held, not set to closer", c:"--s-held", desc:"Jordan talked to them and did not book a closer call."},
+  {key:"setter_cancelled", label:"Setter call cancelled", c:"--s-scancel", desc:"Intro call was cancelled and not rebooked."},
+  {key:"replied", label:"Replied, no call booked", c:"--s-replied", desc:"The lead wrote back after Helen's forward, but no call is on the calendar."},
+  {key:"chasing", label:"Chasing, no reply", c:"--s-chasing", desc:"Jordan has reached out; nothing back yet."},
+  {key:"not_contacted", label:"Not contacted yet", c:"--s-cold", desc:"No email, text or call from Jordan in Close since the forward."},
+  {key:"no_close", label:"No Close record", c:"--s-none", desc:"On the tracker, but there is no Close lead to read."},
+  {key:"error", label:"Could not load", c:"--s-none", desc:"Close did not answer for these leads. Refresh to try again."},
+  {key:"breakup", label:"Breakup sent: low priority", c:"--s-breakup", desc:"Jordan sent the breakup. Kept here unless the lead replies or books."},
+];
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const norm = s => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
+
+// ---------- dates (Jordan's time zone) ----------
+const dayFmt = new Intl.DateTimeFormat("en-CA", {timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit"});
+const dayKey = d => dayFmt.format(d);                       // YYYY-MM-DD in Mountain time
+const md = k => { const [, m, d] = k.split("-"); return `${+m}/${+d}`; };
+const kdate = k => new Date(k + "T12:00:00Z");
+const addDays = (k, n) => { const d = kdate(k); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const isWeekend = k => [0, 6].includes(kdate(k).getUTCDay());
+const addBiz = (k, n) => { let x = k; while (n > 0) { x = addDays(x, 1); if (!isWeekend(x)) n--; } return x; };
+const nextBiz = k => { let x = k; while (isWeekend(x)) x = addDays(x, 1); return x; };
+const dow = k => kdate(k).toLocaleDateString("en-US", {weekday:"short", timeZone:"UTC"});
+const timeOf = d => d.toLocaleTimeString("en-US", {hour:"numeric", minute:"2-digit", timeZone: TZ, timeZoneName:"short"});
+const parseSheetDate = s => {
+  if (!s) return null;
+  let m = String(s).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m) return `${m[3]}-${m[1].padStart(2,"0")}-${m[2].padStart(2,"0")}`;
+  m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
+};
+const fmtPhone = p => { const d = String(p || "").replace(/\D/g, ""); const t = d.length === 11 && d[0] === "1" ? d.slice(1) : d; return t.length === 10 ? `(${t.slice(0,3)}) ${t.slice(3,6)}-${t.slice(6)}` : p; };
+
+// ---------- connectors ----------
+let mcp = null;
+async function call(server, tool, input, tries = 2) {
+  try {
+    const r = await mcp.callTool(server, tool, input, {cache: {staleTime: 120000, gcTime: 86400000}});
+    let p = r.payload;
+    if (typeof p === "string") { try { p = JSON.parse(p); } catch (_) {} }
+    return p;
+  } catch (e) {
+    if (e && e.retryable && tries > 1) {
+      await new Promise(res => setTimeout(res, (e.retryAfterMs || 800) + Math.random() * 600));
+      return call(server, tool, input, tries - 1);
+    }
+    throw e;
+  }
+}
+function findKey(obj, key, depth = 0) {
+  if (!obj || typeof obj !== "object" || depth > 8) return undefined;
+  if (key in obj) return obj[key];
+  for (const v of Object.values(obj)) { const f = findKey(v, key, depth + 1); if (f !== undefined) return f; }
+  return undefined;
+}
+
+async function readTracker() {
+  const p = await call("Composio", "COMPOSIO_MULTI_EXECUTE_TOOL", {
+    tools: [{tool_slug: "GOOGLESHEETS_BATCH_GET", account: SHEET_ACCOUNT, arguments: {
+      spreadsheet_id: SHEET, dateTimeRenderOption: "FORMATTED_STRING",
+      ranges: [`${TAB}!D1:F300`, `${TAB}!I1:I300`, `${TAB}!M1:M300`, `${TAB}!W1:W300`]}}],
+    sync_response_to_workbench: false });
+  const vr = findKey(p, "valueRanges");
+  if (!Array.isArray(vr) || vr.length < 4) throw {code: "tool_error", message: "Tracker came back without its columns"};
+  const col = i => vr[i].values || [];
+  const def = col(0), name = col(1), fwd = col(2), notes = col(3);
+  const rows = [];
+  for (let i = 1; i < def.length; i++) {
+    const [action = "", forwarded = "", owner = ""] = def[i] || [];
+    const nm = (name[i] || [])[0];
+    if (!nm || forwarded !== "Yes") continue;
+    if (!(owner === "Jordan" || /jkempster@/i.test(action))) continue;
+    rows.push({name: nm, fwd: parseSheetDate((fwd[i] || [])[0]), note: (notes[i] || [])[0] || ""});
+  }
+  if (!rows.length) throw {code: "tool_error", message: "No Jordan rows found on the tracker"};
+  return rows;
+}
+
+async function setterLeads() {
+  // Leads in Close whose Setter field is Jordan (the intake Routine sets it), to match new tracker names.
+  const out = [];
+  let p = await call("Close", "search", {query: "leads where custom field Setter is Jordan Kempster"});
+  for (let page = 0; p && page < 5; page++) {
+    for (const r of p.results || []) out.push({id: r.lead_id || r.id, name: r.title || r.label});
+    if (!p.next_cursor || !p.search_id) break;
+    p = await call("Close", "paginate_search", {search_id: p.search_id, cursor: p.next_cursor});
+  }
+  return out;
+}
+
+async function loadLead(id) {
+  const leadP = call("Close", "fetch_lead", {id});
+  const actsP = (async () => {
+    const all = []; let cursor = null;
+    for (let page = 0; page < 8; page++) {
+      const input = {lead_ids: [id], activity_types: ["activity.call","activity.email","activity.meeting","activity.sms","activity.task_completed"],
+        activity_at: {start: "2026-09-01T00:00:00Z"}};
+      if (cursor) input.cursor = cursor;
+      const p = await call("Close", "activity_search", input);
+      all.push(...(p.results || []));
+      cursor = p.next_cursor; if (!cursor) break;
+    }
+    return all;
+  })();
+  const tasksP = call("Close", "find_tasks", {lead_id: id, is_complete: false}).then(p => p.results || []).catch(() => []);
+  const lead = await leadP;
+  const contact = lead.primary_contact_id ? await call("Close", "fetch_contact", {id: lead.primary_contact_id}).catch(() => null) : null;
+  return {lead, acts: await actsP, tasks: await tasksP, contact};
+}
+
+// ---------- reading one lead ----------
+function analyse(row, b) {
+  const now = new Date(), today = dayKey(now);
+  const lead = b.lead;
+  const cf = (lead.custom_fields || []).find(f => f.id === "cf_RdUwNTlCpEBzzWDbmzUcPUwPMmQPmO6EZJLsH6olFhM");
+  const fwdAt = cf && cf.value ? new Date(cf.value) : row.fwd ? new Date(row.fwd + "T06:00:00Z") : new Date(lead.created_at);
+  const fwdDay = row.fwd && (!cf || !cf.value) ? row.fwd : dayKey(fwdAt);
+  const statusM = (lead.summaries || [])[0]?.match(/Status: ([^\n]+)/);
+  const phone = (b.contact?.phones || [])[0]?.phone || "";
+  const email = (b.contact?.emails || [])[0]?.email || "";
+  const display = lead.name || row.name;
+  const first = (b.contact?.name || display).split(/\s+/)[0].replace(/^./, c => c.toUpperCase());
+
+  const seen = new Set(), touches = [], inbound = [], meetings = [];
+  let breakupTaskAt = null, breakupMsgAt = null;
+  for (const a of b.acts) {
+    let p = {}; try { p = JSON.parse(a.preview || a.text || "{}"); } catch (_) {}
+    const at = new Date(a.activity_at || p.activity_at);
+    const type = a.activity_type;
+    if (type === "activity.meeting") {
+      const title = p.title || a.title || "";
+      const cancelled = /^cancel/i.test(title) || /declin|cancel/i.test(p.status || "");
+      const host = title.replace(/^cancell?ed:\s*/i, "").split(" and ").pop().trim();
+      const start = new Date(p.starts_at || a.activity_at);
+      if (dayKey(start) < addDays(fwdDay, -1)) continue;       // calls from before Helen's forward
+      const setter = SETTERS.includes(norm(host)) || (p.duration && p.duration <= 900 && !/discovery/i.test(p.note || ""));
+      meetings.push({start, host, cancelled, setter, upcoming: !cancelled && start > now, held: !cancelled && start <= now});
+      continue;
+    }
+    if (type === "activity.task_completed") {
+      if (/^day 5 breakup/i.test(p.task_text || "") && p.user_id === JORDAN) breakupTaskAt = at;
+      continue;
+    }
+    if (at < fwdAt) continue;
+    if (type === "activity.email" && at - fwdAt <= 60000) continue;  // Helen's forward itself
+    const key = type + "|" + Math.round(at / 1000) + "|" + (p.subject || p.text || "");
+    if (seen.has(key)) continue; seen.add(key);
+    const kind = type === "activity.email" ? "email" : type === "activity.sms" ? "text" : "call";
+    const outbound = type === "activity.call" ? true : !!p.date_sent;
+    if (outbound && p.user_id === JORDAN) {
+      touches.push({at, kind});
+      if (kind === "text" && BREAKUP_RE.test(p.text || "")) breakupMsgAt = at;
+    } else if (!outbound) {
+      inbound.push({at, kind});
+    }
+  }
+  // Email bodies are only in the lead summary; catch a breakup email Jordan wrote there.
+  for (const blk of (lead.summaries || [])) {
+    if (!/^Email thread/.test(blk)) continue;
+    for (const msg of blk.split(/\n\n(?=\d{8}\n)/)) {
+      const m = msg.match(/^(\d{4})(\d{2})(\d{2})\nFrom: Jordan Kempster/);
+      if (m && BREAKUP_RE.test(msg)) { const at = new Date(`${m[1]}-${m[2]}-${m[3]}T18:00:00Z`); if (!breakupMsgAt || at > breakupMsgAt) breakupMsgAt = at; }
+    }
+  }
+  touches.sort((a, b2) => a.at - b2.at); inbound.sort((a, b2) => a.at - b2.at); meetings.sort((a, b2) => a.start - b2.start);
+
+  const setterM = meetings.filter(m => m.setter), closerM = meetings.filter(m => !m.setter);
+  const pick = (list, f) => list.filter(f).pop();
+  const sUp = setterM.find(m => m.upcoming), sHeld = pick(setterM, m => m.held), sCan = pick(setterM, m => m.cancelled);
+  const cUp = closerM.find(m => m.upcoming), cHeld = pick(closerM, m => m.held), cCan = pick(closerM, m => m.cancelled);
+
+  // Breakup: a stop-following-up message, or the Day 5 task marked done while the lead was still cold.
+  let breakupAt = breakupMsgAt, breakupHow = "message";
+  if (!breakupAt && breakupTaskAt) {
+    // Jordan sometimes ticks off all three tasks once a lead books, so a booked or replying lead is not a breakup.
+    const warm = inbound.some(x => x.at < breakupTaskAt) || meetings.some(m => !m.cancelled);
+    if (!warm) { breakupAt = breakupTaskAt; breakupHow = "task"; }
+  }
+  const revived = breakupAt && (inbound.some(x => x.at > breakupAt) || meetings.some(m => !m.cancelled && (m.upcoming || m.start > breakupAt)));
+  const brokeUp = breakupAt && !revived;
+
+  let stage;
+  if (cUp) stage = "closer_booked";
+  else if (sUp) stage = "setter_booked";
+  else if (brokeUp) stage = "breakup";
+  else if (cHeld) stage = "closer_met";
+  else if (cCan) stage = "closer_cancelled";
+  else if (sHeld) stage = "held_not_set";
+  else if (sCan) stage = "setter_cancelled";
+  else if (inbound.length) stage = "replied";
+  else if (touches.length) stage = "chasing";
+  else stage = "not_contacted";
+
+  // ----- what happened -----
+  const tl = [];
+  tl.push({k: fwdDay, t: "Helen forwarded to Jordan"});
+  const byDay = new Map();
+  for (const t of touches) { const k = dayKey(t.at); if (!byDay.has(k)) byDay.set(k, new Set()); byDay.get(k).add(t.kind); }
+  const days = [...byDay.keys()];
+  if (days.length) {
+    const lag = Math.round((kdate(days[0]) - kdate(fwdDay)) / 864e5);
+    tl.push({k: days[0], t: `Jordan responded (${[...byDay.get(days[0])].join(" + ")})${lag === 0 ? ", same day" : `, ${lag} day${lag > 1 ? "s" : ""} after the forward`}`, bad: lag > 1});
+    const rest = days.slice(1);
+    for (const k of rest.slice(0, 3)) tl.push({k, t: `Jordan followed up (${[...byDay.get(k)].join(" + ")})`});
+    if (rest.length > 3) tl.push({k: rest[rest.length - 1], t: `${rest.length - 3} more follow-ups, latest`});
+  } else {
+    tl.push({k: today, t: "No email, text or call from Jordan in Close yet", bad: true});
+  }
+  if (inbound.length) {
+    tl.push({k: dayKey(inbound[0].at), t: `${first} replied (${inbound[0].kind})`});
+    if (inbound.length > 1) tl.push({k: dayKey(inbound[inbound.length - 1].at), t: `${first}'s latest reply (${inbound.length} in all)`});
+  }
+  for (const m of meetings) {
+    const who = m.setter ? (norm(m.host) === "jordan kempster" ? "Setter call with Jordan" : `Setter call with ${m.host}`) : `Closer call with ${m.host}`;
+    tl.push({k: dayKey(m.start), t: `${who}: ${m.cancelled ? "cancelled" : m.upcoming ? `booked for ${dow(dayKey(m.start))} ${timeOf(m.start)}` : "held"}`, bad: m.cancelled});
+  }
+  if (sHeld && !closerM.some(m => !m.cancelled)) tl.push({k: dayKey(sHeld.start), t: "Did not ascend to a closer", bad: true});
+  if (breakupAt) tl.push({k: dayKey(breakupAt), t: breakupHow === "task" ? "Breakup email sent (Day 5 task marked done)" : "Breakup message sent", bad: false});
+  if (revived) tl.push({k: today, t: `${first} came back after the breakup`});
+  tl.sort((a, b2) => a.k < b2.k ? -1 : a.k > b2.k ? 1 : 0);
+
+  // ----- next step -----
+  const callIt = phone ? `call ${fmtPhone(phone)}` : "ask for the best number";
+  const tomorrow = nextBiz(addDays(today, 1));
+  const openTask = (b.tasks || []).filter(t => t.assigned_to === JORDAN && !/^day [125]/i.test(t.text || "")).sort((x, y) => (x.due_date || "") < (y.due_date || "") ? -1 : 1)[0];
+  const taskDue = openTask?.due_date ? openTask.due_date.slice(0, 10) : null;
+  let action, due = null, note = "";
+  const day2 = addBiz(fwdDay, 1), day5 = addDays(fwdDay, 5);
+  switch (stage) {
+    case "closer_booked": {
+      const k = dayKey(cUp.start);
+      due = k === today ? today : addDays(k, -1);
+      action = k === today ? `Closer call with ${cUp.host} is today at ${timeOf(cUp.start)}. Text ${first} a reminder this morning.` :
+        `Text ${first} on ${md(due)} to confirm the ${md(k)} call with ${cUp.host}.`;
+      break; }
+    case "setter_booked": {
+      const k = dayKey(sUp.start);
+      due = k === today ? today : addDays(k, -1);
+      action = k === today ? `Intro call today at ${timeOf(sUp.start)}. Book the closer call before hanging up.` :
+        `Confirm by text on ${md(due)} for the ${md(k)} intro call; book the closer call live on the call.`;
+      break; }
+    case "closer_met":
+      action = `Closer stage. Check the outcome with ${cHeld.host}; nothing for Jordan unless they hand it back.`;
+      break;
+    case "closer_cancelled":
+      due = today;
+      action = `Rebook the closer call: ${callIt} today, don't just email.`;
+      break;
+    case "held_not_set":
+      if (taskDue) { due = taskDue; action = `Follow up on ${md(taskDue)} (task in Close: "${(openTask.text || "").slice(0, 60)}").`; }
+      else { due = today; action = `No follow-up date set. Decide today: reopen with ${first} or close it out, and add a dated task in Close.`; }
+      note = row.note ? `Tracker note: ${row.note}` : "";
+      break;
+    case "setter_cancelled":
+      due = today;
+      action = `Rebook the intro: ${callIt} on ${md(today)} and resend the calendar link.`;
+      break;
+    case "replied":
+      due = inbound[inbound.length - 1].at > (touches[touches.length - 1]?.at || 0) ? today : tomorrow;
+      action = `${first} replied ${md(dayKey(inbound[inbound.length - 1].at))}. ${phone ? `Call ${fmtPhone(phone)}` : "Reply and ask for a number"} on ${md(due)} and book the intro live.`;
+      break;
+    case "chasing": {
+      const n = days.length;
+      if (n < 2) { due = day2 < today ? today : day2; action = `Day 2 follow-up${day2 < today ? ` (was due ${md(day2)})` : ""}: ${callIt} and email on Helen's thread on ${md(due)}.`; }
+      else { due = day5 < today ? today : day5; action = `Send the breakup email ("Should I stop following up?") on ${md(due)}${day5 < today ? ` (was due ${md(day5)})` : ""}, then mark low priority.`; }
+      break; }
+    case "not_contacted":
+      due = today;
+      action = `First touch is overdue (forward was ${md(fwdDay)}): reply on Helen's thread and ${callIt} today.`;
+      break;
+    case "breakup":
+      action = `Low priority. Only re-engage if ${first} replies.`;
+      if (taskDue) { due = taskDue; action += ` Open task due ${md(taskDue)}.`; }
+      break;
+  }
+  if (taskDue && stage !== "held_not_set" && stage !== "breakup" && !note) note = `Open task in Close due ${md(taskDue)}: ${(openTask.text || "").slice(0, 70)}`;
+  return {stage, name: display, trackerName: row.name, id: lead.id, status: statusM ? statusM[1] : "", phone, email, fwdDay, tl, action, due, note,
+          sortKey: (due || "9999") + display.toLowerCase()};
+}
+
+// ---------- render ----------
+function dueTag(k) {
+  if (!k) return "";
+  const today = dayKey(new Date());
+  const cls = k < today ? "late" : k === today ? "today" : "later";
+  const txt = k < today ? `overdue ${md(k)}` : k === today ? "today" : `${dow(k)} ${md(k)}`;
+  return `<span class="due ${cls}">${txt}</span>`;
+}
+function rowHTML(m) {
+  const link = m.id ? `<a class="name" href="https://app.close.com/lead/${esc(m.id)}/" target="_blank" rel="noopener">${esc(m.name)}</a>` : `<span class="nolink">${esc(m.name)}</span>`;
+  const kv = [];
+  if (m.trackerName && norm(m.trackerName) !== norm(m.name)) kv.push(`<span>Tracker: ${esc(m.trackerName)}</span>`);
+  if (m.status) kv.push(`<span>Close status: ${esc(m.status)}</span>`);
+  if (m.phone) kv.push(`<span class="mono">${esc(fmtPhone(m.phone))}</span>`);
+  if (m.email) kv.push(`<span>${esc(m.email)}</span>`);
+  const tl = (m.tl || []).map(x => `<li><span class="d">${md(x.k)}</span><span class="${x.bad ? "bad" : ""}">${esc(x.t)}</span></li>`).join("");
+  return `<article class="row"><div class="lead">${link}<div class="kv">${kv.join("")}</div></div>
+    <div><div class="lbl">What happened</div><ol class="tl">${tl}</ol></div>
+    <div class="next"><div class="lbl">Next step</div><div class="act">${dueTag(m.due)}${esc(m.action)}</div>${m.note ? `<div class="note">${esc(m.note)}</div>` : ""}</div></article>`;
+}
+function render(models) {
+  const groups = STAGES.map(s => ({...s, rows: models.filter(m => m.stage === s.key).sort((a, b) => a.sortKey < b.sortKey ? -1 : 1)})).filter(g => g.rows.length);
+  $("chips").innerHTML = groups.map(g => `<a class="chip" href="#${g.key}" style="--c:var(${g.c})"><span class="dot"></span>${esc(g.label)} <b>${g.rows.length}</b></a>`).join("");
+  $("list").innerHTML = groups.map(g => `<section class="grp ${g.key}" id="${g.key}" style="--c:var(${g.c})">
+      <div class="gh"><h2><span class="dot"></span>${esc(g.label)}</h2><span class="n">${g.rows.length} lead${g.rows.length > 1 ? "s" : ""}</span><p>${esc(g.desc)}</p></div>
+      <div class="rows">${g.rows.map(rowHTML).join("")}</div></section>`).join("") || `<p class="empty">No leads found.</p>`;
+}
+function notice(msg) { const n = $("notice"); n.hidden = !msg; n.textContent = msg || ""; }
+function errText(e, server) {
+  const c = e && e.code;
+  if (c === "server_not_connected" || c === "selection_required") return `Add the ${server} connector in claude.ai Settings, Connectors.`;
+  if (c === "needs_reauth") return `Reconnect ${server} in claude.ai Settings, Connectors.`;
+  if (c === "not_in_manifest" || c === "approval_required" || c === "consent_required") return `${server} is not allowed for this page. Allow it from the page's permissions menu.`;
+  return (e && e.message) || `${server} did not answer.`;
+}
+
+// ---------- run ----------
+let running = false;
+async function refresh() {
+  if (running || !mcp) return; running = true;
+  const btn = $("refresh"); btn.disabled = true; btn.textContent = "Refreshing…";
+  $("bar").hidden = false; $("barfill").style.width = "4%"; notice("");
+  const msgs = [];
+  let rows, srcTracker = "live";
+  try { rows = await readTracker(); }
+  catch (e) { srcTracker = "saved list"; rows = ROSTER.map(([name, f]) => ({name, fwd: parseSheetDate(f), note: ""}));
+    msgs.push(`Tracker not read live (${errText(e, "Composio")}); using the list saved on 10/13, so newer forwards may be missing.`); }
+  // Match tracker names to Close leads.
+  const unknown = rows.filter(r => !(norm(r.name) in LEAD_IDS));
+  if (unknown.length) {
+    try {
+      const sl = await setterLeads();
+      for (const r of unknown) { const hit = sl.filter(s => norm(s.name) === norm(r.name)); r.id = hit.length === 1 ? hit[0].id : null; }
+    } catch (e) { msgs.push(`Could not search Close for ${unknown.length} new tracker name(s).`); }
+  }
+  for (const r of rows) if (norm(r.name) in LEAD_IDS) r.id = LEAD_IDS[norm(r.name)];
+  // One row per Close lead (the tracker can list a person twice).
+  const seenIds = new Set(); rows = rows.filter(r => !r.id || (seenIds.has(r.id) ? false : (seenIds.add(r.id), true)));
+  $("barfill").style.width = "10%";
+  const models = []; let done = 0, failed = 0, firstErr = null;
+  const queue = rows.slice();
+  async function worker() {
+    while (queue.length) {
+      const r = queue.shift();
+      if (!r.id) {
+        models.push({stage: "no_close", name: r.name, id: null, fwdDay: r.fwd, tl: [{k: r.fwd || dayKey(new Date()), t: "Helen forwarded to Jordan"}],
+          action: "Create the lead in Close (or find it by email) so Jordan's follow-up is tracked.", due: null, note: r.note, sortKey: r.name.toLowerCase()});
+      } else {
+        try { models.push(analyse(r, await loadLead(r.id))); }
+        catch (e) { failed++; firstErr = firstErr || e;
+          models.push({stage: "error", name: r.name, id: r.id, fwdDay: r.fwd, tl: [{k: r.fwd || dayKey(new Date()), t: "Helen forwarded to Jordan"}],
+            action: errText(e, "Close"), due: null, note: "", sortKey: r.name.toLowerCase()}); }
+      }
+      done++; $("barfill").style.width = `${10 + 90 * done / rows.length}%`;
+      if (done % 8 === 0) render(models);
+    }
+  }
+  await Promise.all(Array.from({length: 6}, worker));
+  if (failed === rows.length && firstErr) msgs.unshift(`Close could not be read: ${errText(firstErr, "Close")}`);
+  else if (failed) msgs.push(`${failed} lead(s) could not be loaded from Close; they are listed under "Could not load".`);
+  render(models);
+  const stamp = new Date();
+  $("updated").textContent = `Updated ${stamp.toLocaleString("en-US", {month:"short", day:"numeric", hour:"numeric", minute:"2-digit", timeZone: TZ, timeZoneName:"short"})}`;
+  $("src").textContent = `${models.length} leads · tracker: ${srcTracker} · Close: live`;
+  notice(msgs.join(" "));
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({at: stamp.toISOString(), models, src: $("src").textContent})); } catch (_) {}
+  $("bar").hidden = true; btn.disabled = false; btn.textContent = "Refresh from Close"; running = false;
+}
+
+// Show the last refresh straight away, then pull fresh data.
+try {
+  const c = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+  if (c && Array.isArray(c.models)) { render(c.models); $("updated").textContent = `Showing ${new Date(c.at).toLocaleString("en-US", {month:"short", day:"numeric", hour:"numeric", minute:"2-digit", timeZone: TZ, timeZoneName:"short"})}, refreshing…`; $("src").textContent = c.src || ""; }
+} catch (_) {}
+$("refresh").addEventListener("click", refresh);
+(async () => {
+  mcp = window.claude && window.claude.use ? await window.claude.use("mcp") : null;
+  if (!mcp) { $("refresh").disabled = true; notice("This page reads Close through your claude.ai connectors. Open it in Claude, signed in, to load live data."); if (!$("chips").innerHTML) $("list").innerHTML = `<p class="empty">Open this page in Claude to load Jordan's leads.</p>`; return; }
+  refresh();
+})();
+})();
+</script>
