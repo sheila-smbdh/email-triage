@@ -154,16 +154,18 @@ breakup; the lead then drops back into its normal stage and the timeline says it
 Day 2 / Day 5 follow the intake Routine's cadence (Task 2 due D0+1, Task 3 due D0+5), in
 America/Denver. Within a group, rows sort by due date, then name.
 
-### Action required panel (added 2026-10-16)
+### Action required filter (added 2026-10-16)
 
-Above the stage chips, "Action required for Jordan" lists every lead whose next step is due
-today or earlier, oldest first, with the Close link, the due tag and the action. "Today" is
-worked out when the page is opened (Mountain time), so Jordan's saved copy stays right from day
-to day without a new save. Breakups, deprioritized leads and leads already with a closer are left
-out. Overdue steps keep their real due date (Day 2 = forward + 1 business day, breakup = forward
-+ 5 days, first touch = the forward date, a rebook = the cancelled call's date, a held call with
-no follow-up task = the next business day after it), so they read as "overdue 10/3" rather than
-"today". When nothing is due, the panel says so and names the next lead coming up.
+The first chip above the stage groups is a red **Action required** button with a count. Clicking
+it narrows every stage group to leads whose next step is due today or earlier; clicking again
+shows everyone. The choice is remembered per browser (`localStorage` key `jlt-only-due`).
+(A separate panel listing these leads was tried first and dropped the same day as too long.)
+"Today" is worked out when the page is opened (Mountain time), so Jordan's saved copy stays right
+from day to day without a new save. Breakups, deprioritized leads and leads already with a closer
+never count. Overdue steps keep their real due date (Day 2 = forward + 1 business day, breakup =
+forward + 5 days, first touch = the forward date, a rebook = the cancelled call's date, a held
+call with no follow-up task = the next business day after it), so they read as "overdue 10/3"
+rather than "today".
 
 ## 5. Changing it
 
