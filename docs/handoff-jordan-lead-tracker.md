@@ -180,9 +180,9 @@ handled per connector (add / reconnect / allow for this page) rather than one ge
    send no-shows to "Setter call cancelled".
 3. **"Could have set" is not judged.** Sheila's example next step ("could have set but not
    set, follow up on x date") needs the call transcript. The page shows Jordan's own tracker
-   note and his Close task date instead. The daily Slack coaching notes (tracker follow-up
-   STEP 5) carry the verdicts; bringing them in would mean the follow-up pass writing them to
-   a tracker column the page can read.
+   note and his Close task date instead. The daily Slack coaching notes that carried these
+   verdicts were removed on 2026-10-16; bringing them back would mean reading transcripts
+   again and writing the verdicts to a tracker column the page can read.
 4. **Breakup emails are seen only through lead summaries**, which may not hold every old
    thread. A completed Day 5 task on a cold lead is the backstop.
 5. **Inbound calls are not counted as replies** (calls have no direction in the preview).
